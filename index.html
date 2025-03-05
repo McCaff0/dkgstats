@@ -4,10 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DKG Stats</title>
+    <style>
+        /* Remove margin and padding for the entire page */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%; /* Ensure the body and html take up the full height */
+        }
+
+        /* Ensure the iframe fills the entire viewport or parent container */
+        iframe {
+            width: 100%; /* Makes iframe width 100% of the parent container */
+            height: 100%; /* Makes iframe height 100% of the parent container */
+            border: none; /* Removes any default border from the iframe */
+            display: block; /* Ensures no space below iframe */
+        }
+    </style>
 </head>
 <body>
     <iframe src="https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec"
-            width="100%" height="1000px" style="border:none;">
+            style="border:none;">
     </iframe>
 </body>
 </html>
+
