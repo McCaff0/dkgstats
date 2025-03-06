@@ -18,7 +18,7 @@
       border: none;
       display: block;
       transform: scale(1); /* Force scaling */
-      transform-origin: 0 0; 
+      transform-origin: 0 0;
     }
 
     body {
@@ -26,6 +26,18 @@
       background: #0e041e;
       min-height: 100vh; /* Prevent extra space below the iframe */
       overflow: hidden; /* Prevent any overflow */
+    }
+
+    /* Ensuring consistent scaling across all devices */
+    @media (max-width: 600px) {
+      iframe {
+        height: 100vh; /* Full height on mobile */
+      }
+    }
+
+    /* Universal fix for zooming issues on mobile */
+    html {
+      touch-action: manipulation;
     }
   </style>
 </head>
