@@ -89,7 +89,6 @@
 
   <!-- Main container -->
   <div class="container">
-    <!-- First stats box -->
     <div class="stats-box">
       <h3>Current</h3>
       <p><span>TRAC Price</span><span id="tracprice">Loading...</span></p>
@@ -113,7 +112,6 @@
       <p><span>Staking Fee</span><span id="stakingfee">Loading...</span></p>
     </div>
 
-    <!-- Second stats box -->
     <div class="stats-box">
       <p><span>Total KA'S</span><span id="totalkas">Loading...</span></p>
       <p><span>Total TRAC Spent</span><span id="totaltracspent">Loading...</span></p>
@@ -121,43 +119,28 @@
     </div>
   </div>
 
+  <!-- JSONP: Load the script from your Apps Script endpoint with a callback -->
+  <script src="https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec"></script>
   <script>
-    // Replace with your actual deployed Google Apps Script web app URL
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
-
-    function formatNumber(value, decimals = 0, currency = false) {
-      return currency 
-        ? `$${value.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`
-        : value.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    // Callback function for JSONP response
+    function handleData(data) {
+      if (!data) return;
+      document.getElementById('tracprice').innerText = data.tracprice;
+      document.getElementById('marketcap').innerText = data.marketcap;
+      document.getElementById('peratio').innerText = data.peratio;
+      document.getElementById('tracstaked').innerText = data.tracstaked;
+      document.getElementById('stakingapy').innerText = data.stakingapy;
+      document.getElementById('annualspend').innerText = data.annualspend;
+      document.getElementById('dailyspend').innerText = data.dailyspend;
+      document.getElementById('dailypublishes').innerText = data.dailypublishes;
+      document.getElementById('publishpricetrac').innerText = data.publishpricetrac;
+      document.getElementById('publishpriceusd').innerText = data.publishpriceusd;
+      document.getElementById('stakingfee').innerText = data.stakingfee;
+      document.getElementById('totalkas').innerText = data.totalkas;
+      document.getElementById('totaltracspent').innerText = data.totaltracspent;
+      document.getElementById('activenodes').innerText = data.activenodes;
     }
-    function formatPercentage(value, decimals = 2) {
-      return (value * 100).toFixed(decimals) + '%';
-    }
+  </script>
 
-    function fetchData() {
-      fetch(apiUrl)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => updateStats(data))
-        .catch(error => console.error('Error fetching data:', error));
-    }
-
-    function updateStats(data) {
-      document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
-      document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0);
-      document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
-      document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0);
-      document.getElementById('stakingapy').innerText = formatPercentage(data.stakingapy, 2);
-      document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0);
-      document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0);
-      document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
-      document.getElementById('publishpricetrac').innerText = formatNumber(data.publishpricetrac, 6);
-      document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
-      document.getElementById('stakingfee').innerText = formatPercentage(data.stakingfee, 2);
-      document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0);
-      document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
-      document.getElementById('activenodes').innerText = formatNumber(data.activenodes,
+</body>
+</html>
