@@ -2,49 +2,162 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>DKG Stats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link href="https://fonts.googleapis.com/css2?family=Play&display=swap" rel="stylesheet">
   <style>
+    /* Reset */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      height: 100%; /* Ensure full page height */
-    }
-
-    iframe {
-      width: 100%;
-      height: 100vh; /* Use full viewport height */
-      border: none;
-      display: block;
-      transform: scale(1); /* Force scaling */
-      transform-origin: 0 0;
-    }
-
+    /* Body setup */
     body {
       font-family: 'Play', sans-serif;
       background: #0e041e;
-      min-height: 100vh; /* Prevent extra space below the iframe */
-      overflow: hidden; /* Prevent any overflow */
+      color: #dadada;
+      padding: 20px;
+      text-align: center;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* Ensuring consistent scaling across all devices */
+    /* Responsive title image */
+    .title-image {
+      width: 80%;
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+
+    /* Container as a narrow centered column */
+    .container {
+      width: 90%;
+      max-width: 400px;
+      background: #14072f;
+      padding: 15px;
+      border-radius: 18px;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+      margin: 0 auto;
+    }
+
+    /* Stats box styling – same for both boxes */
+    .stats-box {
+      background: #0b0021;
+      padding: 10px;
+      border-radius: 8px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .stats-box h3 {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .stats-box p {
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+
+    .half-line {
+      height: 0.5em;
+      display: block;
+    }
+
+    /* Mobile adjustments */
     @media (max-width: 600px) {
-      iframe {
-        height: 100vh; /* Full height on mobile */
+      .title-image {
+        width: 60%;
       }
-    }
-
-    /* Universal fix for zooming issues on mobile */
-    html {
-      touch-action: manipulation;
+      .stats-box p {
+        font-size: 16px;
+      }
+      .container {
+        padding: 10px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- This iframe will load the Apps Script web app -->
-  <iframe src="https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec"></iframe>
+  <!-- Title Image -->
+  <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKG Calculator" class="title-image">
 
-</body>
-</html>
+  <!-- Main container -->
+  <div class="container">
+    <!-- First stats box -->
+    <div class="stats-box">
+      <h3>Current</h3>
+      <p><span>TRAC Price</span><span id="tracprice">Loading...</span></p>
+      <p><span>Market Cap</span><span id="marketcap">Loading...</span></p>
+      <p><span>P/E Ratio</span><span id="peratio">Loading...</span></p>
+
+      <span class="half-line"></span>
+
+      <p><span>TRAC Staked</span><span id="tracstaked">Loading...</span></p>
+      <p><span>Staking APY</span><span id="stakingapy">Loading...</span></p>
+
+      <h3>28 Day Averages</h3>
+      <p><span>Annual Spend (USD)</span><span id="annualspend">Loading...</span></p>
+      <p><span>Daily Spend (TRAC)</span><span id="dailyspend">Loading...</span></p>
+      <p><span>Daily Publishes</span><span id="dailypublishes">Loading...</span></p>
+
+      <span class="half-line"></span>
+
+      <p><span>Publish Price (TRAC)</span><span id="publishpricetrac">Loading...</span></p>
+      <p><span>Publish Price (USD)</span><span id="publishpriceusd">Loading...</span></p>
+      <p><span>Staking Fee</span><span id="stakingfee">Loading...</span></p>
+    </div>
+
+    <!-- Second stats box -->
+    <div class="stats-box">
+      <p><span>Total KA'S</span><span id="totalkas">Loading...</span></p>
+      <p><span>Total TRAC Spent</span><span id="totaltracspent">Loading...</span></p>
+      <p><span>Active Nodes</span><span id="activenodes">Loading...</span></p>
+    </div>
+  </div>
+
+  <script>
+    // Replace with your actual deployed Google Apps Script web app URL
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
+
+    function formatNumber(value, decimals = 0, currency = false) {
+      return currency 
+        ? `$${value.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`
+        : value.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    }
+    function formatPercentage(value, decimals = 2) {
+      return (value * 100).toFixed(decimals) + '%';
+    }
+
+    function fetchData() {
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => updateStats(data))
+        .catch(error => console.error('Error fetching data:', error));
+    }
+
+    function updateStats(data) {
+      document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
+      document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0);
+      document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
+      document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0);
+      document.getElementById('stakingapy').innerText = formatPercentage(data.stakingapy, 2);
+      document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0);
+      document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0);
+      document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
+      document.getElementById('publishpricetrac').innerText = formatNumber(data.publishpricetrac, 6);
+      document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
+      document.getElementById('stakingfee').innerText = formatPercentage(data.stakingfee, 2);
+      document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0);
+      document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
+      document.getElementById('activenodes').innerText = formatNumber(data.activenodes,
