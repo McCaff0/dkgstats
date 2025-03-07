@@ -150,48 +150,61 @@
   </div>
 
   <script>
-    function formatNumber(value, decimals = 0, isCurrency = false) {
-      if (value == null || value === '') return 'Loading...';
-      
-      let number = Number(value);
-      if (isNaN(number)) return value;
-      
-      let [integer, decimal] = number.toFixed(decimals).split('.');
-      let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+function formatNumber(value, decimals = 0, isCurrency = false) {
+  if (value == null || value === '') return 'Loading...';
+  
+  let number = Number(value);
+  if (isNaN(number)) return value;
+  
+  let [integer, decimal] = number.toFixed(decimals).split('.');
+  let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-      return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
-    }
+  return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
+}
 
-    function formatPercentage(value, period) {
-      if (value == null || value === '') return 'Loading...';
+function formatPercentage(value, period) {
+  if (value == null || value === '') return 'Loading...';
 
-      let number = Number(value);
-      if (isNaN(number)) return value;
+  let number = Number(value);
+  if (isNaN(number)) return value;
 
-      let sign = number > 0 ? '+' : number < 0 ? '-' : '';
-      let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
+  let sign = number > 0 ? '+' : number < 0 ? '-' : '';
+  let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
 
-      return `<span class="${className}">${sign}${Math.abs(number).toFixed(2)}% (${period})</span>`;
-    }
+  return `<span class="${className}">${sign}${Math.abs(number).toFixed(2)}% (${period})</span>`;
+}
 
-    function fetchData(data) {
-      if (!data) return;
+// Function to handle the fetched data from Google Apps Script
+function handleData(data) {
+  if (!data) return;
 
-      document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
-      document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
-      document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
-      document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0, true);
-      document.getElementById('stakingapy').innerText = formatNumber(data.stakingapy * 100, 2) + '%';
-      document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
-      document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
-      document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
+  document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
+  document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
+  document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
+  document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0, true);
+  document.getElementById('stakingapy').innerText = formatNumber(data.stakingapy * 100, 2) + '%';
+  document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
+  document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
+  document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
 
-      document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
-      document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
-    }
+  document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
+  document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
+}
 
-    fetchData();
-    setInterval(fetchData, 10000);
+// Function to fetch data from Google Apps Script
+function fetchData() {
+  const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
+  const script = document.createElement('script');
+  script.src = `${apiUrl}?callback=handleData`;  // Using JSONP callback
+  document.head.appendChild(script);
+}
+
+// Initial data load
+fetchData();
+
+// Refresh data every 10 seconds
+setInterval(fetchData, 10000);
+
   </script>
 
 </body>
