@@ -79,29 +79,28 @@
       display: block;
     }
 
-    /* Right value container for numbers and percentage changes */
+    /* Right-hand value container using CSS grid */
     .value-container {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      width: 150px; /* Fixed width for the right column */
+      display: grid;
+      grid-template-columns: 100px 50px;  /* first column: 100px for number; second: 50px for percentage */
+      width: 150px;
     }
-    /* The number takes up a fixed 100px, right aligned */
+    /* The number: right-aligned in its 100px cell */
     .number-value {
-      width: 100px;
       text-align: right;
     }
-    /* The percentage change takes the remaining space, left aligned */
+    /* The percentage change: left-aligned in its 50px cell */
     .percentage-change {
-      flex: 1;
       text-align: left;
       font-size: 11px;
-      margin-left: 6px;
+      /* If you want extra spacing inside the 50px cell, you can add padding */
+      padding-left: 4px;
     }
 
     .positive { color: #00ff00; } /* Green for positive */
     .negative { color: #ff0000; } /* Red for negative */
-    .neutral  { color: #ffffff; }  /* White for zero */
+    .neutral  { color: #ffffff; } /* White for zero */
+
   </style>
 
   <!-- Google Analytics Tag -->
@@ -123,6 +122,8 @@
   <div class="container">
     <div class="stats-box">
       <h3>Current</h3>
+      
+      <!-- TRAC Price row -->
       <p>
         <span>TRAC Price</span>
         <span class="value-container">
@@ -130,48 +131,66 @@
           <span id="pricechange1d" class="percentage-change"></span>
         </span>
       </p>
+      
+      <!-- Market Cap row -->
       <p>
         <span>Market Cap</span>
         <span class="value-container">
           <span id="marketcap" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
+      
+      <!-- P/E Ratio row -->
       <p>
         <span>P/E Ratio</span>
         <span class="value-container">
           <span id="peratio" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
       
       <span class="half-line"></span>
       
+      <!-- TRAC Staked row -->
       <p>
         <span>TRAC Staked</span>
         <span class="value-container">
           <span id="tracstaked" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
+      
+      <!-- Staking APY row -->
       <p>
         <span>Staking APY</span>
         <span class="value-container">
           <span id="stakingapy" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
       
       <h3>28 Day Averages</h3>
       
+      <!-- Annual Spend row -->
       <p>
         <span>Annual Spend (USD)</span>
         <span class="value-container">
           <span id="annualspend" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
+      
+      <!-- Daily Spend row -->
       <p>
         <span>Daily Spend (TRAC)</span>
         <span class="value-container">
           <span id="dailyspend" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
+      
+      <!-- Daily Publishes row (with percentage change) -->
       <p>
         <span>Daily Publishes</span>
         <span class="value-container">
@@ -184,22 +203,30 @@
     </div>
     
     <div class="stats-box">
+      <!-- Total KA'S row -->
       <p>
         <span>Total KA'S</span>
         <span class="value-container">
           <span id="totalkas" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
+      
+      <!-- Total TRAC Spent row -->
       <p>
         <span>Total TRAC Spent</span>
         <span class="value-container">
           <span id="totaltracspent" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
+      
+      <!-- Active Nodes row -->
       <p>
         <span>Active Nodes</span>
         <span class="value-container">
           <span id="activenodes" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
     </div>
