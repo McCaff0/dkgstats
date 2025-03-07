@@ -44,7 +44,6 @@
       padding: 10px;
       border-radius: 8px;
       width: 100%;
-      margin-bottom: 0; /* Set margin to 0 for bottom box */
     }
 
     .stats-box h3 {
@@ -61,6 +60,15 @@
       font-size: 18px;
       font-weight: bold;
       margin: 8px 0;
+    }
+
+    /* Margin-bottom specific for each box */
+    .stats-box:first-child {
+      margin-bottom: 10px; /* Top box gets 10px margin bottom */
+    }
+
+    .stats-box:last-child {
+      margin-bottom: 0; /* Bottom box has no margin bottom */
     }
 
     .half-line {
