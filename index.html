@@ -84,8 +84,10 @@
 
     /* Styles for percentage changes */
     .percentage-change {
-      font-size: 14px;
+      font-size: 11px;
       margin-left: 6px;
+      position: relative;
+      top: -2.5px;
     }
     
     .positive { color: #00ff00; } /* Green for positive */
@@ -186,7 +188,9 @@ function handleData(data) {
   document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
   document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
   document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
-
+  document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0);
+  document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
+  document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
   document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
   document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
 }
