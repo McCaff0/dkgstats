@@ -69,9 +69,9 @@
       margin-bottom: 5px;
     }
 
+    /* Aligning the stats */
     .stats-box p {
       display: flex;
-      align-items: center;
       justify-content: space-between;
       font-size: 18px;
       font-weight: bold;
@@ -79,23 +79,16 @@
       width: 100%;
     }
 
-    /* Styles for numbers with margin-right */
-    .number-container {
-      display: flex;
-      justify-content: flex-start;
-      gap: 10px;
-      width: 100%;
-      padding-right: 100px; /* Move numbers to the left */
-    }
-
-    .number-container span {
-      margin-right: 10px; /* Add space between number and percentage change */
+    /* Adding margin-right for the numbers */
+    .stats-box p span {
+      padding-right: 100px; /* Move numbers 100px away from the right */
     }
 
     /* Percentage change styles */
     .percentage-change {
       font-size: 11px;
-      margin-left: 10px; /* Space between number and percentage change */
+      margin-left: 10px;
+      text-align: left; /* Align percentage change to the left */
     }
 
     .positive { color: #00ff00; } /* Green for positive */
@@ -121,7 +114,7 @@
       <h3>Current</h3>
       <p>
         <span>TRAC Price</span>
-        <span class="number-container">
+        <span>
           <span id="tracprice">Loading...</span>
           <span id="pricechange1d" class="percentage-change"> </span>
         </span>
@@ -139,7 +132,7 @@
       <p><span>Daily Spend (TRAC)</span><span id="dailyspend">Loading...</span></p>
       <p>
         <span>Daily Publishes</span>
-        <span class="number-container">
+        <span>
           <span id="dailypublishes">Loading...</span>
           <span id="dailypublisheschange28d" class="percentage-change"> </span>
         </span>
