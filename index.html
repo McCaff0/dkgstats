@@ -56,11 +56,9 @@
       width: 100%;
       gap: 4px;
     }
-
     .stats-box:last-child {
       margin-top: 10px;
     }
-
     .stats-box h3 {
       text-align: center;
       font-size: 18px;
@@ -68,7 +66,6 @@
       text-transform: uppercase;
       margin-bottom: 5px;
     }
-
     .stats-box p {
       display: flex;
       justify-content: space-between;
@@ -76,110 +73,112 @@
       font-weight: bold;
       margin: 8px 0;
     }
-
     .half-line {
       height: 0.5em;
       display: block;
     }
 
-    /* Styles for percentage changes */
-    .percentage-change {
-      font-size: 11px;
-      margin-left: 6px;
+    /* Container for the right-hand value (number + percentage change) */
+    .right-value-container {
       position: relative;
-      top: -2.5px;
+      /* This container will span the full available space on the right */
+      width: 100%;
+      min-height: 1.2em; /* ensure there's room for absolute elements */
     }
-    
+    /* The number: its right edge should be 100px from the right edge of the container */
+    .number-value {
+      position: absolute;
+      right: 100px;
+      text-align: right;
+    }
+    /* The percentage change: its left edge should be 80px from the right edge */
+    .percentage-change {
+      position: absolute;
+      right: 80px;
+      font-size: 11px;
+      /* vertically center relative to the container (adjust as needed) */
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
     .positive { color: #00ff00; } /* Green for positive */
     .negative { color: #ff0000; } /* Red for negative */
     .neutral { color: #ffffff; }  /* White for zero */
-  </style>
 
+  </style>
+  
   <!-- Google Analytics Tag -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-16V8B7YWR9');
   </script>
-
+  
 </head>
 <body>
 
   <!-- Title Image -->
   <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKG Calculator" class="title-image">
-
+  
   <!-- Main container -->
   <div class="container">
     <div class="stats-box">
       <h3>Current</h3>
       <p>
         <span>TRAC Price</span>
-        <span>
-          <span id="pricechange1d" class="percentage-change"> </span>
-          <span id="tracprice">Loading...</span>
+        <span class="right-value-container">
+          <span id="tracprice" class="number-value">Loading...</span>
+          <span id="pricechange1d" class="percentage-change"></span>
         </span>
       </p>
       <p><span>Market Cap</span><span id="marketcap">Loading...</span></p>
       <p><span>P/E Ratio</span><span id="peratio">Loading...</span></p>
-
       <span class="half-line"></span>
-
       <p><span>TRAC Staked</span><span id="tracstaked">Loading...</span></p>
       <p><span>Staking APY</span><span id="stakingapy">Loading...</span></p>
-
       <h3>28 Day Averages</h3>
       <p><span>Annual Spend (USD)</span><span id="annualspend">Loading...</span></p>
       <p><span>Daily Spend (TRAC)</span><span id="dailyspend">Loading...</span></p>
       <p>
         <span>Daily Publishes</span>
-        <span>
-          <span id="dailypublisheschange28d" class="percentage-change"> </span>
-          <span id="dailypublishes">Loading...</span>
+        <span class="right-value-container">
+          <span id="dailypublishes" class="number-value">Loading...</span>
+          <span id="dailypublisheschange28d" class="percentage-change"></span>
         </span>
       </p>
-
       <span class="half-line"></span>
     </div>
-
+  
     <div class="stats-box">
       <p><span>Total KA'S</span><span id="totalkas">Loading...</span></p>
       <p><span>Total TRAC Spent</span><span id="totaltracspent">Loading...</span></p>
       <p><span>Active Nodes</span><span id="activenodes">Loading...</span></p>
     </div>
   </div>
-
+  
   <script>
 function formatNumber(value, decimals = 0, isCurrency = false) {
   if (value == null || value === '') return 'Loading...';
-
   let number = Number(value);
   if (isNaN(number)) return value;
-
   let [integer, decimal] = number.toFixed(decimals).split('.');
   let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
   return decimal ? formattedInteger + '.' + decimal : formattedInteger;
 }
 
 function formatPercentage(value, period) {
   if (value == null || value === '') return 'Loading...';
-
   let number = Number(value);
   if (isNaN(number)) return value;
-
   let sign = number > 0 ? '+' : number < 0 ? '-' : '';
   let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
-
   return '<span class="' + className + '">' + sign + (Math.abs(number) * 100).toFixed(2) + '% (' + period + ')</span>';
 }
 
-// Function to handle the fetched data from Google Apps Script
 function handleData(data) {
   if (!data) return;
-
   document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
   document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
   document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
@@ -195,21 +194,16 @@ function handleData(data) {
   document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
 }
 
-// Function to fetch data from Google Apps Script
 function fetchData() {
   const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
   const script = document.createElement('script');
-  script.src = apiUrl + "?callback=handleData";  // Using JSONP callback
+  script.src = apiUrl + "?callback=handleData";
   document.head.appendChild(script);
 }
 
-// Initial data load
 fetchData();
-
-// Refresh data every 10 seconds
 setInterval(fetchData, 10000);
-
   </script>
-
+  
 </body>
 </html>
