@@ -154,14 +154,14 @@
   <script>
 function formatNumber(value, decimals = 0, isCurrency = false) {
   if (value == null || value === '') return 'Loading...';
-  
+
   let number = Number(value);
   if (isNaN(number)) return value;
-  
+
   let [integer, decimal] = number.toFixed(decimals).split('.');
   let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-  return decimal ? ${formattedInteger}.${decimal} : formattedInteger;
+  return decimal ? formattedInteger + '.' + decimal : formattedInteger;
 }
 
 function formatPercentage(value, period) {
@@ -173,7 +173,7 @@ function formatPercentage(value, period) {
   let sign = number > 0 ? '+' : number < 0 ? '-' : '';
   let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
 
-  return <span class="${className}">${sign}${(Math.abs(number) * 100).toFixed(2)}% (${period})</span>;
+  return '<span class="' + className + '">' + sign + (Math.abs(number) * 100).toFixed(2) + '% (' + period + ')</span>';
 }
 
 // Function to handle the fetched data from Google Apps Script
@@ -199,7 +199,7 @@ function handleData(data) {
 function fetchData() {
   const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
   const script = document.createElement('script');
-  script.src = ${apiUrl}?callback=handleData;  // Using JSONP callback
+  script.src = apiUrl + "?callback=handleData";  // Using JSONP callback
   document.head.appendChild(script);
 }
 
