@@ -173,7 +173,7 @@ function formatPercentage(value, period) {
   let sign = number > 0 ? '+' : number < 0 ? '-' : '';
   let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
 
-  return `<span class="${className}">${sign}${Math.abs(number).toFixed(2)}% (${period})</span>`;
+  return `<span class="${className}">${sign}${(Math.abs(number) * 100).toFixed(2)}% (${period})</span>`;
 }
 
 // Function to handle the fetched data from Google Apps Script
