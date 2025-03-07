@@ -17,6 +17,10 @@
       padding: 20px;
       text-align: center;
       overflow-x: hidden;
+      min-height: 100vh; /* Ensures full height on mobile */
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Centers content vertically */
     }
 
     /* Responsive title image */
@@ -28,13 +32,13 @@
 
     /* Container as a narrow centered column */
     .container {
-      width: 90%;
+      width: 96%;
       max-width: 400px;
       background: #14072f;
       padding: 10px;
       border-radius: 18px;
       box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
-      margin: 0 auto;
+      margin: auto;
     }
 
     /* Stats box styling – same for both boxes */
@@ -172,7 +176,6 @@
       document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
     }
 
-    // Function to fetch and display data every 10 seconds
     function fetchData() {
       const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
       const script = document.createElement('script');
