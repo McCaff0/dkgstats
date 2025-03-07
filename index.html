@@ -82,30 +82,25 @@
       display: block;
     }
 
-    /* Container for number + percentage */
+    /* Adjust numbers to stay aligned with extra space for percentage */
     .value-container {
       display: flex;
-      align-items: center;
       justify-content: flex-end;
-      position: relative;
-      width: 100%;
-      padding-right: 100px; /* Indent */
+      width: 150px; /* Reserves space for number + percentage change */
     }
 
-    /* The actual number stays right-aligned like other values */
-    .value-container span:first-child {
-      min-width: 80px; /* Adjust based on number width */
+    .number-value {
       text-align: right;
+      flex: 1; /* Number remains aligned properly */
     }
 
-    /* Percentage change positioned inside indent */
     .percentage-change {
-      position: absolute;
-      right: 0; /* Moves it into the indent */
-      top: -2px; /* Slightly raises it */
       font-size: 11px;
+      margin-left: 6px;
+      position: relative;
+      top: -2.5px;
     }
-
+    
     .positive { color: #00ff00; } /* Green for positive */
     .negative { color: #ff0000; } /* Red for negative */
     .neutral { color: #ffffff; }  /* White for zero */
@@ -124,7 +119,7 @@
       <p>
         <span>TRAC Price</span>
         <span class="value-container">
-          <span id="tracprice">Loading...</span>
+          <span id="tracprice" class="number-value">Loading...</span>
           <span id="pricechange1d" class="percentage-change"></span>
         </span>
       </p>
@@ -142,7 +137,7 @@
       <p>
         <span>Daily Publishes</span>
         <span class="value-container">
-          <span id="dailypublishes">Loading...</span>
+          <span id="dailypublishes" class="number-value">Loading...</span>
           <span id="dailypublisheschange28d" class="percentage-change"></span>
         </span>
       </p>
@@ -201,7 +196,7 @@ function handleData(data) {
   document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
 }
 
-// Function to fetch data from Google Apps Script
+// Fetch data
 function fetchData() {
   const apiUrl = 'YOUR_GOOGLE_SCRIPT_URL';
   const script = document.createElement('script');
@@ -209,10 +204,7 @@ function fetchData() {
   document.head.appendChild(script);
 }
 
-// Initial data load
 fetchData();
-
-// Refresh data every 10 seconds
 setInterval(fetchData, 10000);
   </script>
 
