@@ -46,7 +46,7 @@
       align-items: center;
     }
 
-    /* Stats box */
+    /* Stats box common styles */
     .stats-box {
       background: #0b0021;
       display: flex;
@@ -56,7 +56,7 @@
       width: 100%;
       gap: 4px;
     }
-    .stats-box:last-child {
+    .stats-box:last-of-type {
       margin-top: 10px;
     }
     .stats-box h3 {
@@ -65,7 +65,7 @@
       font-weight: bold;
       text-transform: uppercase;
       margin-bottom: 5px;
-      color: #c8c2cf
+      color: #c8c2cf;
     }
     .stats-box p {
       display: flex;
@@ -74,52 +74,58 @@
       font-size: 18px;
       font-weight: bold;
       margin: 8px 0;
-      color: #c8c2cf
+      color: #c8c2cf;
     }
     .half-line {
       height: 0.5em;
       display: block;
     }
 
-    /* Right-hand value container using CSS grid */
-    .value-container {
+    /* ----- Top Stats Box (first-of-type) layout ----- */
+    .stats-box:first-of-type .value-container {
+      /* Use a grid for the right-hand value area */
       display: grid;
-      grid-template-columns: 100px 40px;  /* first column: 100px for number; second: 50px for percentage */
-      width: 132px;
+      grid-template-columns: 100px 40px;
+      width: 140px;  /* Fixed width to reserve space */
     }
-    /* The number: right-aligned in its 100px cell */
-    .number-value {
+    .stats-box:first-of-type .number-value {
       text-align: right;
     }
-    /* The percentage change: left-aligned in its 50px cell, but now centered */
-    .percentage-change {
+    .stats-box:first-of-type .percentage-change {
       text-align: center;
       font-size: 10px;
       padding-left: 4px;
     }
 
-    .positive { color: #15cf15; } /* Green for positive */
-    .negative { color: #cf1515; } /* Red for negative */
-    .neutral  { color: #7b7f83; } /* White for zero */
+    /* ----- Bottom Stats Box (last-of-type) layout: revert to default right alignment ----- */
+    .stats-box:last-of-type .value-container {
+      display: block;
+      text-align: right;
+      width: auto;
+    }
+
+    /* Color classes */
+    .positive { color: #15cf15; }
+    .negative { color: #cf1515; }
+    .neutral  { color: #7b7f83; }
   </style>
 
   <!-- Google Analytics Tag -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-16V8B7YWR9');
   </script>
-  
 </head>
 <body>
-
   <!-- Title Image -->
   <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKG Calculator" class="title-image">
   
   <!-- Main container -->
   <div class="container">
+    <!-- Top Stats Box -->
     <div class="stats-box">
       <h3>Current</h3>
       
@@ -190,7 +196,7 @@
         </span>
       </p>
       
-      <!-- Daily Publishes row (with percentage change) -->
+      <!-- Daily Publishes row -->
       <p>
         <span>Daily Publishes</span>
         <span class="value-container">
@@ -202,8 +208,8 @@
       <span class="half-line"></span>
     </div>
     
+    <!-- Bottom Stats Box (remains unchanged) -->
     <div class="stats-box">
-      <!-- Total KA'S row -->
       <p>
         <span>Total KA'S</span>
         <span class="value-container">
@@ -211,8 +217,6 @@
           <span class="percentage-change"></span>
         </span>
       </p>
-      
-      <!-- Total TRAC Spent row -->
       <p>
         <span>Total TRAC Spent</span>
         <span class="value-container">
@@ -220,8 +224,6 @@
           <span class="percentage-change"></span>
         </span>
       </p>
-      
-      <!-- Active Nodes row -->
       <p>
         <span>Active Nodes</span>
         <span class="value-container">
