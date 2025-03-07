@@ -17,27 +17,23 @@
       padding: 20px;
       text-align: center;
       overflow-x: hidden;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      width: 100vw;
     }
 
     /* Title image */
     .title-image {
-      width: 80%;
-      max-width: 400px;
+      width: 35%;
       display: block;
       margin: 0 auto 5px auto;
     }
 
     /* Main container */
     .container {
-      width: 96%; /* Takes full width on mobile */
-      max-width: 400px; /* Stays narrow on desktop */
       background: #14072f;
+      min-width: 350px;
       padding: 10px;
       border-radius: 18px;
       box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
@@ -71,19 +67,7 @@
       height: 0.5em;
       display: block;
     }
-
-    /* Mobile adjustments */
-    @media (max-width: 600px) {
-      .title-image {
-        width: 60%;
-      }
-      .container {
-        width: 96%;
-      }
-      .stats-box p {
-        font-size: 16px;
-      }
-    }
+    
   </style>
 
   <!-- Google Analytics Tag -->
