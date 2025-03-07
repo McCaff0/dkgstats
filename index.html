@@ -120,7 +120,6 @@
   </div>
 
   <!-- JSONP: Load the script from your Apps Script endpoint with a callback -->
-  <script src="https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec"></script>
   <script>
     // Callback function for JSONP response
     function handleData(data) {
@@ -140,6 +139,12 @@
       document.getElementById('totaltracspent').innerText = data.totaltracspent;
       document.getElementById('activenodes').innerText = data.activenodes;
     }
+
+    // Load the data via JSONP (insert script tag dynamically)
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
+    const script = document.createElement('script');
+    script.src = `${apiUrl}?callback=handleData`;
+    document.head.appendChild(script);
   </script>
 
 </body>
