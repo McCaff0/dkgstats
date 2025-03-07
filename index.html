@@ -136,13 +136,18 @@
       let number = Number(value);
       if (isNaN(number)) return value;
       
-      // Apply thousands separator
-      let formattedNumber = number.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      // Split number into integer and decimal parts
+      let [integer, decimal] = number.toFixed(decimals).split('.');
 
-      if (isCurrency) {
-        return formattedNumber;
+      // Apply thousands separator to the integer part
+      let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+      // Combine integer and decimal parts (if any)
+      if (decimal) {
+        return `${formattedInteger}.${decimal}`;
       }
-      return formattedNumber;
+      
+      return formattedInteger;
     }
 
     // Callback function for JSONP response
@@ -166,11 +171,20 @@
       document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
     }
 
-    // Load the data via JSONP (insert script tag dynamically)
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
-    const script = document.createElement('script');
-    script.src = `${apiUrl}?callback=handleData`;
-    document.head.appendChild(script);
+    // Function to fetch and display data every 10 seconds
+    function fetchData() {
+      const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
+      const script = document.createElement('script');
+      script.src = `${apiUrl}?callback=handleData`;
+      document.head.appendChild(script);
+    }
+
+    // Initial data fetch
+    fetchData();
+
+    // Fetch new data every 10 seconds (10000ms)
+    setInterval(fetchData, 10000);
+
   </script>
 
 </body>
