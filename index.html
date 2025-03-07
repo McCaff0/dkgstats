@@ -64,11 +64,11 @@
 
     /* Margin-bottom specific for each box */
     .stats-box:first-child {
-      margin-bottom: 10px; /* Top box gets 10px margin bottom */
+      margin-bottom: 10px;
     }
 
     .stats-box:last-child {
-      margin-bottom: 0; /* Bottom box has no margin bottom */
+      margin-bottom: 0;
     }
 
     .half-line {
@@ -89,6 +89,17 @@
       }
     }
   </style>
+
+  <!-- Google Analytics Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-16V8B7YWR9');
+  </script>
+
 </head>
 <body>
 
@@ -136,25 +147,16 @@
       let number = Number(value);
       if (isNaN(number)) return value;
       
-      // Split number into integer and decimal parts
       let [integer, decimal] = number.toFixed(decimals).split('.');
-
-      // Apply thousands separator to the integer part
       let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-      // Combine integer and decimal parts (if any)
-      if (decimal) {
-        return `${formattedInteger}.${decimal}`;
-      }
-      
-      return formattedInteger;
+      return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
     }
 
     // Callback function for JSONP response
     function handleData(data) {
       if (!data) return;
 
-      // Format values
       document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
       document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
       document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
@@ -179,21 +181,9 @@
       document.head.appendChild(script);
     }
 
-    // Initial data fetch
     fetchData();
-
-    // Fetch new data every 10 seconds (10000ms)
     setInterval(fetchData, 10000);
-    
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-16V8B7YWR9');
-</script>
+  </script>
 
 </body>
 </html>
