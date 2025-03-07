@@ -17,18 +17,17 @@
       padding: 20px;
       text-align: center;
       overflow-x: hidden;
-      min-height: 100vh; /* Ensures full viewport height */
-      width: 100vw; /* Ensures full viewport width */
-
+      min-height: 100vh;
+      width: 100vw;
       display: flex;
       flex-direction: column;
-      align-items: center; /* Keeps horizontal centering */
+      align-items: center;
     }
-
 
     /* Title image */
     .title-image {
-      width: 35%;
+      width: 60%;
+      max-width: 350px;
       display: block;
       margin: 0 auto 5px auto;
     }
@@ -42,7 +41,9 @@
       padding: 10px;
       border-radius: 18px;
       box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
-      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     /* Stats box */
@@ -51,6 +52,10 @@
       padding: 10px;
       border-radius: 8px;
       width: 100%;
+    }
+
+    .stats-box:last-child {
+      margin-top: 10px;
     }
 
     .stats-box h3 {
@@ -73,7 +78,16 @@
       height: 0.5em;
       display: block;
     }
+
+    /* Styles for percentage changes */
+    .percentage-change {
+      font-size: 14px;
+      margin-left: 6px;
+    }
     
+    .positive { color: #00ff00; } /* Green for positive */
+    .negative { color: #ff0000; } /* Red for negative */
+    .neutral { color: #ffffff; }  /* White for zero */
   </style>
 
   <!-- Google Analytics Tag -->
@@ -96,7 +110,13 @@
   <div class="container">
     <div class="stats-box">
       <h3>Current</h3>
-      <p><span>TRAC Price</span><span id="tracprice">Loading...</span></p>
+      <p>
+        <span>TRAC Price</span>
+        <span>
+          <span id="tracprice">Loading...</span>
+          <span id="pricechange1d" class="percentage-change">Loading...</span>
+        </span>
+      </p>
       <p><span>Market Cap</span><span id="marketcap">Loading...</span></p>
       <p><span>P/E Ratio</span><span id="peratio">Loading...</span></p>
 
@@ -108,13 +128,15 @@
       <h3>28 Day Averages</h3>
       <p><span>Annual Spend (USD)</span><span id="annualspend">Loading...</span></p>
       <p><span>Daily Spend (TRAC)</span><span id="dailyspend">Loading...</span></p>
-      <p><span>Daily Publishes</span><span id="dailypublishes">Loading...</span></p>
+      <p>
+        <span>Daily Publishes</span>
+        <span>
+          <span id="dailypublishes">Loading...</span>
+          <span id="dailypublisheschange28d" class="percentage-change">Loading...</span>
+        </span>
+      </p>
 
       <span class="half-line"></span>
-
-      <p><span>Publish Price (TRAC)</span><span id="publishpricetrac">Loading...</span></p>
-      <p><span>Publish Price (USD)</span><span id="publishpriceusd">Loading...</span></p>
-      <p><span>Staking Fee</span><span id="stakingfee">Loading...</span></p>
     </div>
 
     <div class="stats-box">
@@ -137,6 +159,18 @@
       return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
     }
 
+    function formatPercentage(value, period) {
+      if (value == null || value === '') return 'Loading...';
+
+      let number = Number(value);
+      if (isNaN(number)) return value;
+
+      let sign = number > 0 ? '+' : number < 0 ? '-' : '';
+      let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
+
+      return `<span class="${className}">${sign}${Math.abs(number).toFixed(2)}% (${period})</span>`;
+    }
+
     function handleData(data) {
       if (!data) return;
 
@@ -148,19 +182,9 @@
       document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
       document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
       document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
-      document.getElementById('publishpricetrac').innerText = formatNumber(data.publishpricetrac, 6);
-      document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
-      document.getElementById('stakingfee').innerText = formatNumber(data.stakingfee * 100, 2) + '%';
-      document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0, true);
-      document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0, true);
-      document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
-    }
 
-    function fetchData() {
-      const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
-      const script = document.createElement('script');
-      script.src = `${apiUrl}?callback=handleData`;
-      document.head.appendChild(script);
+      document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
+      document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
     }
 
     fetchData();
