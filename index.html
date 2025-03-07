@@ -8,7 +8,7 @@
   <style>
     /* Reset */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    
     /* Body setup */
     body {
       font-family: 'Play', sans-serif;
@@ -23,7 +23,7 @@
       flex-direction: column;
       align-items: center;
     }
-
+    
     /* Title image */
     .title-image {
       width: 60%;
@@ -31,7 +31,7 @@
       display: block;
       margin: 0 auto 5px auto;
     }
-
+    
     /* Main container */
     .container {
       background: #14072f;
@@ -40,12 +40,12 @@
       max-width: 500px;
       padding: 10px;
       border-radius: 18px;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 50px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
+    
     /* Stats box */
     .stats-box {
       background: #0b0021;
@@ -69,6 +69,7 @@
     .stats-box p {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       font-size: 18px;
       font-weight: bold;
       margin: 8px 0;
@@ -77,34 +78,34 @@
       height: 0.5em;
       display: block;
     }
-
-    /* Container for the right-hand value (number + percentage change) */
-    .right-value-container {
+    
+    /* Right-value container: fixed width for all right-hand values */
+    .value-container {
       position: relative;
-      /* This container will span the full available space on the right */
-      width: 100%;
-      min-height: 1.2em; /* ensure there's room for absolute elements */
+      width: 150px;       /* fixed width for the right column */
+      white-space: nowrap;
     }
-    /* The number: its right edge should be 100px from the right edge of the container */
+    /* The number: its right edge is 100px from the container's right edge */
     .number-value {
       position: absolute;
       right: 100px;
+      top: 50%;
+      transform: translateY(-50%);
       text-align: right;
     }
-    /* The percentage change: its left edge should be 80px from the right edge */
+    /* The percentage change: its left edge is 80px from the container's right edge */
     .percentage-change {
       position: absolute;
       right: 80px;
-      font-size: 11px;
-      /* vertically center relative to the container (adjust as needed) */
       top: 50%;
       transform: translateY(-50%);
+      font-size: 11px;
     }
-
-    .positive { color: #00ff00; } /* Green for positive */
-    .negative { color: #ff0000; } /* Red for negative */
-    .neutral { color: #ffffff; }  /* White for zero */
-
+    
+    .positive { color: #00ff00; }
+    .negative { color: #ff0000; }
+    .neutral  { color: #ffffff; }
+    
   </style>
   
   <!-- Google Analytics Tag -->
@@ -118,7 +119,7 @@
   
 </head>
 <body>
-
+  
   <!-- Title Image -->
   <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKG Calculator" class="title-image">
   
@@ -126,83 +127,152 @@
   <div class="container">
     <div class="stats-box">
       <h3>Current</h3>
+      
+      <!-- TRAC Price row (with percentage change) -->
       <p>
         <span>TRAC Price</span>
-        <span class="right-value-container">
+        <span class="value-container">
           <span id="tracprice" class="number-value">Loading...</span>
           <span id="pricechange1d" class="percentage-change"></span>
         </span>
       </p>
-      <p><span>Market Cap</span><span id="marketcap">Loading...</span></p>
-      <p><span>P/E Ratio</span><span id="peratio">Loading...</span></p>
+      
+      <!-- Market Cap row (number only) -->
+      <p>
+        <span>Market Cap</span>
+        <span class="value-container">
+          <span id="marketcap" class="number-value">Loading...</span>
+        </span>
+      </p>
+      
+      <!-- P/E Ratio row (number only) -->
+      <p>
+        <span>P/E Ratio</span>
+        <span class="value-container">
+          <span id="peratio" class="number-value">Loading...</span>
+        </span>
+      </p>
+      
       <span class="half-line"></span>
-      <p><span>TRAC Staked</span><span id="tracstaked">Loading...</span></p>
-      <p><span>Staking APY</span><span id="stakingapy">Loading...</span></p>
+      
+      <!-- TRAC Staked row (number only) -->
+      <p>
+        <span>TRAC Staked</span>
+        <span class="value-container">
+          <span id="tracstaked" class="number-value">Loading...</span>
+        </span>
+      </p>
+      
+      <!-- Staking APY row (number only) -->
+      <p>
+        <span>Staking APY</span>
+        <span class="value-container">
+          <span id="stakingapy" class="number-value">Loading...</span>
+        </span>
+      </p>
+      
       <h3>28 Day Averages</h3>
-      <p><span>Annual Spend (USD)</span><span id="annualspend">Loading...</span></p>
-      <p><span>Daily Spend (TRAC)</span><span id="dailyspend">Loading...</span></p>
+      
+      <!-- Annual Spend row (number only) -->
+      <p>
+        <span>Annual Spend (USD)</span>
+        <span class="value-container">
+          <span id="annualspend" class="number-value">Loading...</span>
+        </span>
+      </p>
+      
+      <!-- Daily Spend row (number only) -->
+      <p>
+        <span>Daily Spend (TRAC)</span>
+        <span class="value-container">
+          <span id="dailyspend" class="number-value">Loading...</span>
+        </span>
+      </p>
+      
+      <!-- Daily Publishes row (with percentage change) -->
       <p>
         <span>Daily Publishes</span>
-        <span class="right-value-container">
+        <span class="value-container">
           <span id="dailypublishes" class="number-value">Loading...</span>
           <span id="dailypublisheschange28d" class="percentage-change"></span>
         </span>
       </p>
+      
       <span class="half-line"></span>
     </div>
-  
+    
     <div class="stats-box">
-      <p><span>Total KA'S</span><span id="totalkas">Loading...</span></p>
-      <p><span>Total TRAC Spent</span><span id="totaltracspent">Loading...</span></p>
-      <p><span>Active Nodes</span><span id="activenodes">Loading...</span></p>
+      <!-- Total KA'S row -->
+      <p>
+        <span>Total KA'S</span>
+        <span class="value-container">
+          <span id="totalkas" class="number-value">Loading...</span>
+        </span>
+      </p>
+      
+      <!-- Total TRAC Spent row -->
+      <p>
+        <span>Total TRAC Spent</span>
+        <span class="value-container">
+          <span id="totaltracspent" class="number-value">Loading...</span>
+        </span>
+      </p>
+      
+      <!-- Active Nodes row -->
+      <p>
+        <span>Active Nodes</span>
+        <span class="value-container">
+          <span id="activenodes" class="number-value">Loading...</span>
+        </span>
+      </p>
     </div>
   </div>
   
   <script>
-function formatNumber(value, decimals = 0, isCurrency = false) {
-  if (value == null || value === '') return 'Loading...';
-  let number = Number(value);
-  if (isNaN(number)) return value;
-  let [integer, decimal] = number.toFixed(decimals).split('.');
-  let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return decimal ? formattedInteger + '.' + decimal : formattedInteger;
-}
-
-function formatPercentage(value, period) {
-  if (value == null || value === '') return 'Loading...';
-  let number = Number(value);
-  if (isNaN(number)) return value;
-  let sign = number > 0 ? '+' : number < 0 ? '-' : '';
-  let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
-  return '<span class="' + className + '">' + sign + (Math.abs(number) * 100).toFixed(2) + '% (' + period + ')</span>';
-}
-
-function handleData(data) {
-  if (!data) return;
-  document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
-  document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
-  document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
-  document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0, true);
-  document.getElementById('stakingapy').innerText = formatNumber(data.stakingapy * 100, 2) + '%';
-  document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
-  document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
-  document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
-  document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0);
-  document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
-  document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
-  document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
-  document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
-}
-
-function fetchData() {
-  const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
-  const script = document.createElement('script');
-  script.src = apiUrl + "?callback=handleData";
-  document.head.appendChild(script);
-}
-
-fetchData();
-setInterval(fetchData, 10000);
+    function formatNumber(value, decimals = 0, isCurrency = false) {
+      if (value == null || value === '') return 'Loading...';
+      let number = Number(value);
+      if (isNaN(number)) return value;
+      let [integer, decimal] = number.toFixed(decimals).split('.');
+      let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return decimal ? formattedInteger + '.' + decimal : formattedInteger;
+    }
+    
+    function formatPercentage(value, period) {
+      if (value == null || value === '') return 'Loading...';
+      let number = Number(value);
+      if (isNaN(number)) return value;
+      let sign = number > 0 ? '+' : number < 0 ? '-' : '';
+      let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
+      return '<span class="' + className + '">' + sign + (Math.abs(number) * 100).toFixed(2) + '% (' + period + ')</span>';
+    }
+    
+    function handleData(data) {
+      if (!data) return;
+      document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
+      document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
+      document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
+      document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0, true);
+      document.getElementById('stakingapy').innerText = formatNumber(data.stakingapy * 100, 2) + '%';
+      document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
+      document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
+      document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
+      document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0);
+      document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
+      document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
+      document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
+      document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
+    }
+    
+    function fetchData() {
+      const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
+      const script = document.createElement('script');
+      script.src = apiUrl + "?callback=handleData";
+      document.head.appendChild(script);
+    }
+    
+    fetchData();
+    setInterval(fetchData, 10000);
   </script>
   
 </body>
