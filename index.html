@@ -25,26 +25,25 @@
       width: 100vw;
     }
 
-    /* Responsive title image */
+    /* Title image */
     .title-image {
       width: 80%;
       max-width: 400px;
       display: block;
-      margin: 0 auto 5px auto; /* Centered with 5px gap */
+      margin: 0 auto 5px auto;
     }
 
-    /* Container */
+    /* Main container */
     .container {
-      width: 96%;
-      max-width: 400px;
+      width: 96%; /* Takes full width on mobile */
+      max-width: 400px; /* Stays narrow on desktop */
       background: #14072f;
       padding: 10px;
       border-radius: 18px;
       box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
-      margin: 0 auto;
     }
 
-    /* Stats box styling */
+    /* Stats box */
     .stats-box {
       background: #0b0021;
       padding: 10px;
@@ -68,7 +67,6 @@
       margin: 8px 0;
     }
 
-    /* Spacing */
     .half-line {
       height: 0.5em;
       display: block;
@@ -80,13 +78,24 @@
         width: 60%;
       }
       .container {
-        width: 90%;
+        width: 96%;
       }
       .stats-box p {
         font-size: 16px;
       }
     }
   </style>
+
+  <!-- Google Analytics Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-16V8B7YWR9');
+  </script>
+
 </head>
 <body>
 
@@ -125,6 +134,48 @@
     </div>
   </div>
 
+  <script>
+    function formatNumber(value, decimals = 0, isCurrency = false) {
+      if (value == null || value === '') return 'Loading...';
+      
+      let number = Number(value);
+      if (isNaN(number)) return value;
+      
+      let [integer, decimal] = number.toFixed(decimals).split('.');
+      let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+      return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
+    }
+
+    function handleData(data) {
+      if (!data) return;
+
+      document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
+      document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
+      document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
+      document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0, true);
+      document.getElementById('stakingapy').innerText = formatNumber(data.stakingapy * 100, 2) + '%';
+      document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
+      document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
+      document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
+      document.getElementById('publishpricetrac').innerText = formatNumber(data.publishpricetrac, 6);
+      document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
+      document.getElementById('stakingfee').innerText = formatNumber(data.stakingfee * 100, 2) + '%';
+      document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0, true);
+      document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0, true);
+      document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
+    }
+
+    function fetchData() {
+      const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
+      const script = document.createElement('script');
+      script.src = `${apiUrl}?callback=handleData`;
+      document.head.appendChild(script);
+    }
+
+    fetchData();
+    setInterval(fetchData, 10000);
+  </script>
+
 </body>
 </html>
-
