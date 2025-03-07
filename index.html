@@ -49,9 +49,12 @@
     /* Stats box */
     .stats-box {
       background: #0b0021;
+      display: flex;
+      flex-direction: column;
       padding: 10px;
       border-radius: 8px;
       width: 100%;
+      gap: 4px;
     }
 
     .stats-box:last-child {
@@ -113,8 +116,8 @@
       <p>
         <span>TRAC Price</span>
         <span>
+          <span id="pricechange1d" class="percentage-change"> </span>
           <span id="tracprice">Loading...</span>
-          <span id="pricechange1d" class="percentage-change">Loading...</span>
         </span>
       </p>
       <p><span>Market Cap</span><span id="marketcap">Loading...</span></p>
@@ -131,8 +134,8 @@
       <p>
         <span>Daily Publishes</span>
         <span>
+          <span id="dailypublisheschange28d" class="percentage-change"> </span>
           <span id="dailypublishes">Loading...</span>
-          <span id="dailypublisheschange28d" class="percentage-change">Loading...</span>
         </span>
       </p>
 
@@ -171,7 +174,7 @@
       return `<span class="${className}">${sign}${Math.abs(number).toFixed(2)}% (${period})</span>`;
     }
 
-    function handleData(data) {
+    function fetchData(data) {
       if (!data) return;
 
       document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
