@@ -32,7 +32,7 @@
       width: 90%;
       max-width: 400px;
       background: #14072f;
-      padding: 15px;
+      padding: 10px;
       border-radius: 18px;
       box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
       margin: 0 auto;
@@ -44,7 +44,7 @@
       padding: 10px;
       border-radius: 8px;
       width: 100%;
-      margin-bottom: 10px;
+      margin-bottom: 0; /* Set margin to 0 for bottom box */
     }
 
     .stats-box h3 {
@@ -121,23 +121,38 @@
 
   <!-- JSONP: Load the script from your Apps Script endpoint with a callback -->
   <script>
+    // Function to format numbers
+    function formatNumber(value, decimals = 0, isCurrency = false) {
+      if (value == null || value === '') return 'Loading...';
+      
+      let number = Number(value);
+      if (isNaN(number)) return value;
+      
+      if (isCurrency) {
+        return number.toFixed(decimals).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+      }
+      return number.toFixed(decimals);
+    }
+
     // Callback function for JSONP response
     function handleData(data) {
       if (!data) return;
-      document.getElementById('tracprice').innerText = data.tracprice;
-      document.getElementById('marketcap').innerText = data.marketcap;
-      document.getElementById('peratio').innerText = data.peratio;
-      document.getElementById('tracstaked').innerText = data.tracstaked;
-      document.getElementById('stakingapy').innerText = data.stakingapy;
-      document.getElementById('annualspend').innerText = data.annualspend;
-      document.getElementById('dailyspend').innerText = data.dailyspend;
-      document.getElementById('dailypublishes').innerText = data.dailypublishes;
-      document.getElementById('publishpricetrac').innerText = data.publishpricetrac;
-      document.getElementById('publishpriceusd').innerText = data.publishpriceusd;
-      document.getElementById('stakingfee').innerText = data.stakingfee;
-      document.getElementById('totalkas').innerText = data.totalkas;
-      document.getElementById('totaltracspent').innerText = data.totaltracspent;
-      document.getElementById('activenodes').innerText = data.activenodes;
+
+      // Format values
+      document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
+      document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
+      document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
+      document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0, true);
+      document.getElementById('stakingapy').innerText = formatNumber(data.stakingapy * 100, 2) + '%';
+      document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
+      document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
+      document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
+      document.getElementById('publishpricetrac').innerText = formatNumber(data.publishpricetrac, 6);
+      document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
+      document.getElementById('stakingfee').innerText = formatNumber(data.stakingfee * 100, 2) + '%';
+      document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0, true);
+      document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0, true);
+      document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
     }
 
     // Load the data via JSONP (insert script tag dynamically)
