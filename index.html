@@ -71,6 +71,7 @@
 
     .stats-box p {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       font-size: 18px;
       font-weight: bold;
@@ -78,20 +79,23 @@
       width: 100%;
     }
 
-    /* The container for numbers and percentage change */
+    /* Styles for numbers with margin-right */
     .number-container {
       display: flex;
       justify-content: flex-start;
       gap: 10px;
       width: 100%;
-      padding-right: 100px; /* Move the numbers left */
+      padding-right: 100px; /* Move numbers to the left */
     }
 
-    /* Styles for percentage changes */
+    .number-container span {
+      margin-right: 10px; /* Add space between number and percentage change */
+    }
+
+    /* Percentage change styles */
     .percentage-change {
       font-size: 11px;
-      position: relative;
-      top: -2.5px;
+      margin-left: 10px; /* Space between number and percentage change */
     }
 
     .positive { color: #00ff00; } /* Green for positive */
