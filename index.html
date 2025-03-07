@@ -26,7 +26,7 @@
 
     /* Title image */
     .title-image {
-      width: 60%;
+      width: 70%;
       max-width: 350px;
       display: block;
       margin: 0 auto 5px auto;
@@ -37,7 +37,7 @@
       background: #14072f;
       width: 96%;
       min-width: 350px;
-      max-width: 400px;
+      max-width: 500px;
       padding: 10px;
       border-radius: 18px;
       box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
@@ -82,28 +82,34 @@
       display: block;
     }
 
-    /* Styles for percentage changes */
-    .percentage-change {
-      font-size: 11px;
-      margin-left: 6px;
+    /* Container for number + percentage */
+    .value-container {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
       position: relative;
-      top: -2.5px;
+      width: 100%;
+      padding-right: 100px; /* Indent */
     }
-    
+
+    /* The actual number stays right-aligned like other values */
+    .value-container span:first-child {
+      min-width: 80px; /* Adjust based on number width */
+      text-align: right;
+    }
+
+    /* Percentage change positioned inside indent */
+    .percentage-change {
+      position: absolute;
+      right: 0; /* Moves it into the indent */
+      top: -2px; /* Slightly raises it */
+      font-size: 11px;
+    }
+
     .positive { color: #00ff00; } /* Green for positive */
     .negative { color: #ff0000; } /* Red for negative */
     .neutral { color: #ffffff; }  /* White for zero */
   </style>
-
-  <!-- Google Analytics Tag -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-16V8B7YWR9');
-  </script>
 
 </head>
 <body>
@@ -117,9 +123,9 @@
       <h3>Current</h3>
       <p>
         <span>TRAC Price</span>
-        <span>
-          <span id="pricechange1d" class="percentage-change"> </span>
+        <span class="value-container">
           <span id="tracprice">Loading...</span>
+          <span id="pricechange1d" class="percentage-change"></span>
         </span>
       </p>
       <p><span>Market Cap</span><span id="marketcap">Loading...</span></p>
@@ -135,9 +141,9 @@
       <p><span>Daily Spend (TRAC)</span><span id="dailyspend">Loading...</span></p>
       <p>
         <span>Daily Publishes</span>
-        <span>
-          <span id="dailypublisheschange28d" class="percentage-change"> </span>
+        <span class="value-container">
           <span id="dailypublishes">Loading...</span>
+          <span id="dailypublisheschange28d" class="percentage-change"></span>
         </span>
       </p>
 
@@ -197,9 +203,9 @@ function handleData(data) {
 
 // Function to fetch data from Google Apps Script
 function fetchData() {
-  const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
+  const apiUrl = 'YOUR_GOOGLE_SCRIPT_URL';
   const script = document.createElement('script');
-  script.src = `${apiUrl}?callback=handleData`;  // Using JSONP callback
+  script.src = `${apiUrl}?callback=handleData`;
   document.head.appendChild(script);
 }
 
@@ -208,7 +214,6 @@ fetchData();
 
 // Refresh data every 10 seconds
 setInterval(fetchData, 10000);
-
   </script>
 
 </body>
