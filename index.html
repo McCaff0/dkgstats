@@ -75,35 +75,35 @@
       font-size: 18px;
       font-weight: bold;
       margin: 8px 0;
+      width: 100%;
     }
+
+    /* The container for numbers and percentage change */
+    .number-container {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      width: 100%;
+      padding-right: 100px; /* Move the numbers left */
+    }
+
+    /* Styles for percentage changes */
+    .percentage-change {
+      font-size: 11px;
+      position: relative;
+      top: -2.5px;
+    }
+
+    .positive { color: #00ff00; } /* Green for positive */
+    .negative { color: #ff0000; } /* Red for negative */
+    .neutral { color: #ffffff; }  /* White for zero */
 
     .half-line {
       height: 0.5em;
       display: block;
     }
 
-    /* Styles for percentage changes */
-    .percentage-change {
-      font-size: 11px;
-      margin-left: 6px;
-      position: relative;
-      top: -2.5px;
-    }
-    
-    .positive { color: #00ff00; } /* Green for positive */
-    .negative { color: #ff0000; } /* Red for negative */
-    .neutral { color: #ffffff; }  /* White for zero */
   </style>
-
-  <!-- Google Analytics Tag -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-16V8B7YWR9');
-  </script>
 
 </head>
 <body>
@@ -117,9 +117,9 @@
       <h3>Current</h3>
       <p>
         <span>TRAC Price</span>
-        <span>
-          <span id="pricechange1d" class="percentage-change"> </span>
+        <span class="number-container">
           <span id="tracprice">Loading...</span>
+          <span id="pricechange1d" class="percentage-change"> </span>
         </span>
       </p>
       <p><span>Market Cap</span><span id="marketcap">Loading...</span></p>
@@ -135,9 +135,9 @@
       <p><span>Daily Spend (TRAC)</span><span id="dailyspend">Loading...</span></p>
       <p>
         <span>Daily Publishes</span>
-        <span>
-          <span id="dailypublisheschange28d" class="percentage-change"> </span>
+        <span class="number-container">
           <span id="dailypublishes">Loading...</span>
+          <span id="dailypublisheschange28d" class="percentage-change"> </span>
         </span>
       </p>
 
