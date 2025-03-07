@@ -26,7 +26,7 @@
 
     /* Title image */
     .title-image {
-      width: 70%;
+      width: 60%;
       max-width: 350px;
       display: block;
       margin: 0 auto 5px auto;
@@ -82,18 +82,7 @@
       display: block;
     }
 
-    /* Adjust numbers to stay aligned with extra space for percentage */
-    .value-container {
-      display: flex;
-      justify-content: flex-end;
-      width: 150px; /* Reserves space for number + percentage change */
-    }
-
-    .number-value {
-      text-align: right;
-      flex: 1; /* Number remains aligned properly */
-    }
-
+    /* Styles for percentage changes */
     .percentage-change {
       font-size: 11px;
       margin-left: 6px;
@@ -105,6 +94,16 @@
     .negative { color: #ff0000; } /* Red for negative */
     .neutral { color: #ffffff; }  /* White for zero */
   </style>
+
+  <!-- Google Analytics Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-16V8B7YWR9');
+  </script>
 
 </head>
 <body>
@@ -118,9 +117,9 @@
       <h3>Current</h3>
       <p>
         <span>TRAC Price</span>
-        <span class="value-container">
-          <span id="tracprice" class="number-value">Loading...</span>
-          <span id="pricechange1d" class="percentage-change"></span>
+        <span>
+          <span id="pricechange1d" class="percentage-change"> </span>
+          <span id="tracprice">Loading...</span>
         </span>
       </p>
       <p><span>Market Cap</span><span id="marketcap">Loading...</span></p>
@@ -136,9 +135,9 @@
       <p><span>Daily Spend (TRAC)</span><span id="dailyspend">Loading...</span></p>
       <p>
         <span>Daily Publishes</span>
-        <span class="value-container">
-          <span id="dailypublishes" class="number-value">Loading...</span>
-          <span id="dailypublisheschange28d" class="percentage-change"></span>
+        <span>
+          <span id="dailypublisheschange28d" class="percentage-change"> </span>
+          <span id="dailypublishes">Loading...</span>
         </span>
       </p>
 
@@ -162,7 +161,7 @@ function formatNumber(value, decimals = 0, isCurrency = false) {
   let [integer, decimal] = number.toFixed(decimals).split('.');
   let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-  return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
+  return decimal ? ${formattedInteger}.${decimal} : formattedInteger;
 }
 
 function formatPercentage(value, period) {
@@ -174,7 +173,7 @@ function formatPercentage(value, period) {
   let sign = number > 0 ? '+' : number < 0 ? '-' : '';
   let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
 
-  return `<span class="${className}">${sign}${(Math.abs(number) * 100).toFixed(2)}% (${period})</span>`;
+  return <span class="${className}">${sign}${(Math.abs(number) * 100).toFixed(2)}% (${period})</span>;
 }
 
 // Function to handle the fetched data from Google Apps Script
@@ -196,16 +195,20 @@ function handleData(data) {
   document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
 }
 
-// Fetch data
+// Function to fetch data from Google Apps Script
 function fetchData() {
-  const apiUrl = 'YOUR_GOOGLE_SCRIPT_URL';
+  const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
   const script = document.createElement('script');
-  script.src = `${apiUrl}?callback=handleData`;
+  script.src = ${apiUrl}?callback=handleData;  // Using JSONP callback
   document.head.appendChild(script);
 }
 
+// Initial data load
 fetchData();
+
+// Refresh data every 10 seconds
 setInterval(fetchData, 10000);
+
   </script>
 
 </body>
