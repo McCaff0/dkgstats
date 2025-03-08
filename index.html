@@ -238,7 +238,7 @@
   
   <script>
     function formatNumber(value, decimals = 0, isCurrency = false) {
-      if (value == null || value === '') return ' ';
+      if (value == null || value === '') return 'Loading...';
       let number = Number(value);
       if (isNaN(number)) return value;
       let [integer, decimal] = number.toFixed(decimals).split('.');
@@ -247,7 +247,7 @@
     }
     
     function formatPercentage(value, period) {
-      if (value == null || value === '') return 'Loading...';
+      if (value == null || value === '') return ' ';
       let number = Number(value);
       if (isNaN(number)) return value;
       let sign = number > 0 ? '+' : number < 0 ? '-' : '';
