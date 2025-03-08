@@ -81,20 +81,30 @@
       display: block;
     }
 
-    /* Value container: right aligned block */
+    /* Value container for right-hand values with fixed height */
     .value-container {
-      text-align: right;
+      position: relative;
+      width: 150px;
+      height: 40px; /* fixed height for alignment */
     }
-    /* The number: displayed as block */
+    /* The number: right aligned and centered vertically at 50% of container height */
     .number-value {
-      display: block;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: right;
+      width: 100%;
     }
-    /* The percentage change: displayed as a separate block beneath the number, centered */
+    /* The percentage change: right aligned, placed beneath the number (e.g., at 70% of container height) */
     .percentage-change {
-      display: block;
+      position: absolute;
+      right: 0;
+      top: 70%;  /* adjust this percentage as needed */
+      transform: translateY(-50%);
+      text-align: right;
       font-size: 11px;
-      margin-top: 2px;
-      text-align: center;
+      width: 100%;
     }
 
     /* Color classes */
@@ -113,7 +123,6 @@
   </script>
 </head>
 <body>
-
   <!-- Title Image -->
   <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKG Calculator" class="title-image">
   
@@ -202,24 +211,27 @@
       <span class="half-line"></span>
     </div>
     
-    <!-- Bottom Stats Box (Original layout: numbers right-aligned on one line) -->
+    <!-- Bottom Stats Box (same layout as top now) -->
     <div class="stats-box">
       <p>
         <span>Total KA'S</span>
-        <span class="value-container" style="text-align: right;">
+        <span class="value-container">
           <span id="totalkas" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
       <p>
         <span>Total TRAC Spent</span>
-        <span class="value-container" style="text-align: right;">
+        <span class="value-container">
           <span id="totaltracspent" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
       <p>
         <span>Active Nodes</span>
-        <span class="value-container" style="text-align: right;">
+        <span class="value-container">
           <span id="activenodes" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
     </div>
