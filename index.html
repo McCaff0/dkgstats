@@ -46,7 +46,7 @@
       align-items: center;
     }
 
-    /* Stats box common styles */
+    /* Stats box */
     .stats-box {
       background: #0b0021;
       display: flex;
@@ -81,32 +81,25 @@
       display: block;
     }
 
-    /* ----- Top Stats Box (first-of-type) layout ----- */
-    .stats-box:first-of-type .value-container {
-      /* Use a grid for the right-hand value area */
-      display: grid;
-      grid-template-columns: 100px 40px;
-      width: 140px;  /* Fixed width to reserve space */
-    }
-    .stats-box:first-of-type .number-value {
+    /* Value container: right aligned block */
+    .value-container {
       text-align: right;
     }
-    .stats-box:first-of-type .percentage-change {
-      text-align: center;
-      font-size: 10px;
-      padding-left: 4px;
-    }
-
-    /* ----- Bottom Stats Box (last-of-type) layout: revert to default right alignment ----- */
-    .stats-box:last-of-type .value-container {
+    /* The number: displayed as block */
+    .number-value {
       display: block;
-      text-align: right;
-      width: auto;
+    }
+    /* The percentage change: displayed as a separate block beneath the number, centered */
+    .percentage-change {
+      display: block;
+      font-size: 11px;
+      margin-top: 2px;
+      text-align: center;
     }
 
     /* Color classes */
     .positive { color: #15cf15; }
-    .negative { color: #d12626; }
+    .negative { color: #cf1515; }
     .neutral  { color: #7b7f83; }
   </style>
 
@@ -120,6 +113,7 @@
   </script>
 </head>
 <body>
+
   <!-- Title Image -->
   <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKG Calculator" class="title-image">
   
@@ -134,7 +128,7 @@
         <span>TRAC Price</span>
         <span class="value-container">
           <span id="tracprice" class="number-value">Loading...</span>
-          <span id="pricechange1d" class="percentage-change"></span>
+          <span id="pricechange1d" class="percentage-change">Loading...</span>
         </span>
       </p>
       
@@ -201,34 +195,31 @@
         <span>Daily Publishes</span>
         <span class="value-container">
           <span id="dailypublishes" class="number-value">Loading...</span>
-          <span id="dailypublisheschange28d" class="percentage-change"></span>
+          <span id="dailypublisheschange28d" class="percentage-change">Loading...</span>
         </span>
       </p>
       
       <span class="half-line"></span>
     </div>
     
-    <!-- Bottom Stats Box (remains unchanged) -->
+    <!-- Bottom Stats Box (Original layout: numbers right-aligned on one line) -->
     <div class="stats-box">
       <p>
         <span>Total KA'S</span>
-        <span class="value-container">
+        <span class="value-container" style="text-align: right;">
           <span id="totalkas" class="number-value">Loading...</span>
-          <span class="percentage-change"></span>
         </span>
       </p>
       <p>
         <span>Total TRAC Spent</span>
-        <span class="value-container">
+        <span class="value-container" style="text-align: right;">
           <span id="totaltracspent" class="number-value">Loading...</span>
-          <span class="percentage-change"></span>
         </span>
       </p>
       <p>
         <span>Active Nodes</span>
-        <span class="value-container">
+        <span class="value-container" style="text-align: right;">
           <span id="activenodes" class="number-value">Loading...</span>
-          <span class="percentage-change"></span>
         </span>
       </p>
     </div>
