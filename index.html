@@ -35,8 +35,8 @@
     /* Main container */
     .container {
       background: #14072f;
-      width: 96%;
-      min-width: 400px;
+      width: 94%;
+      min-width: 380px;
       max-width: 450px;
       padding: 10px;
       border-radius: 18px;
@@ -244,14 +244,14 @@
         <span>Total KA'S</span>
         <span class="value-container">
           <span id="totalkas" class="number-value">Loading...</span>
-          <span class="percentage-change"></span>
+          <span id="kas24h" class="percentage-change"> </span>
         </span>
       </p>
       <p>
         <span>Total TRAC Spent</span>
         <span class="value-container">
           <span id="totaltracspent" class="number-value">Loading...</span>
-          <span class="percentage-change"></span>
+          <span id="spend24h" class="percentage-change"> </span>
         </span>
       </p>
       <p>
@@ -291,7 +291,22 @@
       }
       return '<span class="' + className + '">' + sign + formatted + '% (' + period + ')</span>';
     }
-    
+
+    function formatNumberChange(value, decimals = 0) {
+  if (value == null || value === '') return ' ';
+  let number = Number(value);
+  if (isNaN(number)) return value;
+  
+  let sign = number > 0 ? '+' : number < 0 ? '-' : '';
+  let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
+
+  let [integer, decimal] = Math.abs(number).toFixed(decimals).split('.');
+  let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  let formattedNumber = decimal ? formattedInteger + '.' + decimal : formattedInteger;
+  
+  return '<span class="' + className + '">' + sign + formattedNumber + '</span>';
+}
     function handleData(data) {
       if (!data) return;
       document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
@@ -306,7 +321,9 @@
       document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
       document.getElementById('stakingfee').innerText = formatNumber(data.stakingfee * 100, 2) + '%';
       document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0);
+      document.getElementById('kas24h').innerText = formatNumberChange(data.kas24h, 0);
       document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
+      document.getElementById('spend24h').innerText = formatNumberChange(data.spend24h, 0);
       document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
       document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
       document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
