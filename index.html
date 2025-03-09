@@ -35,15 +35,15 @@
     /* Main container */
     .container {
       background: #373737;
-      width: 96%;
-      min-width: 360px;
-      max-width: 400px;
       padding: 8px;
+      gap: 8px;
       border-radius: 16px;
       box-shadow: 0 0 100px rgb(78 78 78 / 40%);
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      flex-wrap: wrap; /* Allows wrapping when needed */
+      justify-content: center; /* Centers the boxes */
+      width: 100%; /* Ensures it fits dynamically */
+      max-width: 100%;
     }
 
     /* Stats box */
@@ -51,12 +51,13 @@
       background: #0f0f0f;
       display: flex;
       flex-direction: column;
-      padding: 10px;
+      padding: 8px;
       border-radius: 8px;
-      width: 100%;
+      width: 94%; /* Takes up most of the space */
+      max-width: 380px; /* But doesn't exceed 380px */
+      flex: 1 1 380px; /* Ensures they can shrink or grow within limits */
     }
-    .stats-box:last-of-type {
-      margin-top: 10px;
+
     }
     .stats-box h3 {
       text-align: center;
@@ -108,7 +109,7 @@
 
     /* Color classes */
     .positive { color: #1c941c; }
-    .negative { color: #d10232; }
+    .negative { color: #d10837; }
     .neutral  { color: #a6a6a6; }
   </style>
 
