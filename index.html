@@ -309,6 +309,8 @@
 }
     function handleData(data) {
       if (!data) return;
+      console.log("Raw kas24h:", data.kas24h);
+      console.log("Raw spend24h:", data.spend24h);
       document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
       document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
       document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
