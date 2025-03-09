@@ -33,32 +33,49 @@
     }
 
     /* Main container */
+    /* Main container */
     .container {
       background: #373737;
       padding: 8px;
-      gap: 8px;
       border-radius: 16px;
       box-shadow: 0 0 100px rgb(78 78 78 / 40%);
       display: flex;
-      flex-wrap: wrap; /* Allows wrapping when needed */
-      justify-content: center; /* Centers the boxes */
-      width: 100%; /* Ensures it fits dynamically */
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 8px; /* Adds spacing between items */
+      width: fit-content;
       max-width: 100%;
     }
-
+    
+    /* Row that contains a stat box and its corresponding extra box */
+    .stats-row {
+      display: flex;
+      gap: 8px; /* Space between stat and extra box */
+      justify-content: center;
+      width: 100%;
+      max-width: 780px; /* Ensures content doesn't stretch too wide */
+    }
+    
     /* Stats box */
     .stats-box {
       background: #0f0f0f;
-      display: flex;
-      flex-direction: column;
       padding: 8px;
       border-radius: 8px;
-      width: 94%; /* Takes up most of the space */
-      max-width: 380px; /* But doesn't exceed 380px */
-      flex: 1 1 380px; /* Ensures they can shrink or grow within limits */
+      width: 94%;
+      max-width: 380px;
     }
-
+    
+    /* Extra box */
+    .extra-box {
+      background: #1a1a1a;
+      padding: 8px;
+      border-radius: 8px;
+      width: 94%;
+      max-width: 180px;
+      aspect-ratio: 1/1; /* Keeps them square */
     }
+    
     .stats-box h3 {
       text-align: center;
       font-size: 18px;
