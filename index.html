@@ -143,8 +143,9 @@
   <!-- Title Image -->
   <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKG Calculator" class="title-image">
   
-  <!-- Main container -->
-  <div class="container">
+<!-- Main container -->
+<div class="container">
+  <div class="stats-group">
     <!-- Top Stats Box -->
     <div class="stats-box">
       <h3>Current</h3>
@@ -256,7 +257,7 @@
       
     </div>
     
-    <!-- Bottom Stats Box (same layout as top now) -->
+    <!-- Bottom Stats Box -->
     <div class="stats-box">
       <p>
         <span>Total KA'S</span>
@@ -281,7 +282,14 @@
       </p>
     </div>
   </div>
-  
+
+  <!-- Extra boxes (appear beside stats group on desktop, below on mobile) -->
+  <div class="extra-group">
+    <div class="extra-box">Extra Box 1</div>
+    <div class="extra-box">Extra Box 2</div>
+  </div>
+</div>
+
   <script>
     function formatNumber(value, decimals = 0, isCurrency = false) {
       if (value == null || value === '') return 'Loading...';
