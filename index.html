@@ -320,10 +320,10 @@
       document.getElementById('publishpricetrac').innerText = formatNumber(data.publishpricetrac, 6);
       document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
       document.getElementById('stakingfee').innerText = formatNumber(data.stakingfee * 100, 2) + '%';
-      document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0);
-      document.getElementById('kas24h').innerText = formatNumberChange(data.kas24h, 0);
+      document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0) + ' (1D)';
+      document.getElementById('kas24h').innerHTML = formatNumberChange(data.kas24h, 0) + ' (1D)';
       document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
-      document.getElementById('spend24h').innerText = formatNumberChange(data.spend24h, 0);
+      document.getElementById('spend24h').innerHTML = formatNumberChange(data.spend24h, 0);
       document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
       document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
       document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
