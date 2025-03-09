@@ -107,9 +107,9 @@
     }
 
     /* Color classes */
-    .positive { color: #15cf15; }
-    .negative { color: #cf1515; }
-    .neutral  { color: #7b7f83; }
+    .positive { color: #1eb01e; }
+    .negative { color: #ab1d35; }
+    .neutral  { color: #a6a6a6; }
   </style>
 
   <!-- Google Analytics Tag -->
@@ -185,7 +185,7 @@
         <span>Annual Spend (USD)</span>
         <span class="value-container">
           <span id="annualspend" class="number-value">Loading...</span>
-          <span id="annualspendchange" class="percentage-change"> </span>
+          <span id="annualspendchange28d" class="percentage-change"> </span>
         </span>
       </p>
       
@@ -325,9 +325,9 @@
       document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
       document.getElementById('stakingfee').innerText = formatNumber(data.stakingfee * 100, 2) + '%';
       document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0)
-      document.getElementById('kas24h').innerHTML = formatNumberChange(data.kas24h, '1D');
+      document.getElementById('kas24h').innerHTML = formatNumberChange(data.kas24h, '(1D)');
       document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
-      document.getElementById('spend24h').innerHTML = formatNumberChange(data.spend24h, '1D');
+      document.getElementById('spend24h').innerHTML = formatNumberChange(data.spend24h, '(1D)');
       document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
       document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
       document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
