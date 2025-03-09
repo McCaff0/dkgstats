@@ -84,8 +84,9 @@
     .value-container {
       position: relative;
       width: 150px;
-      height: 40px;
+      height: 40px; /* fixed height for alignment */
     }
+    /* The number: right aligned and centered vertically at 50% of container height */
     .number-value {
       position: absolute;
       right: 0;
@@ -94,10 +95,11 @@
       text-align: right;
       width: 100%;
     }
+    /* The percentage change: right aligned, placed beneath the number (e.g., at 70% of container height) */
     .percentage-change {
       position: absolute;
       right: 0;
-      top: 96%;
+      top: 96%;  /* adjust this percentage as needed */
       transform: translateY(-50%);
       text-align: right;
       font-size: 11px;
@@ -109,41 +111,187 @@
     .negative { color: #cf1515; }
     .neutral  { color: #7b7f83; }
   </style>
+
+  <!-- Google Analytics Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-16V8B7YWR9');
+  </script>
 </head>
 <body>
+  <!-- Title Image -->
   <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKG Calculator" class="title-image">
   
+  <!-- Main container -->
   <div class="container">
+    <!-- Top Stats Box -->
     <div class="stats-box">
       <h3>Current</h3>
       
-      <p><span>TRAC Price</span><span class="value-container"><span id="tracprice" class="number-value">Loading...</span><span id="pricechange1d" class="percentage-change"></span></span></p>
-      <p><span>Market Cap</span><span class="value-container"><span id="marketcap" class="number-value">Loading...</span><span class="percentage-change"></span></span></p>
-      <p><span>P/E Ratio</span><span class="value-container"><span id="peratio" class="number-value">Loading...</span><span class="percentage-change"></span></span></p>
+      <!-- TRAC Price row -->
+      <p>
+        <span>TRAC Price</span>
+        <span class="value-container">
+          <span id="tracprice" class="number-value">Loading...</span>
+          <span id="pricechange1d" class="percentage-change"> </span>
+        </span>
+      </p>
+      
+      <!-- Market Cap row -->
+      <p>
+        <span>Market Cap</span>
+        <span class="value-container">
+          <span id="marketcap" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
+      
+      <!-- P/E Ratio row -->
+      <p>
+        <span>P/E Ratio</span>
+        <span class="value-container">
+          <span id="peratio" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
       
       <span class="half-line"></span>
       
-      <p><span>TRAC Staked</span><span class="value-container"><span id="tracstaked" class="number-value">Loading...</span><span class="percentage-change"></span></span></p>
-      <p><span>Staking APY</span><span class="value-container"><span id="stakingapy" class="number-value">Loading...</span><span class="percentage-change"></span></span></p>
+      <!-- TRAC Staked row -->
+      <p>
+        <span>TRAC Staked</span>
+        <span class="value-container">
+          <span id="tracstaked" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
+      
+      <!-- Staking APY row -->
+      <p>
+        <span>Staking APY</span>
+        <span class="value-container">
+          <span id="stakingapy" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
       
       <h3>28 Day Averages</h3>
       
-      <p><span>Annual Spend (USD)</span><span class="value-container"><span id="annualspend" class="number-value">Loading...</span><span class="percentage-change"></span></span></p>
-      <p><span>Daily Spend (TRAC)</span><span class="value-container"><span id="dailyspend" class="number-value">Loading...</span><span class="percentage-change"></span></span></p>
-      <p><span>Daily Publishes</span><span class="value-container"><span id="dailypublishes" class="number-value">Loading...</span><span id="dailypublisheschange28d" class="percentage-change"></span></span></p>
-
-      <p><span>Publish Price (TRAC)</span><span class="value-container"><span id="publishpricetrac" class="number-value">Loading...</span><span id="publishpricetracchange" class="percentage-change"></span></span></p>
-      <p><span>Publish Price (USD)</span><span class="value-container"><span id="publishpriceusd" class="number-value">Loading...</span><span id="publishpriceusdchange" class="percentage-change"></span></span></p>
-      <p><span>Staking Fee</span><span class="value-container"><span id="stakingfee" class="number-value">Loading...</span><span id="stakingfeechage" class="percentage-change"></span></span></p>
+      <!-- Annual Spend row -->
+      <p>
+        <span>Annual Spend (USD)</span>
+        <span class="value-container">
+          <span id="annualspend" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
+      
+      <!-- Daily Spend row -->
+      <p>
+        <span>Daily Spend (TRAC)</span>
+        <span class="value-container">
+          <span id="dailyspend" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
+      
+      <!-- Daily Publishes row -->
+      <p>
+        <span>Daily Publishes</span>
+        <span class="value-container">
+          <span id="dailypublishes" class="number-value">Loading...</span>
+          <span id="dailypublisheschange28d" class="percentage-change"> </span>
+        </span>
+      </p>
       
       <span class="half-line"></span>
     </div>
-
+    
+    <!-- Bottom Stats Box (same layout as top now) -->
     <div class="stats-box">
-      <p><span>Total KA'S</span><span class="value-container"><span id="totalkas" class="number-value">Loading...</span><span class="percentage-change"></span></span></p>
-      <p><span>Total TRAC Spent</span><span class="value-container"><span id="totaltracspent" class="number-value">Loading...</span><span class="percentage-change"></span></span></p>
-      <p><span>Active Nodes</span><span class="value-container"><span id="activenodes" class="number-value">Loading...</span><span class="percentage-change"></span></span></p>
+      <p>
+        <span>Total KA'S</span>
+        <span class="value-container">
+          <span id="totalkas" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
+      <p>
+        <span>Total TRAC Spent</span>
+        <span class="value-container">
+          <span id="totaltracspent" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
+      <p>
+        <span>Active Nodes</span>
+        <span class="value-container">
+          <span id="activenodes" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
     </div>
   </div>
+  
+  <script>
+    function formatNumber(value, decimals = 0, isCurrency = false) {
+      if (value == null || value === '') return 'Loading...';
+      let number = Number(value);
+      if (isNaN(number)) return value;
+      let [integer, decimal] = number.toFixed(decimals).split('.');
+      let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return decimal ? formattedInteger + '.' + decimal : formattedInteger;
+    }
+    
+    function formatPercentage(value, period) {
+      if (value == null || value === '') return ' ';
+      let number = Number(value);
+      if (isNaN(number)) return value;
+      let sign = number > 0 ? '+' : number < 0 ? '-' : '';
+      let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
+      let p = Math.abs(number) * 100;
+      let formatted;
+      if (p < 10) {
+        formatted = p.toFixed(2);
+      } else if (p < 100) {
+        formatted = p.toFixed(1);
+      } else {
+        formatted = p.toFixed(0);
+      }
+      return '<span class="' + className + '">' + sign + formatted + '% (' + period + ')</span>';
+    }
+    
+    function handleData(data) {
+      if (!data) return;
+      document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
+      document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
+      document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
+      document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0, true);
+      document.getElementById('stakingapy').innerText = formatNumber(data.stakingapy * 100, 2) + '%';
+      document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
+      document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
+      document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
+      document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0);
+      document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
+      document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
+      document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
+      document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
+      document.getElementById('annualspendchange28d').innerHTML = formatPercentage(data.anualspendchange28d, '28D');
+    }
+    
+    function fetchData() {
+      const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
+      const script = document.createElement('script');
+      script.src = apiUrl + "?callback=handleData";
+      document.head.appendChild(script);
+    }
+    
+    fetchData();
+    setInterval(fetchData, 10000);
+  </script>
+  
 </body>
 </html>
