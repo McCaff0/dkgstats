@@ -12,7 +12,7 @@
     /* Body setup */
     body {
       font-family: 'Play', sans-serif;
-      background: #121212;
+      background: #000000;
       color: #dadada;
       padding: 20px;
       text-align: center;
@@ -38,9 +38,9 @@
       width: 94%;
       min-width: 360px;
       max-width: 400px;
-      padding: 10px;
-      border-radius: 18px;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+      padding: 8px;
+      border-radius: 16px;
+      box-shadow: 0 0 100px rgb(78 78 78 / 40%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -331,7 +331,7 @@
       document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
       document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
       document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
-      document.getElementById('annualspendchange28d').innerHTML = formatPercentage(data.anualspendchange28d, '28D');
+      document.getElementById('annualspendchange28d').innerHTML = formatPercentage(data.annualspendchange28d, '28D');
     }
     
     function fetchData() {
