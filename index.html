@@ -53,6 +53,7 @@
       border-radius: 8px;
       width: 90vw;
       max-width: 380px;
+      min-width: 340px
     }
     .stats-box h3 {
       text-align: center;
@@ -307,8 +308,6 @@
 }
     function handleData(data) {
       if (!data) return;
-      console.log("Raw kas24h:", data.kas24h);
-      console.log("Raw spend24h:", data.spend24h);
       document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
       document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
       document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
