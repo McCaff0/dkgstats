@@ -161,7 +161,6 @@ h1 {
    They have a fixed height so that all three are equal in each container. */
 .graph-box {
   background: #0f0f0f;
-  padding: 8px;
   border-radius: 8px;
   /* Use the same width constraints as stats-box */
   width: 90vw;
@@ -456,7 +455,7 @@ function renderTracPriceChart(labels, prices) {
         data: {
             labels: labels, // Dates array
             datasets: [{
-                label: 'TRAC Price (Last 90 Days)',
+                label: '',  // Removed legend label (so no colored box appears)
                 data: prices,
                 borderColor: 'rgba(28, 148, 28, 1)',       // Line color
                 backgroundColor: 'rgba(28, 148, 28, 0.1)',   // Fill color under the line
@@ -490,18 +489,7 @@ function renderTracPriceChart(labels, prices) {
                         callback: function(value, index, values) {
                             // Convert timestamp to readable date
                             const date = new Date(value);
-                            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-                            // Ensure today's date appears
-                            const today = new Date().toISOString().split('T')[0];
-                            return labels[index] === today || index % 2 === 0 ? formattedDate : null;
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Date',
-                        font: {
-                            size: 12
+                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         }
                     }
                 },
@@ -510,21 +498,18 @@ function renderTracPriceChart(labels, prices) {
                         display: true,
                         text: 'Price (USD)',
                         font: {
-                            size: 12
-                        }
+                            size: 12,
+                            family: 'Arial',
+                            weight: 'bold'
+                        },
+                        color: '#c8c2cf' // Title color change
                     },
                     beginAtZero: false
                 }
             },
             plugins: {
                 legend: {
-                    display: true,
-                    position: 'top',  // Move legend for better spacing
-                    labels: {
-                        font: {
-                            size: 12
-                        }
-                    }
+                    display: false  // Removes the color box next to the title
                 }
             },
             layout: {
