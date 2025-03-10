@@ -192,6 +192,17 @@ h1 {
   height: 191px;
   box-sizing: border-box;
 }
+.graph-title {
+  text-align: center;
+  margin-bottom: 0px; /* Space between the title and the chart */
+  color: #8a8a8a; /* Title color */
+}
+
+.graph-title h3 {
+  font-family: 'Play', sans-serif; /* Font for the title */
+  font-weight: normal; /* Title font weight */
+  font-size: 16px; /* Adjust title size */
+}
 /* Apply the font only to the chart container */
   </style>
 
@@ -354,6 +365,7 @@ h1 {
   <!-- NEW CONTAINER 1: Graph boxes (empty for now) -->
  <div class="container new">
   <div class="graph-box">
+    <h3>TRAC PRICE (90D)</h3>
     <!-- Canvas for TRAC price chart -->
     <canvas id="tracPriceChart" style="width:100%; height:100%;"></canvas>
   </div>
@@ -504,7 +516,7 @@ function renderTracPriceChart(labels, prices, animate = false) {
                 },
                 y: {
                     title: {
-                        display: true,
+                        display: false,
                         text: 'Price (USD)',
                         font: {
                             family: 'Play, sans-serif', // Apply 'Play' font to y-axis title
