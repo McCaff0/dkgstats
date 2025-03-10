@@ -455,7 +455,7 @@ function renderTracPriceChart(labels, prices) {
         data: {
             labels: labels, // Dates array
             datasets: [{
-                label: '',  // Removed legend label (so no colored box appears)
+                label: 'TRAC Price (Last 90 Days)',  // Legend is back
                 data: prices,
                 borderColor: 'rgba(28, 148, 28, 1)',       // Line color
                 backgroundColor: 'rgba(28, 148, 28, 0.1)',   // Fill color under the line
@@ -487,7 +487,6 @@ function renderTracPriceChart(labels, prices) {
                         autoSkip: true,  // Avoid cluttering
                         maxTicksLimit: 10, // Limit number of visible labels
                         callback: function(value, index, values) {
-                            // Convert timestamp to readable date
                             const date = new Date(value);
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         }
@@ -496,28 +495,30 @@ function renderTracPriceChart(labels, prices) {
                 y: {
                     title: {
                         display: true,
-                        text: 'Price (USD)',
-                        font: {
-                            size: 12,
-                            family: 'Arial',
-                            weight: 'bold'
-                        },
-                        color: '#c8c2cf' // Title color change
+                        text: 'Price (USD)'
                     },
                     beginAtZero: false
                 }
             },
             plugins: {
                 legend: {
-                    display: false  // Removes the color box next to the title
+                    labels: {
+                        color: '#c8c2cf',  // Legend text color change
+                        boxWidth: 0, // Hides the little color box
+                        font: {
+                            size: 14
+                        }
+                    },
+                    position: 'top', // Keeps it at the top
+                    align: 'start'   // Aligns to the left (change to 'center' or 'end' if needed)
                 }
             },
             layout: {
                 padding: {
-                    left: 10,
-                    right: 10,
-                    top: 10,
-                    bottom: 10
+                    left: 20,  // Adjust left padding
+                    right: 20, // Adjust right padding
+                    top: 10,   // Adjust top padding (affects legend spacing)
+                    bottom: 10 // Adjust bottom padding (affects x-axis spacing)
                 }
             }
         }
