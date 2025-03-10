@@ -488,9 +488,13 @@ function renderTracPriceChart(labels, prices) {
                         autoSkip: true,  // Avoid cluttering
                         maxTicksLimit: 10, // Limit number of visible labels
                         callback: function(value, index, values) {
+                            // Convert timestamp to readable date
+                            const date = new Date(value);
+                            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
                             // Ensure today's date appears
                             const today = new Date().toISOString().split('T')[0];
-                            return value === today || index % 2 === 0 ? value : null;
+                            return labels[index] === today || index % 2 === 0 ? formattedDate : null;
                         }
                     },
                     title: {
