@@ -427,6 +427,7 @@ h1 {
   const CHART_DATA_URL = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true';
 
 let tracPriceChartInstance = null;  // Store chart instance globally
+let isFirstLoad = true;  // Flag to track if it's the first time loading data
 
 function renderTracPriceChart(labels, prices, animate = false) {
     const ctx = document.getElementById('tracPriceChart').getContext('2d');
@@ -525,7 +526,14 @@ function fetchTracPriceChartData() {
             // Data should be an array of { date: "YYYY-MM-DD", price: number }
             const labels = data.map(item => item.date);
             const prices = data.map(item => item.price);
-            renderTracPriceChart(labels, prices, true);  // Animate chart when data is loaded
+
+            // Animate on first load only, subsequent updates will not animate
+            renderTracPriceChart(labels, prices, isFirstLoad);
+
+            // Set flag to false after the first load
+            if (isFirstLoad) {
+                isFirstLoad = false;
+            }
         })
         .catch(error => {
             console.error('Error fetching chart data:', error);
