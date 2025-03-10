@@ -498,7 +498,7 @@ function renderTracPriceChart(labels, prices, animate = false) {
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         },
                         font: {
-                            family: 'Play', // Apply 'Play' font for x-axis ticks
+                            family: 'Play, sans-serif', // Apply 'Play' font for x-axis ticks
                         }
                     }
                 },
@@ -507,14 +507,14 @@ function renderTracPriceChart(labels, prices, animate = false) {
                         display: true,
                         text: 'Price (USD)',
                         font: {
-                            family: 'Play', // Apply 'Play' font to y-axis title
+                            family: 'Play, sans-serif', // Apply 'Play' font to y-axis title
                             size: 14, // Optional size adjustment
                         }
                     },
                     ticks: {
                         beginAtZero: false,
                         font: {
-                            family: 'Play', // Apply 'Play' font for y-axis ticks
+                            family: 'Play, sans-serif', // Apply 'Play' font for y-axis ticks
                         }
                     }
                 }
@@ -528,7 +528,7 @@ function renderTracPriceChart(labels, prices, animate = false) {
                     text: 'TRAC PRICE (90D)',
                     align: 'center',
                     font: {
-                        family: 'Play', // Apply 'Play' font to the title
+                        family: 'Play, sans-serif', // Apply 'Play' font to the title
                         size: 16, // Font size for title
                         weight: 'normal'   // Font weight for title
                     },
