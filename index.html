@@ -426,18 +426,20 @@ h1 {
   // Replace with your deployed endpoint URL that serves chart data
   const CHART_DATA_URL = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true';
 
-  function fetchTracPriceChartData() {
-    fetch(CHART_DATA_URL)
-      .then(response => response.json())
-      .then(data => {
-        // Data should be an array of { date: "YYYY-MM-DD", price: number }
-        // No further filtering is needed if your endpoint already returns only last 90 days.
-        const labels = data.map(item => item.date);
-        const prices = data.map(item => item.price);
-        renderTracPriceChart(labels, prices);
-      })
-      .catch(error => console.error('Error fetching chart data:', error));
-  }
+function fetchTracPriceChartData() {
+    fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true')
+        .then(response => response.json())
+        .then(data => {
+            // Data should be an array of { date: "YYYY-MM-DD", price: number }
+            const labels = data.map(item => item.date);
+            const prices = data.map(item => item.price);
+            renderTracPriceChart(labels, prices);  // Update chart with actual data
+        })
+        .catch(error => {
+            console.error('Error fetching chart data:', error);
+            renderTracPriceChart([], []);  // Render empty chart if error occurs
+        });
+}
 
 let tracPriceChartInstance = null;  // Store chart instance globally
 let firstLoad = true;  // Track if it's the first load
@@ -453,22 +455,22 @@ function renderTracPriceChart(labels, prices) {
     tracPriceChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels, // Dates array
+            labels: labels || ['Loading...'], // Placeholder label
             datasets: [{
-                label: 'TRAC Price (Last 90 Days)',  // Remove this from legend if you don't want it there
-                data: prices,
-                borderColor: 'rgba(28, 148, 28, 1)',       // Line color
-                backgroundColor: 'rgba(28, 148, 28, 0.1)',   // Fill color under the line
+                label: 'TRAC Price (Last 90 Days)',
+                data: prices || [0],  // Placeholder data
+                borderColor: 'rgba(28, 148, 28, 1)',
+                backgroundColor: 'rgba(28, 148, 28, 0.1)',
                 fill: true,
                 tension: 0.1,
-                pointRadius: 0,        // No circle markers for each data point
-                pointHoverRadius: 5    // Larger marker on hover
+                pointRadius: 0,
+                pointHoverRadius: 5
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: firstLoad ? { duration: 1000 } : false,
+            animation: firstLoad ? { duration: 1000 } : false, // Animate line on first load
             scales: {
                 x: {
                     type: 'time',
@@ -482,11 +484,11 @@ function renderTracPriceChart(labels, prices) {
                     },
                     ticks: {
                         font: {
-                            size: 10  // Smaller font for x-axis labels
+                            size: 10
                         },
-                        autoSkip: true,  // Avoid cluttering
-                        maxTicksLimit: 10, // Limit number of visible labels
-                        callback: function(value, index, values) {
+                        autoSkip: true,
+                        maxTicksLimit: 10,
+                        callback: function(value) {
                             const date = new Date(value);
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         }
@@ -499,7 +501,7 @@ function renderTracPriceChart(labels, prices) {
                     },
                     ticks: {
                         font: {
-                            size: 10  // Smaller font size for y-axis labels (prices)
+                            size: 10
                         },
                     },
                     beginAtZero: false
@@ -507,38 +509,29 @@ function renderTracPriceChart(labels, prices) {
             },
             plugins: {
                 legend: {
-                    display: false, // Hide the legend if you don't need it
-                    labels: {
-                        color: '#c8c2cf',  // Legend text color change
-                        boxWidth: 0, // Hides the little color box
-                        font: {
-                            size: 14
-                        }
-                    },
-                    position: 'top', // Keeps it at the top
-                    align: 'start'   // Aligns to the left (change to 'center' or 'end' if needed)
+                    display: false
                 },
                 title: {
                     display: true,
-                    text: 'TRAC PRICE (90D)',  // Title text
-                    align: 'center',  // Center the title
-                    color: '#636363',  // Title color
+                    text: 'TRAC PRICE (90D)',
+                    align: 'center',
+                    color: '#636363',
                     font: {
-                        size: 14  // Font size for the title (smaller than before)
+                        size: 14
                     }
                 }
             },
             layout: {
                 padding: {
-                    left: 20,  // Adjust left padding
-                    right: 30, // Adjust right padding
-                    top: 0,   // Adjust top padding (affects legend spacing)
-                    bottom: 5 // Adjust bottom padding (affects x-axis spacing)
+                    left: 20,
+                    right: 30,
+                    top: 0,
+                    bottom: 5
                 }
             }
         }
     });
-  firstLoad = false;
+    firstLoad = false;  // Disable first load animation after initial rendering
 }
 
 
