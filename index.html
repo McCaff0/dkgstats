@@ -441,6 +441,7 @@ h1 {
   }
 
 let tracPriceChartInstance = null;  // Store chart instance globally
+let firstLoad = true;  // Track if it's the first load
 
 function renderTracPriceChart(labels, prices) {
     const ctx = document.getElementById('tracPriceChart').getContext('2d');
@@ -468,6 +469,7 @@ function renderTracPriceChart(labels, prices) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: firstLoad ? { duration: 1000 } : false,
             scales: {
                 x: {
                     type: 'time',
