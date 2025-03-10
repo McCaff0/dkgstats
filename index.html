@@ -483,14 +483,16 @@ function renderTracPriceChart(labels, prices, animate = false) {
                 y: {
                     title: {
                         display: true,
-                        text: 'PRICE (USD)'
+                        text: 'Price (USD)'
                     },
                     ticks: {
                         font: {
-                            size: 10
+                            size: 9
                         },
                     },
-                    beginAtZero: false
+                    beginAtZero: false,
+                    // Adjust the padding of the y axis to reduce space
+                    padding: 3
                 }
             },
             plugins: {
@@ -508,11 +510,12 @@ function renderTracPriceChart(labels, prices, animate = false) {
                 }
             },
             layout: {
+                // Reducing the bottom padding to bring the chart closer to the labels
                 padding: {
                     left: 20,
                     right: 30,
                     top: 0,
-                    bottom: 5
+                    bottom: 3  // Reduce this to bring the chart closer to the labels
                 }
             }
         }
@@ -543,8 +546,9 @@ function fetchTracPriceChartData() {
 
 // Render an empty chart with no data on initial load (no animation)
 renderTracPriceChart([], [], false);
-  // Call the function to fetch chart data and render the graph.
-  fetchTracPriceChartData();
+// Call the function to fetch chart data and render the graph.
+fetchTracPriceChartData();
+
 
     
     fetchData();
