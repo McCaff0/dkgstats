@@ -509,16 +509,25 @@ function renderTracPriceChart(labels, prices, animate = false) {
                         callback: function(value) {
                             const date = new Date(value);
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                        }
+                          },
+                        font: {
+                            family: 'Play, sans-serif',
+                        },
+                        padding: 10,
                     }
                 },
                 y: {
                     title: {
                         display: true,
-                        text: 'Price (USD)'
+                        text: 'Price (USD)',
+                          font: {
+                            family: 'Play, sans-serif', // Apply 'Play' font to y-axis title
+                            size: 14, // Optional size adjustment
                     },
                     ticks: {
-                        beginAtZero: false
+                        beginAtZero: false,
+                        font: {
+                            family: 'Play, sans-serif',
                     }
                 }
             },
