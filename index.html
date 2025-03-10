@@ -541,7 +541,32 @@ function renderTracPriceChart(labels, prices, animate = false) {
         }
     });
 }
+function fetchTracPriceChartData() {
+    fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true')
+        .then(response => response.json())
+        .then(data => {
+            // Data should be an array of { date: "YYYY-MM-DD", price: number }
+            const labels = data.map(item => item.date);
+            const prices = data.map(item => item.price);
 
+            // Animate on first load only, subsequent updates will not animate
+            renderTracPriceChart(labels, prices, isFirstLoad);
+
+            // Set flag to false after the first load
+            if (isFirstLoad) {
+                isFirstLoad = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching chart data:', error);
+            // Prevent resetting chart on failure, keep existing data intact
+            if (!isFirstLoad) {
+                console.log('Keeping previous data due to failed fetch.');
+            } else {
+                renderTracPriceChart([], [], false);  // Render empty chart if error occurs during first load without animation
+            }
+        });
+}
 
 // Render an empty chart with no data on initial load (no animation)
 renderTracPriceChart([], [], false);
