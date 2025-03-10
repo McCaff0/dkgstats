@@ -445,19 +445,21 @@ h1 {
     new Chart(ctx, {
       type: 'line',
       data: {
-        labels: labels,
+        labels: labels, // your dates
         datasets: [{
           label: 'TRAC Price (Last 90 Days)',
           data: prices,
-          borderColor: '#1c941c',
-          backgroundColor: 'rgba(28, 148, 28, 0.1)',
-          fill: true,
-          tension: 0.1
+          borderColor: 'rgba(28, 148, 28, 1)',       // Line color (change as desired)
+          backgroundColor: 'rgba(28, 148, 28, 0)',   // Fill color under the line
+          fill: false,
+          tension: 0.1,
+          pointRadius: 0,        // No circle markers for each data point
+          pointHoverRadius: 5    // Larger marker on hover to show the data point
         }]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // let the canvas fill its parent (graph-box)
+        maintainAspectRatio: false,
         scales: {
           x: {
             type: 'time',
@@ -481,11 +483,14 @@ h1 {
             },
             beginAtZero: false
           }
+        },
+        plugins: {
+          tooltip: {
+            // Customize tooltip appearance if needed
+          }
         }
       }
     });
-  }
-  
   // Call the function to fetch chart data and render the graph.
   fetchTracPriceChartData();
 
