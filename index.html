@@ -89,7 +89,6 @@ h1 {
   gap: 8px;
   width: fit-content;
   position: relative;
-  z-index: 1;
 }
 /* Pseudo-element for the shadow */
 .container::before {
@@ -167,6 +166,7 @@ h1 {
 --------------------------------- */
 /* We use the same .container class for the new ones; add an extra class to target their inner boxes */
 .container.new {
+  position: relative;
   /* Inherits all from .container */
 }
 .container.new::before {
@@ -176,7 +176,6 @@ h1 {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);  /* Add any shadow color you prefer */
   box-shadow: 0 0 100px rgb(78 78 78 / 40%);
   z-index: -1;
 }
