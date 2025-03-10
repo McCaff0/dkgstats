@@ -31,127 +31,140 @@
 
     /* Body setup */
     body {
-      font-family: 'Play', sans-serif;
-      background: #0a0a0a;
-      color: #dadada;
-      padding: 20px;
-      text-align: center;
-      overflow-x: hidden;
-      min-height: 100vh;
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    h1 {
-      display: none;
-    }
-    
-    /* Title image */
-    .title-image {
-      width: 75%;
-      max-width: 350px;
-      display: block;
-      margin: -10px auto 5px auto;
-    }
-    
-    /* Flex container to hold all three sections */
-    .main-container {
-      display: flex;
-      flex-wrap: wrap;  /* Allows wrapping when there isn't enough horizontal space */
-      justify-content: center;
-      gap: 16px; /* Space between containers */
-      width: 100%;
-      max-width: 1200px; /* Adjust if needed */
-    }
-    
-    /* Individual containers (same design as original) */
-    .container {
-      background: #373737;
-      padding: 8px;
-      border-radius: 16px;
-      box-shadow: 0 0 100px rgb(78 78 78 / 40%);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-      gap: 8px; /* Adds spacing between items */
-      width: fit-content;
-      min-width: 340px;
-      max-width: 380px;
-    }
-    
-    /* Stats box */
-    .stats-box {
-      background: #0f0f0f;
-      padding: 8px;
-      border-radius: 8px;
-      width: 90vw;
-      max-width: 380px;
-      min-width: 340px;
-    }
-    
-    .stats-box h3 {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-bottom: 0;
-      color: #c8c2cf;
-    }
-    
-    .stats-box p {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 16px;
-      font-weight: bold;
-      margin: -3px 0;
-      color: #c8c2cf;
-    }
-    
-    /* New section styling for empty stats boxes */
-    .empty-stats-box {
-      background: #0f0f0f;
-      padding: 8px;
-      border-radius: 8px;
-      width: 90vw;
-      max-width: 380px;
-      min-width: 340px;
-      height: 120px; /* Adjust height for future graph embedding */
-    }
-    
-    /* Value container styles remain unchanged */
-    .value-container {
-      position: relative;
-      width: 150px;
-      height: 40px;
-    }
-    
-    .number-value {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      text-align: right;
-      width: 100%;
-    }
-    
-    .percentage-change {
-      position: absolute;
-      right: 0;
-      top: 88%;
-      transform: translateY(-50%);
-      text-align: right;
-      font-size: 13px;
-      width: 100%;
-    }
-    
-    /* Color classes */
-    .positive { color: #1c941c; }
-    .negative { color: #c91e1e; }
-    .neutral  { color: #a6a6a6; }
+  font-family: 'Play', sans-serif;
+  background: #0a0a0a;
+  color: #dadada;
+  padding: 20px;
+  text-align: center;
+  overflow-x: hidden;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Hide the h1 as before */
+h1 {
+  display: none;
+}
+
+/* Title image (unchanged) */
+.title-image {
+  width: 75%;
+  max-width: 350px;
+  display: block;
+  margin: -10px auto 5px auto;
+}
+
+/* Main flex container that holds all three containers.
+   They will sit beside each other if there’s room and wrap naturally otherwise. */
+.main-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px; /* Space between containers */
+  width: 100%;
+  max-width: 1200px; /* Optional: limits overall width */
+}
+
+/* ------------------------------
+   Original Container & Stats Boxes
+   (DO NOT CHANGE THIS SECTION)
+--------------------------------- */
+.container {
+  background: #373737;
+  padding: 8px;
+  border-radius: 16px;
+  box-shadow: 0 0 100px rgb(78 78 78 / 40%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+}
+
+.stats-box {
+  background: #0f0f0f;
+  padding: 8px;
+  border-radius: 8px;
+  width: 90vw;
+  max-width: 380px;
+  min-width: 340px;
+}
+
+.stats-box h3 {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 0;
+  color: #c8c2cf;
+}
+
+.stats-box p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  margin: -3px 0;
+  color: #c8c2cf;
+}
+
+.value-container {
+  position: relative;
+  width: 150px;
+  height: 40px;
+}
+
+.number-value {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: right;
+  width: 100%;
+}
+
+.percentage-change {
+  position: absolute;
+  right: 0;
+  top: 88%;
+  transform: translateY(-50%);
+  text-align: right;
+  font-size: 13px;
+  width: 100%;
+}
+
+/* Color classes */
+.positive { color: #1c941c; }
+.negative { color: #c91e1e; }
+.neutral  { color: #a6a6a6; }
+
+/* ------------------------------
+   New Containers (Do Not Modify Original)
+--------------------------------- */
+/* We use the same .container class for the new ones; add an extra class to target their inner boxes */
+.container.new {
+  /* Inherits all from .container */
+}
+
+/* Graph boxes in new containers – they mimic the stats-box sizing but without the inner value markup.
+   They have a fixed height so that all three are equal in each container. */
+.graph-box {
+  background: #0f0f0f;
+  padding: 8px;
+  border-radius: 8px;
+  /* Use the same width constraints as stats-box */
+  width: 90vw;
+  max-width: 380px;
+  min-width: 340px;
+  /* Fixed height ensures equal sizing */
+  height: 120px;
+  box-sizing: border-box;
+}
 
   </style>
 
@@ -166,13 +179,16 @@
 </head>
 <body>
   <!-- Title Image -->
-  <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKGStats.io" class="title-image">
-  <h1>DKGStats.io - Real-Time OriginTrail DKG Statistics</h1>
-  <!-- Main container -->
-<!-- Flex container to hold all three sections -->
+  <!-- Title Image & Hidden h1 remain unchanged -->
+<img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKGStats.io" class="title-image">
+<h1>DKGStats.io - Real-Time OriginTrail DKG Statistics</h1>
+
+<!-- Main flex container holding all three containers -->
 <div class="main-container">
-  <!-- Existing Container -->
+  
+  <!-- ORIGINAL CONTAINER: Do Not Change -->
   <div class="container">
+    <!-- Top Stats Box -->
     <div class="stats-box">
       <h3>Current</h3>
       
@@ -181,7 +197,7 @@
         <span>TRAC Price</span>
         <span class="value-container">
           <span id="tracprice" class="number-value">Loading...</span>
-          <span id="pricechange1d" class="percentage-change"> </span>
+          <span id="pricechange1d" class="percentage-change"></span>
         </span>
       </p>
       
@@ -230,7 +246,7 @@
         <span>Annual Spend (USD)</span>
         <span class="value-container">
           <span id="annualspend" class="number-value">Loading...</span>
-          <span id="annualspendchange28d" class="percentage-change"> </span>
+          <span id="annualspendchange28d" class="percentage-change"></span>
         </span>
       </p>
       
@@ -248,7 +264,7 @@
         <span>Daily Publishes</span>
         <span class="value-container">
           <span id="dailypublishes" class="number-value">Loading...</span>
-          <span id="dailypublisheschange28d" class="percentage-change"> </span>
+          <span id="dailypublisheschange28d" class="percentage-change"></span>
         </span>
       </p>
       
@@ -259,7 +275,7 @@
         <span>Publish Price (TRAC)</span>
         <span class="value-container">
           <span id="publishpricetrac" class="number-value">Loading...</span>
-          <span class="percentage-change"> </span>
+          <span class="percentage-change"></span>
         </span>
       </p>
 
@@ -268,7 +284,7 @@
         <span>Publish Price (USD)</span>
         <span class="value-container">
           <span id="publishpriceusd" class="number-value">Loading...</span>
-          <span class="percentage-change"> </span>
+          <span class="percentage-change"></span>
         </span>
       </p>
 
@@ -277,26 +293,52 @@
         <span>Operator Fee</span>
         <span class="value-container">
           <span id="stakingfee" class="number-value">Loading...</span>
-          <span class="percentage-change"> </span>
+          <span class="percentage-change"></span>
+        </span>
+      </p>
+    </div>
+    
+    <!-- Bottom Stats Box -->
+    <div class="stats-box">
+      <p>
+        <span>Total KA'S</span>
+        <span class="value-container">
+          <span id="totalkas" class="number-value">Loading...</span>
+          <span id="kas24h" class="percentage-change"></span>
+        </span>
+      </p>
+      <p>
+        <span>Total TRAC Spent</span>
+        <span class="value-container">
+          <span id="totaltracspent" class="number-value">Loading...</span>
+          <span id="spend24h" class="percentage-change"></span>
+        </span>
+      </p>
+      <p>
+        <span>Active Nodes</span>
+        <span class="value-container">
+          <span id="activenodes" class="number-value">Loading...</span>
+          <span class="percentage-change"></span>
         </span>
       </p>
     </div>
   </div>
-
-  <!-- New Container 1 -->
-  <div class="container">
-    <div class="empty-stats-box"></div>
-    <div class="empty-stats-box"></div>
-    <div class="empty-stats-box"></div>
+  
+  <!-- NEW CONTAINER 1: Graph boxes (empty for now) -->
+  <div class="container new">
+    <div class="graph-box"></div>
+    <div class="graph-box"></div>
+    <div class="graph-box"></div>
   </div>
 
-  <!-- New Container 2 -->
-  <div class="container">
-    <div class="empty-stats-box"></div>
-    <div class="empty-stats-box"></div>
-    <div class="empty-stats-box"></div>
+  <!-- NEW CONTAINER 2: Graph boxes (empty for now) -->
+  <div class="container new">
+    <div class="graph-box"></div>
+    <div class="graph-box"></div>
+    <div class="graph-box"></div>
   </div>
 </div>
+
   
   <script>
     function formatNumber(value, decimals = 0, isCurrency = false) {
