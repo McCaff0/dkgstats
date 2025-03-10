@@ -440,58 +440,62 @@ h1 {
       .catch(error => console.error('Error fetching chart data:', error));
   }
 
-  function renderTracPriceChart(labels, prices) {
+let tracPriceChartInstance = null;  // Store chart instance globally
+
+function renderTracPriceChart(labels, prices) {
     const ctx = document.getElementById('tracPriceChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels, // your dates
-        datasets: [{
-          label: 'TRAC Price (Last 90 Days)',
-          data: prices,
-          borderColor: 'rgba(28, 148, 28, 1)',       // Line color (change as desired)
-          backgroundColor: 'rgba(28, 148, 28, 0.1)',   // Fill color under the line
-          fill: true,
-          tension: 0.1,
-          pointRadius: 0,        // No circle markers for each data point
-          pointHoverRadius: 5    // Larger marker on hover to show the data point
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              parser: 'yyyy-MM-dd',
-              unit: 'day',
-              tooltipFormat: 'PP',
-              displayFormats: {
-                day: 'MMM d'
-              }
-            },
-            title: {
-              display: true,
-              text: 'Date'
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'Price (USD)'
-            },
-            beginAtZero: false
-          }
-        },
-        plugins: {
-          tooltip: {
-            // Customize tooltip appearance if needed
-          }
-        }
-      }
-    });
+    
+    // Destroy existing chart before creating a new one
+    if (tracPriceChartInstance) {
+        tracPriceChartInstance.destroy();
     }
+
+    tracPriceChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels, // your dates
+            datasets: [{
+                label: 'TRAC Price (Last 90 Days)',
+                data: prices,
+                borderColor: 'rgba(28, 148, 28, 1)',       // Line color (change as desired)
+                backgroundColor: 'rgba(28, 148, 28, 0.1)',   // Fill color under the line
+                fill: true,
+                tension: 0.1,
+                pointRadius: 0,        // No circle markers for each data point
+                pointHoverRadius: 5    // Larger marker on hover to show the data point
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        parser: 'yyyy-MM-dd',
+                        unit: 'day',
+                        tooltipFormat: 'PP',
+                        displayFormats: {
+                            day: 'MMM d'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Price (USD)'
+                    },
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+}
+
   // Call the function to fetch chart data and render the graph.
   fetchTracPriceChartData();
 
