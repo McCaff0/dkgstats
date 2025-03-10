@@ -454,16 +454,16 @@ function renderTracPriceChart(labels, prices) {
     tracPriceChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels, // your dates
+            labels: labels, // Dates array
             datasets: [{
                 label: 'TRAC Price (Last 90 Days)',
                 data: prices,
-                borderColor: 'rgba(28, 148, 28, 1)',       // Line color (change as desired)
+                borderColor: 'rgba(28, 148, 28, 1)',       // Line color
                 backgroundColor: 'rgba(28, 148, 28, 0.1)',   // Fill color under the line
                 fill: true,
                 tension: 0.1,
                 pointRadius: 0,        // No circle markers for each data point
-                pointHoverRadius: 5    // Larger marker on hover to show the data point
+                pointHoverRadius: 5    // Larger marker on hover
             }]
         },
         options: {
