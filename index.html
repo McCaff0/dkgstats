@@ -21,6 +21,12 @@
   <meta name="twitter:title" content="DKGStats.io">
   <meta name="twitter:description" content="Real-time statistics on the OriginTrail Decentralised Knowledge Graph.">
   <meta name="twitter:image" content="https://dkgstats.io/preview-image.jpg">
+
+  <!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Date adapter for time scale (uses date-fns) -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
   
   <!-- Canonical URL -->
   <link rel="canonical" href="https://dkgstats.io">
@@ -325,11 +331,14 @@ h1 {
   </div>
   
   <!-- NEW CONTAINER 1: Graph boxes (empty for now) -->
-  <div class="container new">
-    <div class="graph-box"></div>
-    <div class="graph-box"></div>
-    <div class="graph-box"></div>
+ <div class="container new">
+  <div class="graph-box">
+    <!-- Canvas for TRAC price chart -->
+    <canvas id="tracPriceChart" style="width:100%; height:100%;"></canvas>
   </div>
+  <div class="graph-box"></div>
+  <div class="graph-box"></div>
+</div>
 
   <!-- NEW CONTAINER 2: Graph boxes (empty for now) -->
   <div class="container new">
@@ -414,9 +423,76 @@ h1 {
       script.src = apiUrl + "?callback=handleData";
       document.head.appendChild(script);
     }
+
+    <script>
+  // Replace with your deployed endpoint URL that serves chart data
+  const CHART_DATA_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec?do=getChartData';
+
+  function fetchTracPriceChartData() {
+    fetch(CHART_DATA_URL)
+      .then(response => response.json())
+      .then(data => {
+        // Data should be an array of { date: "YYYY-MM-DD", price: number }
+        // No further filtering is needed if your endpoint already returns only last 90 days.
+        const labels = data.map(item => item.date);
+        const prices = data.map(item => item.price);
+        renderTracPriceChart(labels, prices);
+      })
+      .catch(error => console.error('Error fetching chart data:', error));
+  }
+
+  function renderTracPriceChart(labels, prices) {
+    const ctx = document.getElementById('tracPriceChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'TRAC Price (Last 90 Days)',
+          data: prices,
+          borderColor: '#1c941c',
+          backgroundColor: 'rgba(28, 148, 28, 0.1)',
+          fill: true,
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false, // let the canvas fill its parent (graph-box)
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              parser: 'yyyy-MM-dd',
+              unit: 'day',
+              tooltipFormat: 'PP',
+              displayFormats: {
+                day: 'MMM d'
+              }
+            },
+            title: {
+              display: true,
+              text: 'Date'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Price (USD)'
+            },
+            beginAtZero: false
+          }
+        }
+      }
+    });
+  }
+  
+  // Call the function to fetch chart data and render the graph.
+  fetchTracPriceChartData();
+
     
     fetchData();
-    setInterval(fetchData, 10000);
+    setInterval(fetchData, fetchTracPriceChartData, 10000);
   </script>
   
 </body>
