@@ -455,16 +455,17 @@ function renderTracPriceChart(labels, prices) {
     tracPriceChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels || ['Loading...'], // Placeholder label
+            labels: labels || [],  // Empty array for labels initially
             datasets: [{
                 label: 'TRAC Price (Last 90 Days)',
-                data: prices || [0],  // Placeholder data
+                data: prices || [],  // Empty array for data initially
                 borderColor: 'rgba(28, 148, 28, 1)',
                 backgroundColor: 'rgba(28, 148, 28, 0.1)',
                 fill: true,
                 tension: 0.1,
                 pointRadius: 0,
-                pointHoverRadius: 5
+                pointHoverRadius: 5,
+                borderWidth: 2
             }]
         },
         options: {
@@ -534,7 +535,7 @@ function renderTracPriceChart(labels, prices) {
     firstLoad = false;  // Disable first load animation after initial rendering
 }
 
-
+  renderTracPriceChart([], []);
   // Call the function to fetch chart data and render the graph.
   fetchTracPriceChartData();
 
