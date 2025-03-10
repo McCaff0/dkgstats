@@ -82,7 +82,6 @@ h1 {
   background: #373737;
   padding: 8px;
   border-radius: 16px;
-  box-shadow: 0 0 100px rgb(78 78 78 / 40%);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -170,7 +169,17 @@ h1 {
 .container.new {
   /* Inherits all from .container */
 }
-
+.container.new::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);  /* Add any shadow color you prefer */
+  box-shadow: 0 0 100px rgb(78 78 78 / 40%);
+  z-index: -1;
+}
 /* Graph boxes in new containers – they mimic the stats-box sizing but without the inner value markup.
    They have a fixed height so that all three are equal in each container. */
 .graph-box {
