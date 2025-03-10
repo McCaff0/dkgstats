@@ -193,9 +193,6 @@ h1 {
   box-sizing: border-box;
 }
 /* Apply the font only to the chart container */
-#tracPriceChart {
-    font-family: 'Poppins', sans-serif; /* Use Poppins font for the chart */
-}
   </style>
 
   <!-- Google Analytics Tag -->
@@ -499,6 +496,9 @@ function renderTracPriceChart(labels, prices, animate = false) {
                         callback: function(value) {
                             const date = new Date(value);
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        },
+                        font: {
+                            family: 'Play', // Apply 'Play' font for x-axis ticks
                         }
                     }
                 },
@@ -506,9 +506,16 @@ function renderTracPriceChart(labels, prices, animate = false) {
                     title: {
                         display: true,
                         text: 'Price (USD)',
+                        font: {
+                            family: 'Play', // Apply 'Play' font to y-axis title
+                            size: 14, // Optional size adjustment
+                        }
                     },
                     ticks: {
                         beginAtZero: false,
+                        font: {
+                            family: 'Play', // Apply 'Play' font for y-axis ticks
+                        }
                     }
                 }
             },
@@ -521,9 +528,9 @@ function renderTracPriceChart(labels, prices, animate = false) {
                     text: 'TRAC PRICE (90D)',
                     align: 'center',
                     font: {
-                        family: 'Poppins', // Apply Poppins font to the title
-                        size: 16,          // Adjust font size as needed
-                        weight: 'normal'   // Adjust weight as needed
+                        family: 'Play', // Apply 'Play' font to the title
+                        size: 16, // Font size for title
+                        weight: 'normal'   // Font weight for title
                     },
                     color: '#636363',
                 }
@@ -539,6 +546,7 @@ function renderTracPriceChart(labels, prices, animate = false) {
         }
     });
 }
+
 
 function fetchTracPriceChartData() {
     fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true')
