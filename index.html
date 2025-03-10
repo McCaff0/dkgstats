@@ -92,7 +92,19 @@ h1 {
   position: relative;
   z-index: 1;
 }
-
+/* Pseudo-element for the shadow */
+.container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent; /* No color, just shadow */
+  box-shadow: 0 0 100px rgb(78 78 78 / 40%);
+  border-radius: 16px;
+  z-index: -1; /* Moves shadow behind everything */
+}
 .stats-box {
   background: #0f0f0f;
   padding: 8px;
@@ -100,8 +112,6 @@ h1 {
   width: 90vw;
   max-width: 380px;
   min-width: 340px;
-  position: relative;
-  z-index: 1;
 }
 
 .stats-box h3 {
