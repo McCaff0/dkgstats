@@ -481,17 +481,54 @@ function renderTracPriceChart(labels, prices) {
                             day: 'MMM d'
                         }
                     },
+                    ticks: {
+                        font: {
+                            size: 10  // Smaller font for x-axis labels
+                        },
+                        autoSkip: true,  // Avoid cluttering
+                        maxTicksLimit: 10, // Limit number of visible labels
+                        callback: function(value, index, values) {
+                            // Ensure today's date appears
+                            const today = new Date().toISOString().split('T')[0];
+                            return value === today || index % 2 === 0 ? value : null;
+                        }
+                    },
                     title: {
                         display: true,
-                        text: 'Date'
+                        text: 'Date',
+                        font: {
+                            size: 12
+                        }
                     }
                 },
                 y: {
                     title: {
                         display: true,
-                        text: 'Price (USD)'
+                        text: 'Price (USD)',
+                        font: {
+                            size: 12
+                        }
                     },
                     beginAtZero: false
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',  // Move legend for better spacing
+                    labels: {
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
                 }
             }
         }
