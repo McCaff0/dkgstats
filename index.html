@@ -426,27 +426,11 @@ h1 {
   // Replace with your deployed endpoint URL that serves chart data
   const CHART_DATA_URL = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true';
 
-function fetchTracPriceChartData() {
-    fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true')
-        .then(response => response.json())
-        .then(data => {
-            // Data should be an array of { date: "YYYY-MM-DD", price: number }
-            const labels = data.map(item => item.date);
-            const prices = data.map(item => item.price);
-            renderTracPriceChart(labels, prices);  // Update chart with actual data
-        })
-        .catch(error => {
-            console.error('Error fetching chart data:', error);
-            renderTracPriceChart([], []);  // Render empty chart if error occurs
-        });
-}
-
 let tracPriceChartInstance = null;  // Store chart instance globally
-let firstLoad = true;  // Track if it's the first load
 
-function renderTracPriceChart(labels, prices) {
+function renderTracPriceChart(labels, prices, animate = false) {
     const ctx = document.getElementById('tracPriceChart').getContext('2d');
-    
+
     // Destroy existing chart before creating a new one
     if (tracPriceChartInstance) {
         tracPriceChartInstance.destroy();
@@ -471,7 +455,7 @@ function renderTracPriceChart(labels, prices) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: firstLoad ? { duration: 1000 } : false, // Animate line on first load
+            animation: animate ? { duration: 1000, easing: 'easeInOutQuad' } : false, // Animate line when data is fetched
             scales: {
                 x: {
                     type: 'time',
@@ -532,10 +516,25 @@ function renderTracPriceChart(labels, prices) {
             }
         }
     });
-    firstLoad = false;  // Disable first load animation after initial rendering
 }
 
-  renderTracPriceChart([], []);
+function fetchTracPriceChartData() {
+    fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true')
+        .then(response => response.json())
+        .then(data => {
+            // Data should be an array of { date: "YYYY-MM-DD", price: number }
+            const labels = data.map(item => item.date);
+            const prices = data.map(item => item.price);
+            renderTracPriceChart(labels, prices, true);  // Animate chart when data is loaded
+        })
+        .catch(error => {
+            console.error('Error fetching chart data:', error);
+            renderTracPriceChart([], [], false);  // Render empty chart if error occurs without animation
+        });
+}
+
+// Render an empty chart with no data on initial load (no animation)
+renderTracPriceChart([], [], false);
   // Call the function to fetch chart data and render the graph.
   fetchTracPriceChartData();
 
