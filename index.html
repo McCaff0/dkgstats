@@ -553,7 +553,7 @@ function renderTracPriceChart(labels, prices, animate = false) {
     });
 }
 function fetchTracPriceChartData() {
-    fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true')
+    fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true&type=price')
         .then(response => response.json())
         .then(data => {
             // Data should be an array of { date: "YYYY-MM-DD", price: number }
