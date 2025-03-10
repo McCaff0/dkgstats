@@ -491,8 +491,6 @@ function renderTracPriceChart(labels, prices, animate = false) {
                         },
                     },
                     beginAtZero: false,
-                    // Adjust the padding of the y axis to reduce space
-                    padding: 0
                 }
             },
             plugins: {
@@ -515,7 +513,7 @@ function renderTracPriceChart(labels, prices, animate = false) {
                     left: 20,
                     right: 30,
                     top: 0,
-                    bottom: 3  // Reduce this to bring the chart closer to the labels
+                    bottom: 5  // Reduce this to bring the chart closer to the labels
                 }
             }
         }
