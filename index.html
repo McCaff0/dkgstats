@@ -455,7 +455,7 @@ function renderTracPriceChart(labels, prices) {
         data: {
             labels: labels, // Dates array
             datasets: [{
-                label: 'TRAC Price (Last 90 Days)',  // Legend is back
+                label: 'TRAC Price (Last 90 Days)',  // Remove this from legend if you don't want it there
                 data: prices,
                 borderColor: 'rgba(28, 148, 28, 1)',       // Line color
                 backgroundColor: 'rgba(28, 148, 28, 0.1)',   // Fill color under the line
@@ -507,6 +507,7 @@ function renderTracPriceChart(labels, prices) {
             },
             plugins: {
                 legend: {
+                    display: false, // Hide the legend if you don't need it
                     labels: {
                         color: '#c8c2cf',  // Legend text color change
                         boxWidth: 0, // Hides the little color box
@@ -523,7 +524,7 @@ function renderTracPriceChart(labels, prices) {
                     align: 'center',  // Center the title
                     color: '#c8c2cf',  // Title color
                     font: {
-                        size: 18  // Font size for the title
+                        size: 16  // Font size for the title (smaller than before)
                     }
                 }
             },
@@ -539,6 +540,7 @@ function renderTracPriceChart(labels, prices) {
     });
   firstLoad = false;
 }
+
 
   // Call the function to fetch chart data and render the graph.
   fetchTracPriceChartData();
