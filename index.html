@@ -324,7 +324,7 @@
       document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
       document.getElementById('spend24h').innerHTML = formatNumberChange(data.spend24h, '(1D)');
       document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
-      document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d);
+      document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '(1D)';
       document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
       document.getElementById('annualspendchange28d').innerHTML = formatPercentage(data.annualspendchange28d, '28D');
     }
