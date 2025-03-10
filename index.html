@@ -497,6 +497,11 @@ function renderTracPriceChart(labels, prices) {
                         display: true,
                         text: 'Price (USD)'
                     },
+                    ticks: {
+                        font: {
+                            size: 10  // Smaller font size for y-axis labels (prices)
+                        },
+                    },
                     beginAtZero: false
                 }
             },
@@ -511,6 +516,15 @@ function renderTracPriceChart(labels, prices) {
                     },
                     position: 'top', // Keeps it at the top
                     align: 'start'   // Aligns to the left (change to 'center' or 'end' if needed)
+                },
+                title: {
+                    display: true,
+                    text: 'TRAC Price (Last 90 Days)',  // Title text
+                    align: 'center',  // Center the title
+                    color: '#c8c2cf',  // Title color
+                    font: {
+                        size: 18  // Font size for the title
+                    }
                 }
             },
             layout: {
@@ -523,6 +537,8 @@ function renderTracPriceChart(labels, prices) {
             }
         }
     });
+}
+
   firstLoad = false;
 }
 
