@@ -192,7 +192,9 @@ h1 {
   height: 191px;
   box-sizing: border-box;
 }
-
+#tracPriceChart {
+  font-family: 'Play', sans-serif; /* Ensure the canvas gets the correct font */
+}
   </style>
 
   <!-- Google Analytics Tag -->
@@ -579,6 +581,7 @@ function fetchTracPriceChartData() {
 renderTracPriceChart([], [], false);
 // Call the function to fetch chart data and render the graph.
 fetchTracPriceChartData();
+
     
     fetchData();
     setInterval(fetchData, 10000);
