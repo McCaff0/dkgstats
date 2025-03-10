@@ -43,11 +43,11 @@
       flex-direction: column;
       align-items: center;
     }
-        h1 {
+    
+    h1 {
       display: none;
     }
-
-
+    
     /* Title image */
     .title-image {
       width: 75%;
@@ -55,8 +55,18 @@
       display: block;
       margin: -10px auto 5px auto;
     }
-
-    /* Main container */
+    
+    /* Flex container to hold all three sections */
+    .main-container {
+      display: flex;
+      flex-wrap: wrap;  /* Allows wrapping when there isn't enough horizontal space */
+      justify-content: center;
+      gap: 16px; /* Space between containers */
+      width: 100%;
+      max-width: 1200px; /* Adjust if needed */
+    }
+    
+    /* Individual containers (same design as original) */
     .container {
       background: #373737;
       padding: 8px;
@@ -68,6 +78,8 @@
       justify-content: center;
       gap: 8px; /* Adds spacing between items */
       width: fit-content;
+      min-width: 340px;
+      max-width: 380px;
     }
     
     /* Stats box */
@@ -77,8 +89,9 @@
       border-radius: 8px;
       width: 90vw;
       max-width: 380px;
-      min-width: 340px
+      min-width: 340px;
     }
+    
     .stats-box h3 {
       text-align: center;
       font-size: 18px;
@@ -87,6 +100,7 @@
       margin-bottom: 0;
       color: #c8c2cf;
     }
+    
     .stats-box p {
       display: flex;
       justify-content: space-between;
@@ -96,18 +110,25 @@
       margin: -3px 0;
       color: #c8c2cf;
     }
-    .half-line {
-      height: 20px;
-      display: block;
+    
+    /* New section styling for empty stats boxes */
+    .empty-stats-box {
+      background: #0f0f0f;
+      padding: 8px;
+      border-radius: 8px;
+      width: 90vw;
+      max-width: 380px;
+      min-width: 340px;
+      height: 120px; /* Adjust height for future graph embedding */
     }
-
-    /* Value container for right-hand values with fixed height */
+    
+    /* Value container styles remain unchanged */
     .value-container {
       position: relative;
       width: 150px;
-      height: 40px; /* fixed height for alignment */
+      height: 40px;
     }
-    /* The number: right aligned and centered vertically at 50% of container height */
+    
     .number-value {
       position: absolute;
       right: 0;
@@ -116,21 +137,22 @@
       text-align: right;
       width: 100%;
     }
-    /* The percentage change: right aligned, placed beneath the number (e.g., at 70% of container height) */
+    
     .percentage-change {
       position: absolute;
       right: 0;
-      top: 88%;  /* adjust this percentage as needed */
+      top: 88%;
       transform: translateY(-50%);
       text-align: right;
       font-size: 13px;
       width: 100%;
     }
-
+    
     /* Color classes */
     .positive { color: #1c941c; }
     .negative { color: #c91e1e; }
     .neutral  { color: #a6a6a6; }
+
   </style>
 
   <!-- Google Analytics Tag -->
@@ -147,8 +169,10 @@
   <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKGStats.io" class="title-image">
   <h1>DKGStats.io - Real-Time OriginTrail DKG Statistics</h1>
   <!-- Main container -->
+<!-- Flex container to hold all three sections -->
+<div class="main-container">
+  <!-- Existing Container -->
   <div class="container">
-    <!-- Top Stats Box -->
     <div class="stats-box">
       <h3>Current</h3>
       
@@ -256,34 +280,23 @@
           <span class="percentage-change"> </span>
         </span>
       </p>
-      
-    </div>
-    
-    <!-- Bottom Stats Box (same layout as top now) -->
-    <div class="stats-box">
-      <p>
-        <span>Total KA'S</span>
-        <span class="value-container">
-          <span id="totalkas" class="number-value">Loading...</span>
-          <span id="kas24h" class="percentage-change"> </span>
-        </span>
-      </p>
-      <p>
-        <span>Total TRAC Spent</span>
-        <span class="value-container">
-          <span id="totaltracspent" class="number-value">Loading...</span>
-          <span id="spend24h" class="percentage-change"> </span>
-        </span>
-      </p>
-      <p>
-        <span>Active Nodes</span>
-        <span class="value-container">
-          <span id="activenodes" class="number-value">Loading...</span>
-          <span class="percentage-change"></span>
-        </span>
-      </p>
     </div>
   </div>
+
+  <!-- New Container 1 -->
+  <div class="container">
+    <div class="empty-stats-box"></div>
+    <div class="empty-stats-box"></div>
+    <div class="empty-stats-box"></div>
+  </div>
+
+  <!-- New Container 2 -->
+  <div class="container">
+    <div class="empty-stats-box"></div>
+    <div class="empty-stats-box"></div>
+    <div class="empty-stats-box"></div>
+  </div>
+</div>
   
   <script>
     function formatNumber(value, decimals = 0, isCurrency = false) {
