@@ -192,8 +192,9 @@ h1 {
   height: 191px;
   box-sizing: border-box;
 }
+/* Apply the font only to the chart container */
 #tracPriceChart {
-  font-family: 'Play', sans-serif; /* Ensure the canvas gets the correct font */
+    font-family: 'Poppins', sans-serif; /* Use Poppins font for the chart */
 }
   </style>
 
@@ -493,10 +494,6 @@ function renderTracPriceChart(labels, prices, animate = false) {
                         }
                     },
                     ticks: {
-                        font: {
-                            size: 10,
-                            family: 'Play', // Set font to 'Play'
-                        },
                         autoSkip: true,
                         maxTicksLimit: 10,
                         callback: function(value) {
@@ -509,17 +506,10 @@ function renderTracPriceChart(labels, prices, animate = false) {
                     title: {
                         display: true,
                         text: 'Price (USD)',
-                        font: {
-                            family: 'Play', // Set font to 'Play'
-                        }
                     },
                     ticks: {
-                        font: {
-                            size: 10,
-                            family: 'Play', // Set font to 'Play'
-                        },
-                    },
-                    beginAtZero: false,
+                        beginAtZero: false,
+                    }
                 }
             },
             plugins: {
@@ -530,20 +520,20 @@ function renderTracPriceChart(labels, prices, animate = false) {
                     display: true,
                     text: 'TRAC PRICE (90D)',
                     align: 'center',
-                    color: '#636363',
                     font: {
-                        size: 14,
-                        family: 'Play', // Set font to 'Play' for the title
-                    }
+                        family: 'Poppins', // Apply Poppins font to the title
+                        size: 16,          // Adjust font size as needed
+                        weight: 'normal'   // Adjust weight as needed
+                    },
+                    color: '#636363',
                 }
             },
             layout: {
-                // Reducing the bottom padding to bring the chart closer to the labels
                 padding: {
                     left: 20,
                     right: 35,
                     top: 0,
-                    bottom: 5  // Reduce this to bring the chart closer to the labels
+                    bottom: 5
                 }
             }
         }
