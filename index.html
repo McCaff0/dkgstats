@@ -344,11 +344,11 @@
       document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
       document.getElementById('stakingfee').innerText = formatNumber(data.stakingfee * 100, 2) + '%';
       document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0)
-      document.getElementById('kas24h').innerHTML = formatNumberChange(data.kas24h, '(1D)');
+      document.getElementById('kas24h').innerHTML = formatNumberChange(data.kas24h, '(24H)');
       document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
-      document.getElementById('spend24h').innerHTML = formatNumberChange(data.spend24h, '(1D)');
+      document.getElementById('spend24h').innerHTML = formatNumberChange(data.spend24h, '(24H)');
       document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
-      document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '1D');
+      document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '24H');
       document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
       document.getElementById('annualspendchange28d').innerHTML = formatPercentage(data.annualspendchange28d, '28D');
     }
