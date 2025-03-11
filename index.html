@@ -107,7 +107,7 @@ h1 {
   background: #0f0f0f;
   padding: 8px;
   border-radius: 8px;
-  width: 100vw;
+  width: 92vw;
   max-width: 340px;
   min-width: 340px;
 }
@@ -196,7 +196,7 @@ h1 {
   background: #0f0f0f;
   border-radius: 8px;
   /* Use the same width constraints as stats-box */
-  width: 100vw;
+  width: 92vw;
   max-width: 340px;
   min-width: 340px;
   /* Fixed height ensures equal sizing */
@@ -801,30 +801,35 @@ function isMobileDevice() {
     return window.innerWidth < 768; // Treats small windows as mobile
 }
 
+function isMobileDevice() {
+    return window.innerWidth < 768; // Treats small windows as mobile
+}
+
 function adjustScale() {
     const globalScaleFactor = 1.02; // Global scaling factor for desktop
+    const mobileGlobalScaleFactor = 0.8; // Global scaling factor for mobile
 
     if (isMobileDevice()) {
-        // Use a mobile reference width (e.g., 360px, common for many phones)
-        const mobileReferenceWidth = 390; 
+        // Use a mobile reference width (e.g., 415px, common for many phones)
+        const mobileReferenceWidth = 485; 
         const currentMobileWidth = window.innerWidth;
         const mobileScaleFactor = currentMobileWidth / mobileReferenceWidth;
-        document.body.style.transform = `scale(${mobileScaleFactor})`;
+        // Apply the mobile global scale factor as well
+        const adjustedMobileScaleFactor = mobileScaleFactor * mobileGlobalScaleFactor;
+        document.body.style.transform = `scale(${adjustedMobileScaleFactor})`;
         document.body.style.transformOrigin = "top center"; // Center scaling on mobile
     } else {
         const referenceWidth = 1536; // Reference width for desktop
         const currentWidth = window.innerWidth;
         const scaleFactor = currentWidth / referenceWidth;
-
         // Apply the global scaling factor to the scale factor
         const adjustedScaleFactor = scaleFactor * globalScaleFactor;
-
         document.body.style.transform = `scale(${adjustedScaleFactor})`;
-        document.body.style.transformOrigin = "top center";
+        document.body.style.transformOrigin = "top center"; // Keeps scaling centered
     }
 }
 
-adjustScale();
+adjustScale(); // Initial scaling when page loads
 window.addEventListener("resize", adjustScale);
 
 
