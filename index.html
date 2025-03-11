@@ -808,29 +808,31 @@ function isMobileDevice() {
 }
 
 function adjustScale() {
-    const globalScaleFactor = 1.02; // Global scaling factor (adjust this as needed)
+    const globalScaleFactor = 1.02; // Global scaling factor for desktop
 
     if (isMobileDevice()) {
-        // Apply a separate scaling factor for mobile devices
-        const mobileScaleFactor = 1; // Mobile-specific scale (e.g., 20% larger)
+        // Use a mobile reference width (e.g., 360px, common for many phones)
+        const mobileReferenceWidth = 360; 
+        const currentMobileWidth = window.innerWidth;
+        const mobileScaleFactor = currentMobileWidth / mobileReferenceWidth;
         document.body.style.transform = `scale(${mobileScaleFactor})`;
-        document.body.style.transformOrigin = "unset"; // Prevent scaling from shifting
+        document.body.style.transformOrigin = "top center"; // Center scaling on mobile
     } else {
-        const referenceWidth = 1536; // Match your actual document width
+        const referenceWidth = 1536; // Reference width for desktop
         const currentWidth = window.innerWidth;
         const scaleFactor = currentWidth / referenceWidth;
 
         // Apply the global scaling factor to the scale factor
         const adjustedScaleFactor = scaleFactor * globalScaleFactor;
 
-        // Apply the calculated scale for non-mobile
         document.body.style.transform = `scale(${adjustedScaleFactor})`;
-        document.body.style.transformOrigin = "top center"; // Keeps scaling centered
+        document.body.style.transformOrigin = "top center";
     }
 }
 
-adjustScale(); // Initial scaling when page loads
-window.addEventListener("resize", adjustScale); // Adjust on window resize
+adjustScale();
+window.addEventListener("resize", adjustScale);
+
 
 
     renderPriceChart([], [], false);
