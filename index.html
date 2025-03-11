@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Play&display=swap" rel="stylesheet">
   <title>DKGStats.io</title>
   <meta name="description" content="Real-time statistics on the OriginTrail Decentralised Knowledge Graph.">
@@ -801,6 +801,8 @@ function isMobileDevice() {
 }
 
 function adjustScale() {
+    const globalScaleFactor = 1.1; // Global scaling factor (e.g., 1.1 makes everything 10% larger)
+
     if (isMobileDevice()) {
         document.body.style.transform = "none"; // No scaling on mobile
         document.body.style.transformOrigin = "unset";
@@ -811,8 +813,11 @@ function adjustScale() {
     const currentWidth = window.innerWidth;
     const scaleFactor = currentWidth / referenceWidth;
 
-    document.body.style.transform = `scale(${scaleFactor})`;
-    document.body.style.transformOrigin = "top center";
+    // Apply the global scaling factor to adjust everything globally
+    const adjustedScaleFactor = scaleFactor * globalScaleFactor;
+
+    document.body.style.transform = `scale(${adjustedScaleFactor})`;
+    document.body.style.transformOrigin = "top center"; // Keeps scaling centered
 }
 
 adjustScale();
