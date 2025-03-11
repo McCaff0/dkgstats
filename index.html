@@ -807,11 +807,11 @@ function isMobileDevice() {
 
 function adjustScale() {
     const globalScaleFactor = 1.02; // Global scaling factor for desktop
-    const mobileGlobalScaleFactor = 1.2; // Global scaling factor for mobile
+    const mobileGlobalScaleFactor = 0.9; // Global scaling factor for mobile
 
     if (isMobileDevice()) {
         // Use a mobile reference width (e.g., 415px, common for many phones)
-        const mobileReferenceWidth = 485; 
+        const mobileReferenceWidth = 360; 
         const currentMobileWidth = window.innerWidth;
         const mobileScaleFactor = currentMobileWidth / mobileReferenceWidth;
         // Apply the mobile global scale factor as well
