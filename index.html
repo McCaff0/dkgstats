@@ -465,8 +465,8 @@ h1 {
   // Replace with your deployed endpoint URL that serves chart data
   const CHART_DATA_URL = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true';
 
-let PriceChartInstance = null;  // Store chart instance globally
-let isFirstLoad = true;  // Flag to track if it's the first time loading data
+let PriceChartInstance = null; // Store chart instance globally
+let isFirstLoad = true; // Flag to track if it's the first time loading data
 
 function renderPriceChart(priceLabels, priceValues, animate = false) {
     const canvas = document.getElementById('PriceChart');
@@ -476,74 +476,78 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
     }
     const ctx = canvas.getContext('2d');
 
-    // Destroy existing chart before creating a new one
     if (PriceChartInstance) {
-        PriceChartInstance.destroy();
-    }
-
-    PriceChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: priceLabels || [],
-            datasets: [{
-                label: 'TRAC Price (Last 90 Days)',
-                data: priceValues || [],
-                borderColor: 'rgba(28, 148, 28, 1)',
-                backgroundColor: 'rgba(28, 148, 28, 0.1)',
-                fill: true,
-                tension: 0.1,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: animate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
-            scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        parser: 'yyyy-MM-dd',
-                        unit: 'day',
-                        tooltipFormat: 'PP',
-                        displayFormats: {
-                            day: 'MMM d'
+        // Update existing chart data without destroying it
+        PriceChartInstance.data.labels = priceLabels;
+        PriceChartInstance.data.datasets[0].data = priceValues;
+        PriceChartInstance.options.animation = animate ? { duration: 1000, easing: 'easeInOutQuad' } : false;
+        PriceChartInstance.update();
+    } else {
+        // Create chart with animation on first load only
+        PriceChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: priceLabels || [],
+                datasets: [{
+                    label: 'TRAC Price (Last 90 Days)',
+                    data: priceValues || [],
+                    borderColor: 'rgba(28, 148, 28, 1)',
+                    backgroundColor: 'rgba(28, 148, 28, 0.1)',
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: animate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            parser: 'yyyy-MM-dd',
+                            unit: 'day',
+                            tooltipFormat: 'PP',
+                            displayFormats: {
+                                day: 'MMM d'
+                            }
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 10,
+                            callback: function(value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            },
+                            font: { family: 'Play, sans-serif' },
+                            padding: 0,
                         }
                     },
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10,
-                        callback: function(value) {
-                            const date = new Date(value);
-                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Price (USD)',
+                            font: { family: 'Play, sans-serif', size: 14 },
                         },
-                        font: { family: 'Play, sans-serif' },
-                        padding: 0,
+                        ticks: {
+                            beginAtZero: false,
+                            font: { family: 'Play, sans-serif' }
+                        }
                     }
                 },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Price (USD)',
-                        font: { family: 'Play, sans-serif', size: 14 },
-                    },
-                    ticks: {
-                        beginAtZero: false,
-                        font: { family: 'Play, sans-serif' }
-                    }
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                layout: {
+                    padding: { left: 20, right: 35, top: 0, bottom: 23 }
                 }
-            },
-            plugins: {
-                legend: { display: false },
-                title: { display: false }
-            },
-            layout: {
-                padding: { left: 20, right: 35, top: 0, bottom: 23 }
             }
-        }
-    });
+        });
+    }
 }
 function fetchChartData() {
     // Fetch Price Data
