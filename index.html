@@ -470,10 +470,6 @@ let SpendChartInstance = null; // Store chart instance globally
 let PublishesChartInstance = null; // Store chart instance globally
 let isFirstLoad = true; // Flag to track if it's the first time loading data
 
-// Global variable to track the chart instance and first-load state
-let PriceChartInstance = null;
-let isFirstLoad = true;
-
 function renderPriceChart(priceLabels, priceValues) {
     const canvas = document.getElementById('PriceChart');
     if (!canvas) {
