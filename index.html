@@ -603,16 +603,8 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
     }
     const ctx = canvas.getContext('2d');
 
-    const animationOptions = animate ? { duration: 1000, easing: 'easeInOutQuad' } : false;
-
-    if (PublishesChartInstance) {
-        // Update existing chart instance without destroying it
-        PublishesChartInstance.data.labels = publishesLabels || [];
-        PublishesChartInstance.data.datasets[0].data = publishesValues || [];
-        PublishesChartInstance.options.animation = animationOptions;
-        PublishesChartInstance.update();
-    } else {
-        // Create new chart instance
+    if (!PublishesChartInstance) {
+        // Create chart if it doesn't exist
         PublishesChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -632,7 +624,10 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: animationOptions,
+                animation: {
+                    duration: 1000,  // Enable animation on first render
+                    easing: 'easeInOutQuad'
+                },
                 scales: {
                     x: {
                         type: 'time',
@@ -645,10 +640,6 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                         ticks: {
                             autoSkip: true,
                             maxTicksLimit: 10,
-                            callback: function(value) {
-                                const date = new Date(value);
-                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            },
                             font: { family: 'Play, sans-serif' },
                             padding: 0,
                         }
@@ -677,12 +668,22 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                 }
             }
         });
+    } else {
+        // Only update if the data has changed
+        if (JSON.stringify(PublishesChartInstance.data.labels) !== JSON.stringify(publishesLabels) ||
+            JSON.stringify(PublishesChartInstance.data.datasets[0].data) !== JSON.stringify(publishesValues)) {
+            
+            PublishesChartInstance.data.labels = publishesLabels;
+            PublishesChartInstance.data.datasets[0].data = publishesValues;
+            
+            // **Enable animation again on updates**
+            PublishesChartInstance.update({ duration: 1000, easing: 'easeInOutQuad' });
+        }
     }
 
     if (publishesValues.length > 0) {
         isFirstPublishesLoad = false;
     }
-
 }
 function fetchChartData() {
     let hasSuccessfulFetch = false;
