@@ -804,32 +804,31 @@ function isMobileDevice() {
 
 function adjustScale() {
     const globalScaleFactor = 1.02; // Global scaling factor for desktop
-    const mobileGlobalScaleFactor = 1.05; // Global scaling factor for mobile
 
     if (isMobileDevice()) {
-        // Use a mobile reference width (e.g., 415px, common for many phones)
-        const mobileReferenceWidth = 400; 
+        // Apply mobile-specific scale factor
+        const mobileReferenceWidth = 415; 
         const currentMobileWidth = window.innerWidth;
         const mobileScaleFactor = currentMobileWidth / mobileReferenceWidth;
-        // Apply the mobile global scale factor as well
-        const adjustedMobileScaleFactor = mobileScaleFactor * mobileGlobalScaleFactor;
-        document.body.style.transform = `scale(${adjustedMobileScaleFactor})`;
-        document.body.style.transformOrigin = "top center"; // Center scaling on mobile
+        // If you want to add a global factor for mobile, you could do it here as well.
+        document.body.style.transform = `scale(${mobileScaleFactor})`;
+        document.body.style.transformOrigin = "top center";
     } else {
-        const referenceWidth = 1536; // Reference width for desktop
+        const referenceWidth = 1536; // Match your actual document width
         const currentWidth = window.innerWidth;
         const scaleFactor = currentWidth / referenceWidth;
-        // Apply the global scaling factor to the scale factor
         const adjustedScaleFactor = scaleFactor * globalScaleFactor;
         document.body.style.transform = `scale(${adjustedScaleFactor})`;
-        document.body.style.transformOrigin = "top center"; // Keeps scaling centered
+        document.body.style.transformOrigin = "top center";
     }
+    
+    // Force no horizontal overflow
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
 }
 
-adjustScale(); // Initial scaling when page loads
+adjustScale();
 window.addEventListener("resize", adjustScale);
-
-
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
