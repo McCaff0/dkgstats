@@ -469,7 +469,12 @@ let PriceChartInstance = null;  // Store chart instance globally
 let isFirstLoad = true;  // Flag to track if it's the first time loading data
 
 function renderPriceChart(priceLabels, priceValues, animate = false) {
-    const ctx = document.getElementById('PriceChart').getContext('2d');
+    const canvas = document.getElementById('PriceChart');
+    if (!canvas) {
+        console.error("PriceChart canvas not found!");
+        return;
+    }
+    const ctx = canvas.getContext('2d');
 
     // Destroy existing chart before creating a new one
     if (PriceChartInstance) {
@@ -479,10 +484,10 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
     PriceChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels || [],  // Use the correct labels passed to the function
+            labels: priceLabels || [],
             datasets: [{
-                label: 'TRAC Price (Last 90 Days)', // Dataset label will still exist, but legend is hidden
-                data: prices || [],  // Use the correct price data passed to the function
+                label: 'TRAC Price (Last 90 Days)',
+                data: priceValues || [],
                 borderColor: 'rgba(28, 148, 28, 1)',
                 backgroundColor: 'rgba(28, 148, 28, 0.1)',
                 fill: true,
@@ -495,7 +500,7 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: animate ? { duration: 1000, easing: 'easeInOutQuad' } : false, // Animate line when data is fetched
+            animation: animate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
             scales: {
                 x: {
                     type: 'time',
@@ -514,9 +519,7 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
                             const date = new Date(value);
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         },
-                        font: {
-                            family: 'Play, sans-serif',
-                        },
+                        font: { family: 'Play, sans-serif' },
                         padding: 0,
                     }
                 },
@@ -524,34 +527,20 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
                     title: {
                         display: true,
                         text: 'Price (USD)',
-                        font: {
-                            family: 'Play, sans-serif', // Apply 'Play' font to y-axis title
-                            size: 14, // Optional size adjustment
-                        },
+                        font: { family: 'Play, sans-serif', size: 14 },
                     },
                     ticks: {
                         beginAtZero: false,
-                        font: {
-                            family: 'Play, sans-serif',
-                        }
+                        font: { family: 'Play, sans-serif' }
                     }
                 }
             },
             plugins: {
-                legend: {
-                    display: false // Ensure legend is completely hidden
-                },
-                title: {
-                    display: false // Ensure the title is hidden
-                }
+                legend: { display: false },
+                title: { display: false }
             },
             layout: {
-                padding: {
-                    left: 20,
-                    right: 35,
-                    top: 0,
-                    bottom: 23
-                }
+                padding: { left: 20, right: 35, top: 0, bottom: 23 }
             }
         }
     });
