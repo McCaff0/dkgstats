@@ -468,7 +468,9 @@ h1 {
 let PriceChartInstance = null; // Store chart instance globally
 let SpendChartInstance = null; // Store chart instance globally
 let PublishesChartInstance = null; // Store chart instance globally
-let isFirstLoad = true; // Flag to track if it's the first time loading data
+let isFirstDataLoad = true; // Flag to track if it's the first time loading data
+let isFirstSpendLoad = true;
+let isFirstPublishesLoad = true;
 
 function renderPriceChart(priceLabels, priceValues) {
     const canvas = document.getElementById('PriceChart');
@@ -551,7 +553,7 @@ function renderPriceChart(priceLabels, priceValues) {
         isFirstDataLoad = false;
     }
 }
-  function renderSpendChart(spendLabels, spendValues, animate = false) {
+function renderSpendChart(spendLabels, spendValues, animate = false) {
     const canvas = document.getElementById('SpendChart');
     if (!canvas) {
         console.error("SpendChart canvas not found!");
@@ -563,6 +565,9 @@ function renderPriceChart(priceLabels, priceValues) {
     if (SpendChartInstance) {
         SpendChartInstance.destroy();
     }
+
+    // If there is data and it's the first load, force animate regardless of the parameter.
+    const shouldAnimate = (isFirstSpendLoad && spendValues.length > 0) || animate;
 
     SpendChartInstance = new Chart(ctx, {
         type: 'line',
@@ -583,7 +588,7 @@ function renderPriceChart(priceLabels, priceValues) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: animate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
+            animation: shouldAnimate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
             scales: {
                 x: {
                     type: 'time',
@@ -591,9 +596,7 @@ function renderPriceChart(priceLabels, priceValues) {
                         parser: 'yyyy-MM-dd',
                         unit: 'day',
                         tooltipFormat: 'PP',
-                        displayFormats: {
-                            day: 'MMM d'
-                        }
+                        displayFormats: { day: 'MMM d' }
                     },
                     ticks: {
                         autoSkip: true,
@@ -610,7 +613,7 @@ function renderPriceChart(priceLabels, priceValues) {
                     title: {
                         display: true,
                         text: 'Spend (USD)',
-                        font: { family: 'Play, sans-serif', size: 14 },
+                        font: { family: 'Play, sans-serif', size: 14 }
                     },
                     ticks: {
                         beginAtZero: false,
@@ -627,8 +630,12 @@ function renderPriceChart(priceLabels, priceValues) {
             }
         }
     });
-}
 
+    // Once data is loaded the first time, disable further animation.
+    if (spendValues.length > 0) {
+        isFirstSpendLoad = false;
+    }
+}
 // Function for the Publishes Chart
 function renderPublishesChart(publishesLabels, publishesValues, animate = false) {
     const canvas = document.getElementById('PublishesChart');
@@ -642,6 +649,9 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
     if (PublishesChartInstance) {
         PublishesChartInstance.destroy();
     }
+
+    // If there is data and it's the first load, force animate regardless of the parameter.
+    const shouldAnimate = (isFirstPublishesLoad && publishesValues.length > 0) || animate;
 
     PublishesChartInstance = new Chart(ctx, {
         type: 'line',
@@ -662,7 +672,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: animate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
+            animation: shouldAnimate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
             scales: {
                 x: {
                     type: 'time',
@@ -670,9 +680,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                         parser: 'yyyy-MM-dd',
                         unit: 'day',
                         tooltipFormat: 'PP',
-                        displayFormats: {
-                            day: 'MMM d'
-                        }
+                        displayFormats: { day: 'MMM d' }
                     },
                     ticks: {
                         autoSkip: true,
@@ -689,7 +697,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                     title: {
                         display: true,
                         text: 'Publishes',
-                        font: { family: 'Play, sans-serif', size: 14 },
+                        font: { family: 'Play, sans-serif', size: 14 }
                     },
                     ticks: {
                         beginAtZero: false,
@@ -706,6 +714,11 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             }
         }
     });
+
+    // Once data is loaded the first time, disable further animation.
+    if (publishesValues.length > 0) {
+        isFirstPublishesLoad = false;
+    }
 }
 function fetchChartData() {
    
