@@ -228,9 +228,6 @@ h1 {
   </script>
 </head>
 <body>
-  <div id="scaling-container">
-  <!-- Title Image -->
-  <!-- Title Image & Hidden h1 remain unchanged -->
 <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKGStats.io" class="title-image">
 <h1>DKGStats.io - Real-Time OriginTrail DKG Statistics</h1>
 <!-- Main flex container holding all three containers -->
@@ -800,27 +797,6 @@ function fetchChartData() {
         });
 }
 
-function adjustScale() {
-  const baseWidth = 1080; // Base resolution width (1080px)
-  const screenWidth = window.innerWidth; // Get the screen width
-  let scaleFactor = 1;
-
-  // Only scale for screens wider than 1080px
-  if (screenWidth > baseWidth) {
-    scaleFactor = screenWidth / baseWidth; // Calculate the scale factor
-  }
-
-  const container = document.getElementById('scaling-container');
-  if (container) {
-    // Apply the scale transform only when needed
-    container.style.transform = `scale(${scaleFactor})`;
-    container.style.transformOrigin = 'top center'; // Keep the scaling from the top-center
-  }
-}
-
-// Apply scaling when the page loads or resizes
-window.addEventListener('load', adjustScale);
-window.addEventListener('resize', adjustScale);
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
