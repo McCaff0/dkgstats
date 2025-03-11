@@ -551,9 +551,9 @@ function fetchChartData() {
         .then(response => response.json())
         .then(data => {
             console.log("Price Data:", data);  // Debugging line
-            if (data && data.price) {
-                const priceLabels = data.price.map(item => item.date);
-                const priceValues = data.price.map(item => item.price);
+            if (Array.isArray(data) && data.length > 0) {
+                const priceLabels = data.map(item => item.date);
+                const priceValues = data.map(item => item.value);  // Use "value" instead of "price"
                 renderPriceChart(priceLabels, priceValues, isFirstLoad);
             } else {
                 console.warn("No price data received.");
@@ -570,9 +570,9 @@ function fetchChartData() {
         .then(response => response.json())
         .then(data => {
             console.log("Spend Data:", data);  // Debugging line
-            if (data && data.spend) {
-                const spendLabels = data.spend.map(item => item.date);
-                const spendValues = data.spend.map(item => item.spend);
+            if (Array.isArray(data) && data.length > 0) {
+                const spendLabels = data.map(item => item.date);
+                const spendValues = data.map(item => item.value);  // Use "value" instead of "spend"
                 renderSpendChart(spendLabels, spendValues, isFirstLoad);
             } else {
                 console.warn("No spend data received.");
@@ -589,9 +589,9 @@ function fetchChartData() {
         .then(response => response.json())
         .then(data => {
             console.log("Publishes Data:", data);  // Debugging line
-            if (data && data.publishes) {
-                const publishesLabels = data.publishes.map(item => item.date);
-                const publishesValues = data.publishes.map(item => item.publishes);
+            if (Array.isArray(data) && data.length > 0) {
+                const publishesLabels = data.map(item => item.date);
+                const publishesValues = data.map(item => item.value);  // Use "value" instead of "publishes"
                 renderPublishesChart(publishesLabels, publishesValues, isFirstLoad);
             } else {
                 console.warn("No publishes data received.");
@@ -607,9 +607,9 @@ function fetchChartData() {
     isFirstLoad = false;
 }
 
-
 // Call the function to fetch all chart data
 fetchChartData();
+
 
     
     fetchData();
