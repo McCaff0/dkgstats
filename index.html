@@ -363,15 +363,19 @@ h1 {
     </div>
   </div>
   
-  <!-- NEW CONTAINER 1: Graph boxes (empty for now) -->
- <div class="container new">
+<div class="container new">
   <div class="graph-box">
     <h3>TRAC PRICE (90D)</h3>
-    <!-- Canvas for TRAC price chart -->
-    <canvas id="tracPriceChart" style="width:100%; height:100%;"></canvas>
+    <canvas id="PriceChart" style="width:100%; height:100%;"></canvas>
   </div>
-  <div class="graph-box"></div>
-  <div class="graph-box"></div>
+  <div class="graph-box">
+    <h3>USD Spend (90D)</h3>
+    <canvas id="SpendChart" style="width:100%; height:100%;"></canvas>
+  </div>
+  <div class="graph-box">
+    <h3>Daily Publishes (90D)</h3>
+    <canvas id="PublishesChart" style="width:100%; height:100%;"></canvas>
+  </div>
 </div>
 
   <!-- NEW CONTAINER 2: Graph boxes (empty for now) -->
@@ -461,18 +465,18 @@ h1 {
   // Replace with your deployed endpoint URL that serves chart data
   const CHART_DATA_URL = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true';
 
-let tracPriceChartInstance = null;  // Store chart instance globally
+let PriceChartInstance = null;  // Store chart instance globally
 let isFirstLoad = true;  // Flag to track if it's the first time loading data
 
-function renderTracPriceChart(labels, prices, animate = false) {
-    const ctx = document.getElementById('tracPriceChart').getContext('2d');
+function renderPriceChart(labels, prices, animate = false) {
+    const ctx = document.getElementById('PriceChart').getContext('2d');
 
     // Destroy existing chart before creating a new one
-    if (tracPriceChartInstance) {
-        tracPriceChartInstance.destroy();
+    if (PriceChartInstance) {
+        PriceChartInstance.destroy();
     }
 
-    tracPriceChartInstance = new Chart(ctx, {
+    PriceChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels || [],  // Empty array for labels initially
@@ -552,42 +556,62 @@ function renderTracPriceChart(labels, prices, animate = false) {
         }
     });
 }
-function fetchTracPriceChartData() {
-    fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true&type=price')
+function fetchChartData() {
+    fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true')
         .then(response => response.json())
         .then(data => {
-            // Data should be an array of { date: "YYYY-MM-DD", price: number }
-            const labels = data.map(item => item.date);
-            const prices = data.map(item => item.price);
+            if (!data) {
+                console.error("No chart data received.");
+                return;
+            }
 
-            // Animate on first load only, subsequent updates will not animate
-            renderTracPriceChart(labels, prices, isFirstLoad);
+            // Extract data for different charts
+            if (data.price) {
+                const priceLabels = data.price.map(item => item.date);
+                const priceValues = data.price.map(item => item.price);
+                renderPriceChart(labels, priceValues, isFirstLoad);
+            }
 
-            // Set flag to false after the first load
+            if (data.volume) {
+                const volumeLabels = data.volume.map(item => item.date);
+                const volumeValues = data.volume.map(item => item.volume);
+                renderSpendChart(labels, spendValues, isFirstLoad);
+            }
+
+            if (data.staking) {
+                const stakingLabels = data.staking.map(item => item.date);
+                const stakingValues = data.staking.map(item => item.apy);
+                renderPublishesChart(labels, publishesValues, isFirstLoad);
+            }
+
+            // Add more if needed...
+
+            // Set flag to false after the first load to prevent animation on subsequent updates
             if (isFirstLoad) {
                 isFirstLoad = false;
             }
         })
         .catch(error => {
             console.error('Error fetching chart data:', error);
-            // Prevent resetting chart on failure, keep existing data intact
+
+            // Prevent resetting charts on failure, keep existing data intact
             if (!isFirstLoad) {
                 console.log('Keeping previous data due to failed fetch.');
             } else {
-                renderTracPriceChart([], [], false);  // Render empty chart if error occurs during first load without animation
+                renderPriceChart([], [], false);
+                renderSpendChart([], [], false);
+                renderPublishesChart([], [], false);
             }
         });
 }
 
-// Render an empty chart with no data on initial load (no animation)
-renderTracPriceChart([], [], false);
-// Call the function to fetch chart data and render the graph.
-fetchTracPriceChartData();
+// Call the function to fetch all chart data
+fetchChartData();
 
     
     fetchData();
     setInterval(fetchData, 10000);
-    setInterval(fetchTracPriceChartData, 10000);
+    setInterval(fetchChartData, 10000);
   </script>
   
 </body>
