@@ -36,22 +36,27 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
 html, body {
-    overflow-x: hidden;
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    background-color: #121212; /* Adjust this to match your theme */
+    overflow: hidden; /* Prevents scrolling issues */
+    background-color: #121212; /* Matches theme */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Ensures top alignment */
 }
 
 #scale-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
-    min-height: 100vh; /* Ensure full height */
-    overflow: hidden; /* Prevent black bars from appearing */
+    min-height: 100vh; /* Ensures it fills the screen */
+    overflow: hidden;
+    position: relative;
+
 }
     /* Body setup */
     body {
@@ -818,46 +823,47 @@ function fetchChartData() {
 }
 
 function isMobileDevice() {
-    return window.innerWidth < 768; // Treats small windows as mobile
+    return window.innerWidth < 768; // Mobile breakpoint
 }
 
 function adjustScale() {
     const scaleWrapper = document.getElementById("scale-wrapper");
     if (!scaleWrapper) return;
 
-    const globalScaleFactor = 1.02; // Global scaling factor for desktop
+    const globalScaleFactor = 1.02; // Scaling factor for desktop
+    let scaleFactor, widthCorrection;
 
-    let scaleFactor;
-    
     if (isMobileDevice()) {
         const mobileReferenceWidth = 415; 
         const currentMobileWidth = window.innerWidth;
-        scaleFactor = (currentMobileWidth / mobileReferenceWidth);
+        scaleFactor = currentMobileWidth / mobileReferenceWidth;
+        widthCorrection = 100 / scaleFactor;
 
-        // Ensure wrapper fully covers the screen
-        scaleWrapper.style.width = `${100 / scaleFactor}vw`;
+        scaleWrapper.style.width = `${widthCorrection}vw`;
         scaleWrapper.style.height = `${100 / scaleFactor}vh`;
 
         scaleWrapper.style.transform = `scale(${scaleFactor})`;
         scaleWrapper.style.transformOrigin = "top center";
     } else {
-        const referenceWidth = 1536; // Reference width for desktop
+        const referenceWidth = 1536;
         const currentWidth = window.innerWidth;
         scaleFactor = (currentWidth / referenceWidth) * globalScaleFactor;
+        widthCorrection = 100 / scaleFactor;
 
-        // Ensure wrapper fully covers the screen
-        scaleWrapper.style.width = `${100 / scaleFactor}vw`;
+        scaleWrapper.style.width = `${widthCorrection}vw`;
         scaleWrapper.style.height = `${100 / scaleFactor}vh`;
 
         scaleWrapper.style.transform = `scale(${scaleFactor})`;
         scaleWrapper.style.transformOrigin = "top center";
     }
+
+    // Ensure no black bars appear
+    document.body.style.height = "100vh";
+    document.body.style.overflow = "hidden";
 }
 
 adjustScale();
 window.addEventListener("resize", adjustScale);
-
-
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
