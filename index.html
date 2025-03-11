@@ -733,7 +733,7 @@ function fetchChartData() {
             if (Array.isArray(data) && data.length > 0) {
                 const priceLabels = data.map(item => item.date);
                 const priceValues = data.map(item => item.value);  // Assuming 'value' field
-                renderPriceChart(priceLabels, priceValues, isFirstLoad);
+                renderPriceChart(priceLabels, priceValues, isFirstDataLoad);
                 hasSuccessfulFetch = true;
             } else {
                 console.warn("No valid price data received.");
@@ -752,7 +752,7 @@ function fetchChartData() {
             if (Array.isArray(data) && data.length > 0) {
                 const spendLabels = data.map(item => item.date);
                 const spendValues = data.map(item => item.value);  // Assuming 'value' field
-                renderSpendChart(spendLabels, spendValues, isFirstLoad);
+                renderSpendChart(spendLabels, spendValues, isFirstSpendLoad);
                 hasSuccessfulFetch = true;
             } else {
                 console.warn("No valid spend data received.");
@@ -771,7 +771,7 @@ function fetchChartData() {
             if (Array.isArray(data) && data.length > 0) {
                 const publishesLabels = data.map(item => item.date);
                 const publishesValues = data.map(item => item.value);  // Assuming 'value' field
-                renderPublishesChart(publishesLabels, publishesValues, isFirstLoad);
+                renderPublishesChart(publishesLabels, publishesValues, isFirstPublishesLoad);
                 hasSuccessfulFetch = true;
             } else {
                 console.warn("No valid publishes data received.");
