@@ -801,27 +801,29 @@ function isMobileDevice() {
 }
 
 function adjustScale() {
-    const globalScaleFactor = 1.1; // Global scaling factor (e.g., 1.1 makes everything 10% larger)
+    const globalScaleFactor = 1.05; // Global scaling factor (adjust this as needed)
 
     if (isMobileDevice()) {
-        document.body.style.transform = "none"; // No scaling on mobile
-        document.body.style.transformOrigin = "unset";
-        return;
+        // Apply a separate scaling factor for mobile devices
+        const mobileScaleFactor = 1.2; // Mobile-specific scale (e.g., 20% larger)
+        document.body.style.transform = `scale(${mobileScaleFactor})`;
+        document.body.style.transformOrigin = "unset"; // Prevent scaling from shifting
+    } else {
+        const referenceWidth = 1536; // Match your actual document width
+        const currentWidth = window.innerWidth;
+        const scaleFactor = currentWidth / referenceWidth;
+
+        // Apply the global scaling factor to the scale factor
+        const adjustedScaleFactor = scaleFactor * globalScaleFactor;
+
+        // Apply the calculated scale for non-mobile
+        document.body.style.transform = `scale(${adjustedScaleFactor})`;
+        document.body.style.transformOrigin = "top center"; // Keeps scaling centered
     }
-
-    const referenceWidth = 1536; // Match your actual document width
-    const currentWidth = window.innerWidth;
-    const scaleFactor = currentWidth / referenceWidth;
-
-    // Apply the global scaling factor to adjust everything globally
-    const adjustedScaleFactor = scaleFactor * globalScaleFactor;
-
-    document.body.style.transform = `scale(${adjustedScaleFactor})`;
-    document.body.style.transformOrigin = "top center"; // Keeps scaling centered
 }
 
-adjustScale();
-window.addEventListener("resize", adjustScale);
+adjustScale(); // Initial scaling when page loads
+window.addEventListener("resize", adjustScale); // Adjust on window resize
 
 
     renderPriceChart([], [], false);
