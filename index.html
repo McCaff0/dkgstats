@@ -549,67 +549,76 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
         });
     }
 }
-function fetchChartData() {
+ ChartData() {
+    // Render the empty chart immediately (placeholder)
+    renderEmptyChart();
+
+    let hasSuccessfulFetch = false; // Track if any fetch succeeds
+
     // Fetch Price Data
     fetch(CHART_DATA_URL + '&type=price')
         .then(response => response.json())
         .then(data => {
-            console.log("Price Data:", data);  // Debugging line
+            console.log("Price Data:", data);
+
             if (Array.isArray(data) && data.length > 0) {
                 const priceLabels = data.map(item => item.date);
-                const priceValues = data.map(item => item.value);  // Use "value" instead of "price"
+                const priceValues = data.map(item => item.value);  // Assuming 'value' field
                 renderPriceChart(priceLabels, priceValues, isFirstLoad);
+                hasSuccessfulFetch = true;
             } else {
-                console.warn("No price data received.");
-                renderPriceChart([], [], false);  // Render empty chart on failure
+                console.warn("No valid price data received.");
             }
         })
         .catch(error => {
             console.error("Error fetching price data:", error);
-            renderPriceChart([], [], false);
         });
 
     // Fetch Spend Data
     fetch(CHART_DATA_URL + '&type=spend')
         .then(response => response.json())
         .then(data => {
-            console.log("Spend Data:", data);  // Debugging line
+            console.log("Spend Data:", data);
+
             if (Array.isArray(data) && data.length > 0) {
                 const spendLabels = data.map(item => item.date);
-                const spendValues = data.map(item => item.value);  // Use "value" instead of "spend"
+                const spendValues = data.map(item => item.value);  // Assuming 'value' field
                 renderSpendChart(spendLabels, spendValues, isFirstLoad);
+                hasSuccessfulFetch = true;
             } else {
-                console.warn("No spend data received.");
-                renderSpendChart([], [], false);
+                console.warn("No valid spend data received.");
             }
         })
         .catch(error => {
             console.error("Error fetching spend data:", error);
-            renderSpendChart([], [], false);
         });
 
     // Fetch Publishes Data
     fetch(CHART_DATA_URL + '&type=publishes')
         .then(response => response.json())
         .then(data => {
-            console.log("Publishes Data:", data);  // Debugging line
+            console.log("Publishes Data:", data);
+
             if (Array.isArray(data) && data.length > 0) {
                 const publishesLabels = data.map(item => item.date);
-                const publishesValues = data.map(item => item.value);  // Use "value" instead of "publishes"
+                const publishesValues = data.map(item => item.value);  // Assuming 'value' field
                 renderPublishesChart(publishesLabels, publishesValues, isFirstLoad);
+                hasSuccessfulFetch = true;
             } else {
-                console.warn("No publishes data received.");
-                renderPublishesChart([], [], false);
+                console.warn("No valid publishes data received.");
             }
         })
         .catch(error => {
             console.error("Error fetching publishes data:", error);
-            renderPublishesChart([], [], false);
+        })
+        .finally(() => {
+            // Set flag to false after the first successful load
+            if (hasSuccessfulFetch && isFirstLoad) {
+                isFirstLoad = false;
+            }
         });
-
-    // Set flag to false after the first load
-    isFirstLoad = false;
 }
+
 
 // Call the function to fetch all chart data
 fetchChartData();
