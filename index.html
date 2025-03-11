@@ -40,7 +40,7 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* Completely removes unwanted scrolling */
+    overflow: hidden;
     background-color: #121212;
     display: flex;
     justify-content: center;
@@ -54,9 +54,8 @@ html, body {
     justify-content: flex-start;
     width: 100vw;
     height: 100vh;
-    overflow: hidden; /* Prevents unnecessary scrollbars */
+    overflow: hidden;
     position: relative;
-
 
 }
     /* Body setup */
@@ -827,20 +826,26 @@ function isMobileDevice() {
     return window.innerWidth < 768; // Mobile breakpoint
 }
 
+function isMobileDevice() {
+    return window.innerWidth < 768; // Mobile breakpoint
+}
+
 function adjustScale() {
     const scaleWrapper = document.getElementById("scale-wrapper");
     if (!scaleWrapper) return;
 
-    const globalScaleFactor = 1.02; // Scaling factor for desktop
-    let scaleFactor, widthCorrection;
+    const globalScaleFactor = 1.02; // Desktop scaling factor
+    let scaleFactor, widthCorrection, heightCorrection;
 
     if (isMobileDevice()) {
         const mobileReferenceWidth = 415;
         const currentMobileWidth = window.innerWidth;
         scaleFactor = currentMobileWidth / mobileReferenceWidth;
         widthCorrection = 100 / scaleFactor;
+        heightCorrection = 100 / scaleFactor;
 
         scaleWrapper.style.width = `${widthCorrection}vw`;
+        scaleWrapper.style.height = `${heightCorrection}vh`;
         scaleWrapper.style.transform = `scale(${scaleFactor})`;
         scaleWrapper.style.transformOrigin = "top center";
 
@@ -854,8 +859,10 @@ function adjustScale() {
         const currentWidth = window.innerWidth;
         scaleFactor = (currentWidth / referenceWidth) * globalScaleFactor;
         widthCorrection = 100 / scaleFactor;
+        heightCorrection = 100 / scaleFactor;
 
         scaleWrapper.style.width = `${widthCorrection}vw`;
+        scaleWrapper.style.height = `${heightCorrection}vh`;
         scaleWrapper.style.transform = `scale(${scaleFactor})`;
         scaleWrapper.style.transformOrigin = "top center";
 
@@ -863,11 +870,15 @@ function adjustScale() {
         document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
     }
+
+    // Ensure content always fits inside the viewport
+    scaleWrapper.style.minHeight = `${window.innerHeight}px`;
 }
 
 // Run on load and window resize
 adjustScale();
 window.addEventListener("resize", adjustScale);
+
 
 
 
