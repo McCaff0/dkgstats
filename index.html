@@ -737,39 +737,34 @@ function fetchChartData() {
 }
 
 function isMobileDevice() {
-    return window.innerWidth < 768; // Checks if the device is a mobile device based on window width
+    return window.innerWidth < 768; // Checks if the device is mobile based on window width
 }
 
 function adjustScale() {
-    const globalScaleFactor = 1.05; // Global scaling factor
+    const globalScaleFactor = 1.05; // Global scaling factor for desktop
+    let scaleFactor;
 
     if (isMobileDevice()) {
-        // Define a mobile reference width (adjust to your desired value)
-        const mobileReferenceWidth = 475; // Example reference width for mobile (common mobile width)
-        const currentWidth = window.innerWidth; // Get the current width of the mobile device
-        const mobileScaleFactor = currentWidth / mobileReferenceWidth; // Calculate the scaling factor for mobile
-
-        // Apply the scaling transformation for mobile
-        document.body.style.transform = `scale(${mobileScaleFactor})`;
-        document.body.style.transformOrigin = "top center"; // No shift in origin for mobile scaling
+        const mobileReferenceWidth = 475; // Mobile reference width
+        const currentWidth = window.innerWidth;
+        scaleFactor = currentWidth / mobileReferenceWidth; // Calculate mobile scale factor
+        document.body.style.transform = `scale(${scaleFactor})`;
+        document.body.style.transformOrigin = "top center";
+        // Adjust body's height so that the scaled content doesn't leave extra space
+        document.body.style.height = (window.innerHeight / scaleFactor) + "px";
     } else {
-        // Desktop scaling, using a larger reference width
-        const referenceWidth = 2048; // Reference width for desktop
-        const currentWidth = window.innerWidth; // Get the current width of the window (desktop)
-        const scaleFactor = currentWidth / referenceWidth; // Calculate the scale factor for desktop
-        const adjustedScaleFactor = scaleFactor * globalScaleFactor; // Apply global scaling factor for desktop
-
-        // Apply the scaling transformation for desktop
-        document.body.style.transform = `scale(${adjustedScaleFactor})`;
-        document.body.style.transformOrigin = "top center"; // Keep scaling centered on top for desktop
+        const referenceWidth = 2048; // Desktop reference width
+        const currentWidth = window.innerWidth;
+        scaleFactor = (currentWidth / referenceWidth) * globalScaleFactor; // Calculate desktop scale factor
+        document.body.style.transform = `scale(${scaleFactor})`;
+        document.body.style.transformOrigin = "top center";
+        document.body.style.height = (window.innerHeight / scaleFactor) + "px";
     }
 }
 
-// Initialize the scale adjustment when the page loads
 adjustScale();
-
-// Add an event listener to adjust scaling when the window is resized
 window.addEventListener("resize", adjustScale);
+
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
