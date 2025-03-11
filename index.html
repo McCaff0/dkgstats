@@ -369,7 +369,7 @@ h1 {
     <canvas id="PriceChart" style="width:100%; height:100%;"></canvas>
   </div>
   <div class="graph-box">
-    <h3>USD Spend (90D)</h3>
+    <h3>Daily USD Spend (90D)</h3>
     <canvas id="SpendChart" style="width:100%; height:100%;"></canvas>
   </div>
   <div class="graph-box">
@@ -479,10 +479,10 @@ function renderPriceChart(labels, prices, animate = false) {
     PriceChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels || [],  // Empty array for labels initially
+            labels: labels || [],  // Use the correct labels passed to the function
             datasets: [{
                 label: 'TRAC Price (Last 90 Days)', // Dataset label will still exist, but legend is hidden
-                data: prices || [],  // Empty array for data initially
+                data: prices || [],  // Use the correct price data passed to the function
                 borderColor: 'rgba(28, 148, 28, 1)',
                 backgroundColor: 'rgba(28, 148, 28, 0.1)',
                 fill: true,
@@ -569,22 +569,20 @@ function fetchChartData() {
             if (data.price) {
                 const priceLabels = data.price.map(item => item.date);
                 const priceValues = data.price.map(item => item.price);
-                renderPriceChart(labels, priceValues, isFirstLoad);
+                renderPriceChart(priceLabels, priceValues, isFirstLoad);  // Pass the correct labels and data
             }
 
-            if (data.volume) {
-                const volumeLabels = data.volume.map(item => item.date);
-                const volumeValues = data.volume.map(item => item.volume);
-                renderSpendChart(labels, spendValues, isFirstLoad);
+            if (data.spend) {
+                const spendLabels = data.spend.map(item => item.date);
+                const spendValues = data.spend.map(item => item.spend);
+                renderSpendChart(spendLabels, spendValues, isFirstLoad);  // Correct chart rendering for spend
             }
 
-            if (data.staking) {
-                const stakingLabels = data.staking.map(item => item.date);
-                const stakingValues = data.staking.map(item => item.apy);
-                renderPublishesChart(labels, publishesValues, isFirstLoad);
+            if (data.publishes) {
+                const publishesLabels = data.publishes.map(item => item.date);
+                const publishesValues = data.publishes.map(item => item.publishes);
+                renderPublishesChart(publishesLabels, publishesValues, isFirstLoad);  // Correct chart rendering for publishes
             }
-
-            // Add more if needed...
 
             // Set flag to false after the first load to prevent animation on subsequent updates
             if (isFirstLoad) {
@@ -598,6 +596,7 @@ function fetchChartData() {
             if (!isFirstLoad) {
                 console.log('Keeping previous data due to failed fetch.');
             } else {
+                // In case of error, clear the charts but without animation
                 renderPriceChart([], [], false);
                 renderSpendChart([], [], false);
                 renderPublishesChart([], [], false);
