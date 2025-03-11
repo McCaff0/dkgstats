@@ -682,7 +682,6 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
     if (publishesValues.length > 0) {
         isFirstPublishesLoad = false;
     }
-}
 
 }
 function fetchChartData() {
@@ -789,7 +788,7 @@ function startIntervals() {
 
     // Set new intervals
     dataInterval = setInterval(() => fetchData(), 10000);
-    chartInterval = setInterval(() => updateChartData(), 60000);
+    chartInterval = setInterval(() => fetchChartData(), 60000);
 }
 
 startIntervals();
