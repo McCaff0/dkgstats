@@ -792,8 +792,22 @@ function fetchChartData() {
     renderPublishesChart([], [], false);
     fetchChartData();
     fetchData();
-    setInterval(fetchData, 10000);
-    setInterval(fetchChartData, 60000);
+    
+let dataInterval, chartInterval; // Declare global variables
+
+function startIntervals() {
+    // Clear any existing intervals to prevent duplicates
+    if (dataInterval) clearInterval(dataInterval);
+    if (chartInterval) clearInterval(chartInterval);
+
+    // Set new intervals
+    dataInterval = setInterval(() => fetchData(), 10000); // Fetch data every 10 seconds
+    chartInterval = setInterval(() => fetchChartData(), 60000); // Fetch chart data every 60 seconds
+}
+
+// Start the intervals once when the page loads
+startIntervals();
+
   </script>
   
 </body>
