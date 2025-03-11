@@ -741,29 +741,25 @@ function isMobileDevice() {
 }
 
 function adjustScale() {
-    const globalScaleFactor = 1.02; // Global scaling factor (adjust this as needed)
+    const globalScaleFactor = 1;
 
     if (isMobileDevice()) {
-        // Apply a separate scaling factor for mobile devices
-        const mobileScaleFactor = 1; // Mobile-specific scale
+        const mobileScaleFactor = 1;
         document.body.style.transform = `scale(${mobileScaleFactor})`;
-        document.body.style.transformOrigin = "unset"; // Prevent scaling from shifting
+        document.body.style.transformOrigin = "unset";
     } else {
-        const referenceWidth = 1536; // Match your actual document width
+        const referenceWidth = 2048;
         const currentWidth = window.innerWidth;
         const scaleFactor = currentWidth / referenceWidth;
-
-        // Apply the global scaling factor to the scale factor
         const adjustedScaleFactor = scaleFactor * globalScaleFactor;
 
-        // Apply the calculated scale for non-mobile
         document.body.style.transform = `scale(${adjustedScaleFactor})`;
-        document.body.style.transformOrigin = "top center"; // Keeps scaling centered
+        document.body.style.transformOrigin = "top center";
     }
 }
 
-adjustScale(); // Initial scaling when page loads
-window.addEventListener("resize", adjustScale); // Adjust on window resize 
+adjustScale();
+window.addEventListener("resize", adjustScale);
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
