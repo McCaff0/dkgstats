@@ -794,6 +794,34 @@ function fetchChartData() {
             console.error("Error fetching publishes data:", error);
         });
 }
+    window.addEventListener('resize', adjustScale);
+
+// Function to adjust scale based on viewport width
+function adjustScale() {
+  const viewportWidth = window.innerWidth;
+
+  // Calculate the scale factor relative to 1080px
+  let scaleFactor = 1;
+
+  // Zoom out for smaller screens (below 1080px, e.g., 720p or 768p)
+  if (viewportWidth <= 1080) {
+    scaleFactor = Math.max(0.7, viewportWidth / 1080); // Clamping to a minimum of 0.7x zoom
+  }
+  // Zoom in for larger screens (above 1080px, e.g., 1440p and 4K)
+  else if (viewportWidth > 1080 && viewportWidth <= 1440) {
+    scaleFactor = Math.min(1.25, viewportWidth / 1080); // Up to 1.25x for 1440p
+  }
+  else if (viewportWidth > 1440) {
+    scaleFactor = Math.min(2.0, viewportWidth / 1080); // Up to 2x for 4K screens
+  }
+
+  // Apply the calculated scale factor to the wrapper
+  document.querySelector('.wrapper').style.transform = `scale(${scaleFactor})`;
+  document.querySelector('.wrapper').style.transformOrigin = 'top left'; // Ensure scaling from the top-left corner
+}
+
+// Initialize scaling when page loads
+adjustScale();
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
