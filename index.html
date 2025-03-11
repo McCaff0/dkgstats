@@ -433,17 +433,20 @@ h1 {
               let isFirstSpendLoad = true;
               let isFirstPublishesLoad = true;
 
-    function renderPriceChart(priceLabels, priceValues) {
-        const canvas = document.getElementById('PriceChart');
-        if (!canvas) {
-            console.error("PriceChart canvas not found!");
-            return;
+function renderPriceChart(priceLabels, priceValues, animate = false) {
+    const canvas = document.getElementById('PriceChart');
+    if (!canvas) {
+        console.error("PriceChart canvas not found!");
+        return;
     }
     const ctx = canvas.getContext('2d');
 
     if (PriceChartInstance) {
         PriceChartInstance.destroy();
     }
+
+    const shouldAnimate = (isFirstDataLoad && priceValues.length > 0) || animate;
+
     PriceChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -463,8 +466,7 @@ h1 {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Apply animation only if it's the first time real data is loaded
-            animation: (isFirstDataLoad && priceValues.length > 0) ? { duration: 1000, easing: 'easeInOutQuad' } : false,
+            animation: shouldAnimate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
             scales: {
                 x: {
                     type: 'time',
@@ -506,11 +508,12 @@ h1 {
             }
         }
     });
-      
+
     if (priceValues.length > 0) {
         isFirstDataLoad = false;
     }
 }
+
 function renderSpendChart(spendLabels, spendValues, animate = false) {
     const canvas = document.getElementById('SpendChart');
     if (!canvas) {
@@ -576,7 +579,7 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
                         font: { family: 'Play, sans-serif' },
                         callback: function(value) {
                             return value >= 1000 ? (value / 1000) + 'K' : value;
-                          }
+                        }
                     }
                 }
             },
@@ -594,6 +597,7 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
         isFirstSpendLoad = false;
     }
 }
+
 function renderPublishesChart(publishesLabels, publishesValues, animate = false) {
     const canvas = document.getElementById('PublishesChart');
     if (!canvas) {
