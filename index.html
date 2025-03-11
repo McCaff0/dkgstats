@@ -215,13 +215,7 @@ h1 {
   margin-bottom: -5px; /* Space between the title and the chart */
   color: #8a8a8a; /* Title color */
 }
-    /* On mobile, override the max-width so the boxes can expand */
-@media screen and (max-width: 768px) {
-  .stats-box, 
-  .graph-box {
-    max-width: 360px;
-  }
-}
+
 /* Apply the font only to the chart container */
   </style>
 
@@ -812,7 +806,7 @@ function adjustScale() {
 
     if (isMobileDevice()) {
         // Use a mobile reference width (e.g., 360px, common for many phones)
-        const mobileReferenceWidth = 415; 
+        const mobileReferenceWidth = 400; 
         const currentMobileWidth = window.innerWidth;
         const mobileScaleFactor = currentMobileWidth / mobileReferenceWidth;
         document.body.style.transform = `scale(${mobileScaleFactor})`;
