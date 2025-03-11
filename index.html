@@ -460,15 +460,15 @@ h1 {
       document.getElementById('annualspendchange28d').innerHTML = formatPercentage(data.annualspendchange28d, '28D');
     }
     
-    function fetchData() {
-      const apiUrl = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec';
-      const script = document.createElement('script');
-      script.src = apiUrl + "?callback=handleData";
-      document.head.appendChild(script);
-    }
-
-  // Replace with your deployed endpoint URL that serves chart data
-  const CHART_DATA_URL = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true';
+function fetchData() {
+  const FIREBASE_URL = "https://dkgstats-b5839-default-rtdb.firebaseio.com/data/sheetData.json"; // Updated Firebase URL
+  
+  // Fetch data from Firebase
+  fetch(FIREBASE_URL)
+    .then(response => response.json()) // Parse the response as JSON
+    .then(data => handleData(data)) // Pass data to your handleData function
+    .catch(error => console.error('Error fetching data:', error)); // Log any errors
+}
 
 let PriceChartInstance = null; // Store chart instance globally
 let SpendChartInstance = null; // Store chart instance globally
@@ -732,11 +732,13 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
     }
 }
 function fetchChartData() {
-   
     let hasSuccessfulFetch = false; // Track if any fetch succeeds
 
+    // Define the base URL for chart data in Firebase
+    const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com//data/charts';
+
     // Fetch Price Data
-    fetch(CHART_DATA_URL + '&type=price')
+    fetch(CHART_DATA_BASE_URL + '/price.json')  // Path to price data
         .then(response => response.json())
         .then(data => {
             console.log("Price Data:", data);
@@ -755,7 +757,7 @@ function fetchChartData() {
         });
 
     // Fetch Spend Data
-    fetch(CHART_DATA_URL + '&type=spend')
+    fetch(CHART_DATA_BASE_URL + '/spend.json')  // Path to spend data
         .then(response => response.json())
         .then(data => {
             console.log("Spend Data:", data);
@@ -774,7 +776,7 @@ function fetchChartData() {
         });
 
     // Fetch Publishes Data
-    fetch(CHART_DATA_URL + '&type=publishes')
+    fetch(CHART_DATA_BASE_URL + '/publishes.json')  // Path to publishes data
         .then(response => response.json())
         .then(data => {
             console.log("Publishes Data:", data);
@@ -792,6 +794,7 @@ function fetchChartData() {
             console.error("Error fetching publishes data:", error);
         });
 }
+
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
     renderPublishesChart([], [], false);
