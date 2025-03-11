@@ -35,12 +35,23 @@
     /* Reset */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    html, body {
-  overflow-x: hidden;
+html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #121212; /* Adjust this to match your theme */
 }
+
 #scale-wrapper {
-  width: 100%;
-  overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh; /* Ensure full height */
+    overflow: hidden; /* Prevent black bars from appearing */
 }
     /* Body setup */
     body {
@@ -816,25 +827,36 @@ function adjustScale() {
 
     const globalScaleFactor = 1.02; // Global scaling factor for desktop
 
+    let scaleFactor;
+    
     if (isMobileDevice()) {
         const mobileReferenceWidth = 415; 
         const currentMobileWidth = window.innerWidth;
-        const mobileScaleFactor = currentMobileWidth / mobileReferenceWidth;
-        // Optionally add a mobile global factor if needed
-        scaleWrapper.style.transform = `scale(${mobileScaleFactor})`;
+        scaleFactor = (currentMobileWidth / mobileReferenceWidth);
+
+        // Ensure wrapper fully covers the screen
+        scaleWrapper.style.width = `${100 / scaleFactor}vw`;
+        scaleWrapper.style.height = `${100 / scaleFactor}vh`;
+
+        scaleWrapper.style.transform = `scale(${scaleFactor})`;
         scaleWrapper.style.transformOrigin = "top center";
     } else {
         const referenceWidth = 1536; // Reference width for desktop
         const currentWidth = window.innerWidth;
-        const scaleFactor = currentWidth / referenceWidth;
-        const adjustedScaleFactor = scaleFactor * globalScaleFactor;
-        scaleWrapper.style.transform = `scale(${adjustedScaleFactor})`;
+        scaleFactor = (currentWidth / referenceWidth) * globalScaleFactor;
+
+        // Ensure wrapper fully covers the screen
+        scaleWrapper.style.width = `${100 / scaleFactor}vw`;
+        scaleWrapper.style.height = `${100 / scaleFactor}vh`;
+
+        scaleWrapper.style.transform = `scale(${scaleFactor})`;
         scaleWrapper.style.transformOrigin = "top center";
     }
 }
 
 adjustScale();
 window.addEventListener("resize", adjustScale);
+
 
 
     renderPriceChart([], [], false);
