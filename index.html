@@ -468,7 +468,7 @@ h1 {
 let PriceChartInstance = null;  // Store chart instance globally
 let isFirstLoad = true;  // Flag to track if it's the first time loading data
 
-function renderPriceChart(labels, prices, animate = false) {
+function renderPriceChart(priceLabels, priceValues, animate = false) {
     const ctx = document.getElementById('PriceChart').getContext('2d');
 
     // Destroy existing chart before creating a new one
