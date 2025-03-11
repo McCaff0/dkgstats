@@ -107,7 +107,7 @@ h1 {
   background: #0f0f0f;
   padding: 8px;
   border-radius: 8px;
-  width: 92vw;
+  width: 94vw;
   max-width: 340px;
   min-width: 340px;
 }
@@ -196,7 +196,7 @@ h1 {
   background: #0f0f0f;
   border-radius: 8px;
   /* Use the same width constraints as stats-box */
-  width: 92vw;
+  width: 94vw;
   max-width: 340px;
   min-width: 340px;
   /* Fixed height ensures equal sizing */
@@ -807,11 +807,11 @@ function isMobileDevice() {
 
 function adjustScale() {
     const globalScaleFactor = 1.02; // Global scaling factor for desktop
-    const mobileGlobalScaleFactor = 0.9; // Global scaling factor for mobile
+    const mobileGlobalScaleFactor = 1.1; // Global scaling factor for mobile
 
     if (isMobileDevice()) {
         // Use a mobile reference width (e.g., 415px, common for many phones)
-        const mobileReferenceWidth = 360; 
+        const mobileReferenceWidth = 415; 
         const currentMobileWidth = window.innerWidth;
         const mobileScaleFactor = currentMobileWidth / mobileReferenceWidth;
         // Apply the mobile global scale factor as well
