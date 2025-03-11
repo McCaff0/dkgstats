@@ -618,7 +618,73 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
             }
         });
 }
+function renderEmptyChart() {
+    const canvas = document.getElementById('PriceChart');
+    if (!canvas) {
+        console.error("PriceChart canvas not found!");
+        return;
+    }
+    const ctx = canvas.getContext('2d');
 
+    // Destroy any existing chart first
+    if (PriceChartInstance) {
+        PriceChartInstance.destroy();
+    }
+
+    // Create an empty chart with no data
+    PriceChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'TRAC Price (Last 90 Days)',
+                data: [],
+                borderColor: 'rgba(28, 148, 28, 1)',
+                backgroundColor: 'rgba(28, 148, 28, 0.1)',
+                fill: true,
+                tension: 0.1,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false, // No animation on placeholder
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        parser: 'yyyy-MM-dd',
+                        unit: 'day',
+                        tooltipFormat: 'PP',
+                        displayFormats: {
+                            day: 'MMM d'
+                        }
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 10,
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Price (USD)',
+                    },
+                    ticks: {
+                        beginAtZero: false,
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            }
+        }
+    });
+}
 
 // Call the function to fetch all chart data
 fetchChartData();
