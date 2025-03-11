@@ -557,7 +557,7 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
     });
 }
 function fetchChartData() {
-    fetch('https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true')
+    fetch(CHART_DATA_URL)
         .then(response => response.json())
         .then(data => {
             if (!data) {
@@ -569,19 +569,19 @@ function fetchChartData() {
             if (data.price) {
                 const priceLabels = data.price.map(item => item.date);
                 const priceValues = data.price.map(item => item.price);
-                renderPriceChart(priceLabels, priceValues, isFirstLoad);  // Pass the correct labels and data
+                renderPriceChart(priceLabels, priceValues, isFirstLoad);  // Fixed variable usage
             }
 
             if (data.spend) {
                 const spendLabels = data.spend.map(item => item.date);
                 const spendValues = data.spend.map(item => item.spend);
-                renderSpendChart(spendLabels, spendValues, isFirstLoad);  // Correct chart rendering for spend
+                renderSpendChart(spendLabels, spendValues, isFirstLoad);
             }
 
             if (data.publishes) {
                 const publishesLabels = data.publishes.map(item => item.date);
                 const publishesValues = data.publishes.map(item => item.publishes);
-                renderPublishesChart(publishesLabels, publishesValues, isFirstLoad);  // Correct chart rendering for publishes
+                renderPublishesChart(publishesLabels, publishesValues, isFirstLoad);
             }
 
             // Set flag to false after the first load to prevent animation on subsequent updates
@@ -596,13 +596,14 @@ function fetchChartData() {
             if (!isFirstLoad) {
                 console.log('Keeping previous data due to failed fetch.');
             } else {
-                // In case of error, clear the charts but without animation
+                // Render empty charts if first load fails
                 renderPriceChart([], [], false);
                 renderSpendChart([], [], false);
                 renderPublishesChart([], [], false);
             }
         });
 }
+
 
 // Call the function to fetch all chart data
 fetchChartData();
