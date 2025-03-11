@@ -226,12 +226,9 @@ h1 {
   <!-- Title Image & Hidden h1 remain unchanged -->
 <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKGStats.io" class="title-image">
 <h1>DKGStats.io - Real-Time OriginTrail DKG Statistics</h1>
-
-<div class="wrapper">
 <!-- Main flex container holding all three containers -->
 <div class="main-container">
   
-  <!-- ORIGINAL CONTAINER: Do Not Change -->
   <div class="container">
     <!-- Top Stats Box -->
     <div class="stats-box">
@@ -795,35 +792,41 @@ function fetchChartData() {
             console.error("Error fetching publishes data:", error);
         });
 }
-    window.addEventListener('resize', adjustScale);
+document.addEventListener('DOMContentLoaded', function() {
+  window.addEventListener('resize', adjustScale);
 
-// Function to adjust scale based on viewport width
-function adjustScale() {
-  const viewportWidth = window.innerWidth;
+  // Function to adjust scale based on viewport width
+  function adjustScale() {
+    const viewportWidth = window.innerWidth;
 
-  // Calculate the scale factor relative to 1080px
-  let scaleFactor = 1;
+    // Default scale factor for container width
+    let scaleFactor = 1;
 
-  // Zoom out for smaller screens (below 1080px, e.g., 720p or 768p)
-  if (viewportWidth <= 1080) {
-    scaleFactor = Math.max(0.7, viewportWidth / 1080); // Clamping to a minimum of 0.7x zoom
+    // Zoom out for smaller screens (below 1080px, e.g., 720p or 768p)
+    if (viewportWidth <= 1080) {
+      // Scale down proportionally for smaller screens
+      scaleFactor = Math.max(0.7, viewportWidth / 1080);
+    }
+    // Zoom in for larger screens (above 1080px, e.g., 1440p and 4K)
+    else if (viewportWidth > 1080 && viewportWidth <= 1440) {
+      // Slight zoom-in for screens between 1080px and 1440px
+      scaleFactor = Math.min(1.25, viewportWidth / 1080);
+    }
+    else if (viewportWidth > 1440) {
+      // Moderate zoom-in for larger screens (4K)
+      scaleFactor = Math.min(1.75, viewportWidth / 1080);
+    }
+
+    // Apply the scale to each container inside the main-container
+    const containers = document.querySelectorAll('.container');
+    containers.forEach(container => {
+      container.style.transform = `scale(${scaleFactor})`;
+      container.style.transformOrigin = 'top left'; // Ensure scaling from the top-left corner
+    });
   }
-  // Zoom in for larger screens (above 1080px, e.g., 1440p and 4K)
-  else if (viewportWidth > 1080 && viewportWidth <= 1440) {
-    scaleFactor = Math.min(1.25, viewportWidth / 1080); // Up to 1.25x for 1440p
-  }
-  else if (viewportWidth > 1440) {
-    scaleFactor = Math.min(2.0, viewportWidth / 1080); // Up to 2x for 4K screens
-  }
 
-  // Apply the calculated scale factor to the wrapper
-  document.querySelector('.wrapper').style.transform = `scale(${scaleFactor})`;
-  document.querySelector('.wrapper').style.transformOrigin = 'top left'; // Ensure scaling from the top-left corner
-}
-
-// Initialize scaling when page loads
-adjustScale();
-
+  // Initialize scaling when page loads
+    adjustScale();
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
     renderPublishesChart([], [], false);
