@@ -796,18 +796,26 @@ function fetchChartData() {
             console.error("Error fetching publishes data:", error);
         });
 }
-    function adjustScale() {
-    const referenceWidth = 1536; // Match your actual document width
-    const currentWidth = window.innerWidth;
-    const scaleFactor = currentWidth / referenceWidth;
+function isMobileDevice() {
+    return window.innerWidth < 768; // Treats small windows as mobile
+}
+
+function adjustScale() {
+    if (isMobileDevice()) {
+        document.body.style.transform = "none"; // No scaling on mobile
+        document.body.style.transformOrigin = "unset";
+        return;
+    }
+
+    const baseWidth = 1920; // Reference width (adjust if needed)
+    const scaleFactor = window.innerWidth / baseWidth;
 
     document.body.style.transform = `scale(${scaleFactor})`;
     document.body.style.transformOrigin = "top center";
 }
 
-adjustScale();
 window.addEventListener("resize", adjustScale);
-
+window.addEventListener("load", adjustScale);
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
