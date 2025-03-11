@@ -111,9 +111,11 @@ h1 {
   max-width: 380px;
   min-width: 340px;
 }
-    #scaling-container {
-  width: 1080px;  /* Base design width */
-  margin: 0 auto; /* Center horizontally */
+#scaling-container {
+  width: 100%;
+  max-width: 1080px; /* This limits the content to the original 1080px layout */
+  margin: 0 auto;
+  position: relative;
 }
 
 .stats-box h3 {
@@ -799,25 +801,26 @@ function fetchChartData() {
 }
 
 function adjustScale() {
-  const baseWidth = 1080;
-  const screenWidth = window.innerWidth;
+  const baseWidth = 1080; // Base resolution width (1080px)
+  const screenWidth = window.innerWidth; // Get the screen width
   let scaleFactor = 1;
 
   // Only scale for screens wider than 1080px
   if (screenWidth > baseWidth) {
-    scaleFactor = screenWidth / baseWidth;
+    scaleFactor = screenWidth / baseWidth; // Calculate the scale factor
   }
-  
+
   const container = document.getElementById('scaling-container');
   if (container) {
+    // Apply the scale transform only when needed
     container.style.transform = `scale(${scaleFactor})`;
-    container.style.transformOrigin = 'top center';
+    container.style.transformOrigin = 'top center'; // Keep the scaling from the top-center
   }
 }
 
+// Apply scaling when the page loads or resizes
 window.addEventListener('load', adjustScale);
 window.addEventListener('resize', adjustScale);
-
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
