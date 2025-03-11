@@ -792,42 +792,28 @@ function fetchChartData() {
             console.error("Error fetching publishes data:", error);
         });
 }
-document.addEventListener('DOMContentLoaded', function() {
-  window.addEventListener('resize', adjustScale);
 
-  // Function to adjust scale based on viewport width
-  function adjustScale() {
-    const viewportWidth = window.innerWidth;
-
-    // Default scale factor for container width
-    let scaleFactor = 1;
-
-    // Zoom out for smaller screens (below 1080px, e.g., 720p or 768p)
-    if (viewportWidth <= 1080) {
-      // Scale down proportionally for smaller screens
-      scaleFactor = Math.max(0.7, viewportWidth / 1080);
-    }
-    // Zoom in for larger screens (above 1080px, e.g., 1440p and 4K)
-    else if (viewportWidth > 1080 && viewportWidth <= 1440) {
-      // Slight zoom-in for screens between 1080px and 1440px
-      scaleFactor = Math.min(1.25, viewportWidth / 1080);
-    }
-    else if (viewportWidth > 1440) {
-      // Moderate zoom-in for larger screens (4K)
-      scaleFactor = Math.min(1.75, viewportWidth / 1080);
-    }
-
-    // Apply the scale to each container inside the main-container
-    const containers = document.querySelectorAll('.container');
-    containers.forEach(container => {
-      container.style.transform = `scale(${scaleFactor})`;
-      container.style.transformOrigin = 'top left'; // Ensure scaling from the top-left corner
-    });
+function adjustScale() {
+  const screenWidth = window.innerWidth;  // Get the width of the window
+  
+  // Default scale factor: no zoom on 1080p
+  let scaleFactor = 1;
+  
+  // Calculate scale factor for larger screens
+  if (screenWidth > 1080) {
+    scaleFactor = screenWidth / 1080;
   }
 
-  // Initialize scaling when page loads
-    adjustScale();
-  });
+  // Apply the scale to the body or wrapper element
+  document.body.style.transform = `scale(${scaleFactor})`;
+  document.body.style.transformOrigin = 'top center';  // Keep scaling from the top center to avoid shifting content
+  document.body.style.width = `${100 / scaleFactor}vw`;  // Adjust width to prevent scaling overflow
+}
+
+// Call the adjustScale function on load and resize
+window.addEventListener('load', adjustScale);
+window.addEventListener('resize', adjustScale);
+
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
     renderPublishesChart([], [], false);
