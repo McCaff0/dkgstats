@@ -466,6 +466,8 @@ h1 {
   const CHART_DATA_URL = 'https://script.google.com/macros/s/AKfycbxth4m_5XMipAZGXicVMcXN70SlEN9_eTgiBW9tW08cOLVc_kFzduD5CQgf-mIOiIn9/exec?chart=true';
 
 let PriceChartInstance = null; // Store chart instance globally
+let SpendChartInstance = null; // Store chart instance globally
+let PublishesChartInstance = null; // Store chart instance globally
 let isFirstLoad = true; // Flag to track if it's the first time loading data
 
 function renderPriceChart(priceLabels, priceValues, animate = false) {
@@ -527,6 +529,162 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
                     title: {
                         display: true,
                         text: 'Price (USD)',
+                        font: { family: 'Play, sans-serif', size: 14 },
+                    },
+                    ticks: {
+                        beginAtZero: false,
+                        font: { family: 'Play, sans-serif' }
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            },
+            layout: {
+                padding: { left: 20, right: 35, top: 0, bottom: 23 }
+            }
+        }
+    });
+}
+  function renderSpendChart(spendLabels, spendValues, animate = false) {
+    const canvas = document.getElementById('SpendChart');
+    if (!canvas) {
+        console.error("SpendChart canvas not found!");
+        return;
+    }
+    const ctx = canvas.getContext('2d');
+
+    // Destroy existing chart before creating a new one
+    if (SpendChartInstance) {
+        SpendChartInstance.destroy();
+    }
+
+    SpendChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: spendLabels || [],
+            datasets: [{
+                label: 'Spend (Last 90 Days)',
+                data: spendValues || [],
+                borderColor: 'rgba(148, 28, 28, 1)',
+                backgroundColor: 'rgba(148, 28, 28, 0.1)',
+                fill: true,
+                tension: 0.1,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: animate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        parser: 'yyyy-MM-dd',
+                        unit: 'day',
+                        tooltipFormat: 'PP',
+                        displayFormats: {
+                            day: 'MMM d'
+                        }
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 10,
+                        callback: function(value) {
+                            const date = new Date(value);
+                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        },
+                        font: { family: 'Play, sans-serif' },
+                        padding: 0,
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Spend (USD)',
+                        font: { family: 'Play, sans-serif', size: 14 },
+                    },
+                    ticks: {
+                        beginAtZero: false,
+                        font: { family: 'Play, sans-serif' }
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            },
+            layout: {
+                padding: { left: 20, right: 35, top: 0, bottom: 23 }
+            }
+        }
+    });
+}
+
+// Function for the Publishes Chart
+function renderPublishesChart(publishesLabels, publishesValues, animate = false) {
+    const canvas = document.getElementById('PublishesChart');
+    if (!canvas) {
+        console.error("PublishesChart canvas not found!");
+        return;
+    }
+    const ctx = canvas.getContext('2d');
+
+    // Destroy existing chart before creating a new one
+    if (PublishesChartInstance) {
+        PublishesChartInstance.destroy();
+    }
+
+    PublishesChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: publishesLabels || [],
+            datasets: [{
+                label: 'Publishes (Last 90 Days)',
+                data: publishesValues || [],
+                borderColor: 'rgba(28, 28, 148, 1)',
+                backgroundColor: 'rgba(28, 28, 148, 0.1)',
+                fill: true,
+                tension: 0.1,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: animate ? { duration: 1000, easing: 'easeInOutQuad' } : false,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        parser: 'yyyy-MM-dd',
+                        unit: 'day',
+                        tooltipFormat: 'PP',
+                        displayFormats: {
+                            day: 'MMM d'
+                        }
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 10,
+                        callback: function(value) {
+                            const date = new Date(value);
+                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        },
+                        font: { family: 'Play, sans-serif' },
+                        padding: 0,
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Publishes',
                         font: { family: 'Play, sans-serif', size: 14 },
                     },
                     ticks: {
@@ -607,6 +765,8 @@ function fetchChartData() {
         });
 }
     renderPriceChart([], [], false);
+    renderSpendChart([], [], false);
+    renderPublishesChart([], [], false);
     fetchChartData();
     fetchData();
     setInterval(fetchData, 10000);
