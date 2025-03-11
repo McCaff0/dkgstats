@@ -804,10 +804,16 @@ function adjustScale() {
     scaleFactor = screenWidth / 1080;
   }
 
-  // Apply the scale to the body or wrapper element
+  // Apply the scale to the body (or wrapper element)
   document.body.style.transform = `scale(${scaleFactor})`;
-  document.body.style.transformOrigin = 'top center';  // Keep scaling from the top center to avoid shifting content
-  document.body.style.width = `${100 / scaleFactor}vw`;  // Adjust width to prevent scaling overflow
+  document.body.style.transformOrigin = 'top center';  // Center the scaling on top center to prevent shifting
+
+  // Prevent layout overflow on larger screens
+  if (screenWidth > 1080) {
+    document.body.style.overflow = 'hidden';  // Hide overflow to avoid horizontal scrolling
+  } else {
+    document.body.style.overflow = '';  // Allow overflow for smaller screens (like mobile)
+  }
 }
 
 // Call the adjustScale function on load and resize
