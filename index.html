@@ -108,7 +108,7 @@ h1 {
   padding: 8px;
   border-radius: 8px;
   width: 96vw;
-  max-width: 340px;
+  max-width: 360px;
   min-width: 340px;
 }
 #scaling-container {
@@ -197,7 +197,7 @@ h1 {
   border-radius: 8px;
   /* Use the same width constraints as stats-box */
   width: 96vw;
-  max-width: 340px;
+  max-width: 360px;
   min-width: 340px;
   /* Fixed height ensures equal sizing */
   height: 194px;
@@ -801,7 +801,7 @@ function isMobileDevice() {
 }
 
 function adjustScale() {
-    const globalScaleFactor = 0.95; // Global scaling factor (adjust this as needed)
+    const globalScaleFactor = 1.02; // Global scaling factor (adjust this as needed)
 
     if (isMobileDevice()) {
         // Apply a separate scaling factor for mobile devices
@@ -809,7 +809,7 @@ function adjustScale() {
         document.body.style.transform = `scale(${mobileScaleFactor})`;
         document.body.style.transformOrigin = "unset"; // Prevent scaling from shifting
     } else {
-        const referenceWidth = 1400; // Match your actual document width
+        const referenceWidth = 1536; // Match your actual document width
         const currentWidth = window.innerWidth;
         const scaleFactor = currentWidth / referenceWidth;
 
