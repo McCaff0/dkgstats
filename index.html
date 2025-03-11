@@ -546,51 +546,65 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
     });
 }
 function fetchChartData() {
-    fetch(CHART_DATA_URL)
+    // Fetch Price Data
+    fetch(CHART_DATA_URL + '&type=price')
         .then(response => response.json())
         .then(data => {
-            if (!data) {
-                console.error("No chart data received.");
-                return;
-            }
-
-            // Extract data for different charts
-            if (data.price) {
+            console.log("Price Data:", data);  // Debugging line
+            if (data && data.price) {
                 const priceLabels = data.price.map(item => item.date);
                 const priceValues = data.price.map(item => item.price);
-                renderPriceChart(priceLabels, priceValues, isFirstLoad);  // Fixed variable usage
-            }
-
-            if (data.spend) {
-                const spendLabels = data.spend.map(item => item.date);
-                const spendValues = data.spend.map(item => item.spend);
-                renderSpendChart(spendLabels, spendValues, isFirstLoad);
-            }
-
-            if (data.publishes) {
-                const publishesLabels = data.publishes.map(item => item.date);
-                const publishesValues = data.publishes.map(item => item.publishes);
-                renderPublishesChart(publishesLabels, publishesValues, isFirstLoad);
-            }
-
-            // Set flag to false after the first load to prevent animation on subsequent updates
-            if (isFirstLoad) {
-                isFirstLoad = false;
+                renderPriceChart(priceLabels, priceValues, isFirstLoad);
+            } else {
+                console.warn("No price data received.");
+                renderPriceChart([], [], false);  // Render empty chart on failure
             }
         })
         .catch(error => {
-            console.error('Error fetching chart data:', error);
+            console.error("Error fetching price data:", error);
+            renderPriceChart([], [], false);
+        });
 
-            // Prevent resetting charts on failure, keep existing data intact
-            if (!isFirstLoad) {
-                console.log('Keeping previous data due to failed fetch.');
+    // Fetch Spend Data
+    fetch(CHART_DATA_URL + '&type=spend')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Spend Data:", data);  // Debugging line
+            if (data && data.spend) {
+                const spendLabels = data.spend.map(item => item.date);
+                const spendValues = data.spend.map(item => item.spend);
+                renderSpendChart(spendLabels, spendValues, isFirstLoad);
             } else {
-                // Render empty charts if first load fails
-                renderPriceChart([], [], false);
+                console.warn("No spend data received.");
                 renderSpendChart([], [], false);
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching spend data:", error);
+            renderSpendChart([], [], false);
+        });
+
+    // Fetch Publishes Data
+    fetch(CHART_DATA_URL + '&type=publishes')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Publishes Data:", data);  // Debugging line
+            if (data && data.publishes) {
+                const publishesLabels = data.publishes.map(item => item.date);
+                const publishesValues = data.publishes.map(item => item.publishes);
+                renderPublishesChart(publishesLabels, publishesValues, isFirstLoad);
+            } else {
+                console.warn("No publishes data received.");
                 renderPublishesChart([], [], false);
             }
+        })
+        .catch(error => {
+            console.error("Error fetching publishes data:", error);
+            renderPublishesChart([], [], false);
         });
+
+    // Set flag to false after the first load
+    isFirstLoad = false;
 }
 
 
