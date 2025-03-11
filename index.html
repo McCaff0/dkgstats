@@ -801,15 +801,15 @@ function isMobileDevice() {
 }
 
 function adjustScale() {
-    const globalScaleFactor = 1.05; // Global scaling factor (adjust this as needed)
+    const globalScaleFactor = 0.8; // Global scaling factor (adjust this as needed)
 
     if (isMobileDevice()) {
         // Apply a separate scaling factor for mobile devices
-        const mobileScaleFactor = 1.2; // Mobile-specific scale (e.g., 20% larger)
+        const mobileScaleFactor = 1; // Mobile-specific scale (e.g., 20% larger)
         document.body.style.transform = `scale(${mobileScaleFactor})`;
         document.body.style.transformOrigin = "unset"; // Prevent scaling from shifting
     } else {
-        const referenceWidth = 1536; // Match your actual document width
+        const referenceWidth = 2000; // Match your actual document width
         const currentWidth = window.innerWidth;
         const scaleFactor = currentWidth / referenceWidth;
 
