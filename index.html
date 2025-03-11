@@ -606,6 +606,9 @@ function fetchChartData() {
             console.error("Error fetching publishes data:", error);
         });
 }
+    renderPriceChart([], [], false);
+    renderTracSpendChart([], [], false);
+    renderTracPublishesChart([], [], false);
     fetchChartData();
     fetchData();
     setInterval(fetchData, 10000);
