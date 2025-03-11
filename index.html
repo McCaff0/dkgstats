@@ -38,7 +38,10 @@
     html, body {
   overflow-x: hidden;
 }
-
+#scale-wrapper {
+  width: 100%;
+  overflow-x: hidden;
+}
     /* Body setup */
     body {
   font-family: 'Play', sans-serif;
@@ -233,6 +236,7 @@ h1 {
   </script>
 </head>
 <body>
+  <div id="scale-wrapper">
 <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKGStats.io" class="title-image">
 <h1>DKGStats.io - Real-Time OriginTrail DKG Statistics</h1>
 <!-- Main flex container holding all three containers -->
@@ -807,32 +811,31 @@ function isMobileDevice() {
 }
 
 function adjustScale() {
-    const globalScaleFactor = 1; // Global scaling factor for desktop
+    const scaleWrapper = document.getElementById("scale-wrapper");
+    if (!scaleWrapper) return;
+
+    const globalScaleFactor = 1.02; // Global scaling factor for desktop
 
     if (isMobileDevice()) {
-        // Apply mobile-specific scale factor
         const mobileReferenceWidth = 415; 
         const currentMobileWidth = window.innerWidth;
         const mobileScaleFactor = currentMobileWidth / mobileReferenceWidth;
-        // If you want to add a global factor for mobile, you could do it here as well.
-        document.body.style.transform = `scale(${mobileScaleFactor})`;
-        document.body.style.transformOrigin = "top center";
+        // Optionally add a mobile global factor if needed
+        scaleWrapper.style.transform = `scale(${mobileScaleFactor})`;
+        scaleWrapper.style.transformOrigin = "top center";
     } else {
-        const referenceWidth = 1536; // Match your actual document width
+        const referenceWidth = 1536; // Reference width for desktop
         const currentWidth = window.innerWidth;
         const scaleFactor = currentWidth / referenceWidth;
         const adjustedScaleFactor = scaleFactor * globalScaleFactor;
-        document.body.style.transform = `scale(${adjustedScaleFactor})`;
-        document.body.style.transformOrigin = "top center";
+        scaleWrapper.style.transform = `scale(${adjustedScaleFactor})`;
+        scaleWrapper.style.transformOrigin = "top center";
     }
-    
-    // Force no horizontal overflow
-    document.documentElement.style.overflowX = "hidden";
-    document.body.style.overflowX = "hidden";
 }
 
 adjustScale();
 window.addEventListener("resize", adjustScale);
+
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
