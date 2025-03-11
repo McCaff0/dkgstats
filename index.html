@@ -502,8 +502,8 @@ function renderPriceChart(priceLabels, priceValues) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Use animation only if this is the first load
-            animation: isFirstLoad ? { duration: 1000, easing: 'easeInOutQuad' } : false,
+            // Apply animation only if it's the first time real data is loaded
+            animation: (isFirstDataLoad && priceValues.length > 0) ? { duration: 1000, easing: 'easeInOutQuad' } : false,
             scales: {
                 x: {
                     type: 'time',
@@ -546,9 +546,9 @@ function renderPriceChart(priceLabels, priceValues) {
         }
     });
 
-    // After first load, disable animation for future renders
-    if (isFirstLoad) {
-        isFirstLoad = false;
+    // If we just loaded real data, disable future animations
+    if (priceValues.length > 0) {
+        isFirstDataLoad = false;
     }
 }
   function renderSpendChart(spendLabels, spendValues, animate = false) {
