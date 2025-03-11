@@ -111,6 +111,10 @@ h1 {
   max-width: 380px;
   min-width: 340px;
 }
+    #scaling-container {
+  width: 1080px;  /* Base design width */
+  margin: 0 auto; /* Center horizontally */
+}
 
 .stats-box h3 {
   text-align: center;
@@ -222,6 +226,7 @@ h1 {
   </script>
 </head>
 <body>
+  <div id="scaling-container">
   <!-- Title Image -->
   <!-- Title Image & Hidden h1 remain unchanged -->
 <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKGStats.io" class="title-image">
@@ -794,31 +799,25 @@ function fetchChartData() {
 }
 
 function adjustScale() {
-  const screenWidth = window.innerWidth;  // Get the width of the window
-  
-  // Default scale factor: no zoom on 1080p
+  const baseWidth = 1080;
+  const screenWidth = window.innerWidth;
   let scaleFactor = 1;
-  
-  // Calculate scale factor for larger screens
-  if (screenWidth > 1080) {
-    scaleFactor = screenWidth / 1080;
+
+  // Only scale for screens wider than 1080px
+  if (screenWidth > baseWidth) {
+    scaleFactor = screenWidth / baseWidth;
   }
-
-  // Apply the scale to the body (or wrapper element)
-  document.body.style.transform = `scale(${scaleFactor})`;
-  document.body.style.transformOrigin = 'top center';  // Center the scaling on top center to prevent shifting
-
-  // Prevent layout overflow on larger screens
-  if (screenWidth > 1080) {
-    document.body.style.overflow = 'hidden';  // Hide overflow to avoid horizontal scrolling
-  } else {
-    document.body.style.overflow = '';  // Allow overflow for smaller screens (like mobile)
+  
+  const container = document.getElementById('scaling-container');
+  if (container) {
+    container.style.transform = `scale(${scaleFactor})`;
+    container.style.transformOrigin = 'top center';
   }
 }
 
-// Call the adjustScale function on load and resize
 window.addEventListener('load', adjustScale);
 window.addEventListener('resize', adjustScale);
+
 
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
