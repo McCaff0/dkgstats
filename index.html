@@ -751,7 +751,7 @@ function adjustScale() {
 
         // Apply the scaling transformation for mobile
         document.body.style.transform = `scale(${mobileScaleFactor})`;
-        document.body.style.transformOrigin = "unset"; // No shift in origin for mobile scaling
+        document.body.style.transformOrigin = "top center"; // No shift in origin for mobile scaling
     } else {
         // Desktop scaling, using a larger reference width
         const referenceWidth = 2048; // Reference width for desktop
