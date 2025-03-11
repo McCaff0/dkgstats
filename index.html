@@ -107,7 +107,7 @@ h1 {
   background: #0f0f0f;
   padding: 8px;
   border-radius: 8px;
-  width: 88vw;
+  width: 90vw;
   max-width: 340px;
   min-width: 340px;
 }
@@ -196,7 +196,7 @@ h1 {
   background: #0f0f0f;
   border-radius: 8px;
   /* Use the same width constraints as stats-box */
-  width: 88vw;
+  width: 90vw;
   max-width: 340px;
   min-width: 340px;
   /* Fixed height ensures equal sizing */
@@ -806,7 +806,7 @@ function adjustScale() {
 
     if (isMobileDevice()) {
         // Use a mobile reference width (e.g., 360px, common for many phones)
-        const mobileReferenceWidth = 385; 
+        const mobileReferenceWidth = 390; 
         const currentMobileWidth = window.innerWidth;
         const mobileScaleFactor = currentMobileWidth / mobileReferenceWidth;
         document.body.style.transform = `scale(${mobileScaleFactor})`;
