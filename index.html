@@ -495,7 +495,7 @@ function renderPriceChart(priceLabels, priceValues) {
         data: {
             labels: priceLabels || [],
             datasets: [{
-                label: 'TRAC Price (Last 90 Days)',
+                label: 'Price',
                 data: priceValues || [],
                 borderColor: 'rgba(146, 176, 174, 1)',
                 backgroundColor: 'rgba(146, 176, 174, 0.1)',
@@ -579,7 +579,7 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
         data: {
             labels: spendLabels || [],
             datasets: [{
-                label: 'Spend (Last 90 Days)',
+                label: 'Spend',
                 data: spendValues || [],
                 borderColor: 'rgba(146, 176, 174, 0.8)',
                 backgroundColor: 'rgba(146, 176, 174, 0.1)',
@@ -666,7 +666,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
         data: {
             labels: publishesLabels || [],
             datasets: [{
-                label: 'Publishes (Last 90 Days)',
+                label: 'Publishes',
                 data: publishesValues || [],
                 borderColor: 'rgba(146, 176, 174, 0.8)',
                 backgroundColor: 'rgba(146, 176, 174, 0.1)',
