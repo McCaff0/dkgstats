@@ -99,8 +99,8 @@ h1 {
         padding: 8px;
         border-radius: 8px;
         width: 88vw;
-        max-width: 410px;
-        min-width: 410px;
+        max-width: 400px;
+        min-width: 400px;
 
 }
       
@@ -130,7 +130,7 @@ h1 {
           
       .value-container {
         position: relative;
-        width: 200px;
+        width: 160px;
         height: 40px;
 }
       
@@ -175,8 +175,8 @@ h1 {
 .graph-box {
   background: #0f0f0f;
   border-radius: 8px;
-  max-width: 410px;
-  min-width: 410px;
+  max-width: 400px;
+  min-width: 400px;
   height: 251px;
   box-sizing: border-box;
 }
@@ -791,7 +791,7 @@ function isMobileDevice() {
 function adjustScale(force = false) {
     if (scaleApplied && !force) return; // Prevent multiple recalculations unless forced
 
-    const globalScaleFactor = 1.02; // Desktop scale
+    const globalScaleFactor = 1.04; // Desktop scale
     let scaleFactor;
 
     if (isMobileDevice()) {
