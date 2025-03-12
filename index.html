@@ -799,10 +799,8 @@ function fetchChartData() {
         });
 }
 
-let initialHeight = window.innerHeight;
 let initialScaleFactor = null;
 let scaleApplied = false;
-let lastScrollY = 0;
 
 function isMobileDevice() {
     return window.innerWidth < 768;
@@ -813,59 +811,37 @@ function adjustScale(force = false) {
 
     const globalScaleFactor = 1.06;
     let scaleFactor;
-    const currentHeight = window.innerHeight;
-    
-    // Detect the address bar hide scenario: only change in height, no significant window resize
-    const heightChange = Math.abs(currentHeight - initialHeight);
-
-    // Ignore the scaling if the height change is very small (address bar disappearing/appearing)
-    if (heightChange < 10) {
-        // Just return and don't adjust the scale
-        return;
-    }
 
     if (isMobileDevice()) {
         const mobileReferenceHeight = 900;
+        const currentHeight = window.innerHeight;
         scaleFactor = currentHeight / mobileReferenceHeight;
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
 
-        document.body.style.transform = `scale(${initialScaleFactor})`;
+        document.body.style.transform = scale(${initialScaleFactor});
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
+        document.body.style.height = ${window.innerHeight / initialScaleFactor}px;
     } else {
         const referenceHeight = 973;
+        const currentHeight = window.innerHeight;
         scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
 
-        document.body.style.transform = `scale(${initialScaleFactor})`;
+        document.body.style.transform = scale(${initialScaleFactor});
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-        document.querySelector(".main-container").style.width = `${96 / initialScaleFactor}vw`;
+        document.body.style.height = ${window.innerHeight / initialScaleFactor}px;
+        document.querySelector(".main-container").style.width = ${96 / initialScaleFactor}vw;
     }
 
     scaleApplied = true;
-    initialHeight = currentHeight;  // Update the initial height after scaling is applied
 }
 
-// Listen to resize and scroll events to detect changes
+// Recalculate scaling when resizing the window
 window.addEventListener("resize", () => {
     scaleApplied = false;
     adjustScale(true);
-});
-
-window.addEventListener("scroll", () => {
-    // Keep track of the scroll position to detect if the address bar is being revealed or hidden
-    const currentScrollY = window.scrollY;
-
-    // If the scroll position has changed slightly, adjust the scaling (but avoid if it's just the address bar showing)
-    if (Math.abs(currentScrollY - lastScrollY) > 0) {
-        scaleApplied = false;
-        adjustScale(true);
-    }
-
-    lastScrollY = currentScrollY;
 });
 
 // Apply scale after charts/data are loaded
@@ -875,7 +851,7 @@ function fetchDataAndApplyScale() {
 }
 
 // Apply scaling on load
-adjustScale();
+adjustScale(); 
     
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
