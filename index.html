@@ -819,9 +819,10 @@ function adjustScale(force = false) {
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
 
-        document.body.style.transform = scale(${initialScaleFactor});
+        // Corrected syntax for template literals
+        document.body.style.transform = `scale(${initialScaleFactor})`; // use backticks
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = ${window.innerHeight / initialScaleFactor}px;
+        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`; // use backticks
     } else {
         const referenceHeight = 973;
         const currentHeight = window.innerHeight;
@@ -829,10 +830,11 @@ function adjustScale(force = false) {
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
 
-        document.body.style.transform = scale(${initialScaleFactor});
+        // Corrected syntax for template literals
+        document.body.style.transform = `scale(${initialScaleFactor})`; // use backticks
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = ${window.innerHeight / initialScaleFactor}px;
-        document.querySelector(".main-container").style.width = ${96 / initialScaleFactor}vw;
+        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`; // use backticks
+        document.querySelector(".main-container").style.width = `${96 / initialScaleFactor}vw`; // use backticks
     }
 
     scaleApplied = true;
@@ -851,7 +853,8 @@ function fetchDataAndApplyScale() {
 }
 
 // Apply scaling on load
-adjustScale(); 
+adjustScale();
+
     
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
