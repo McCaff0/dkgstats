@@ -430,7 +430,6 @@ h1 {
               let isFirstDataLoad = true;
               let isFirstSpendLoad = true;
               let isFirstPublishesLoad = true;
-
 function renderPriceChart(priceLabels, priceValues, animate = false) {
     const canvas = document.getElementById('PriceChart');
     if (!canvas) {
@@ -439,11 +438,18 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
     }
     const ctx = canvas.getContext('2d');
 
-    // Determine whether this is the first data load (i.e. the chart is empty)
-    const isEmpty = !PriceChartInstance || (PriceChartInstance.data.datasets[0].data.length === 0);
+    // Check if we need to create a new chart:
+    // Create a new chart if no instance exists OR if the existing chart has no data.
+    if (!PriceChartInstance || PriceChartInstance.data.datasets[0].data.length === 0) {
+        // If an instance exists but has no data, destroy it first.
+        if (PriceChartInstance) {
+            PriceChartInstance.destroy();
+        }
 
-    if (isEmpty) {
-        // Create the chart with default animation ("grow-in" effect)
+        // Determine if we should animate (only on first real data load)
+        const shouldAnimate = (isFirstDataLoad && priceValues.length > 0) || animate;
+
+        // Create a new chart instance with animation enabled
         PriceChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -463,7 +469,7 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 500, easing: 'easeInOutQuad' },
+                animation: shouldAnimate ? { duration: 500, easing: 'easeInOutQuad' } : false,
                 scales: {
                     x: {
                         type: 'time',
@@ -506,7 +512,7 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
             }
         });
     } else {
-        // For subsequent updates, update the chart data instantly (no animation)
+        // Subsequent updates: update data instantly with no animation
         PriceChartInstance.data.labels = priceLabels;
         PriceChartInstance.data.datasets[0].data = priceValues;
         PriceChartInstance.update({ duration: 0 });
@@ -516,7 +522,6 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
         isFirstDataLoad = false;
     }
 }
-
 
 function renderSpendChart(spendLabels, spendValues, animate = false) {
     const canvas = document.getElementById('SpendChart');
@@ -620,8 +625,11 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
     const ctx = canvas.getContext('2d');
 
-    // Check if the chart instance doesn't exist or if it exists but has no data yet.
     if (!PublishesChartInstance || PublishesChartInstance.data.datasets[0].data.length === 0) {
+        if (PublishesChartInstance) {
+            PublishesChartInstance.destroy();
+        }
+        // Create chart with default animation (grow in effect)
         PublishesChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -641,7 +649,6 @@ function renderPublishesChart(publishesLabels, publishesValues) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                // Use default animation (grow in) on first load
                 animation: { duration: 800, easing: 'easeInOutQuad' },
                 scales: {
                     x: {
@@ -655,8 +662,12 @@ function renderPublishesChart(publishesLabels, publishesValues) {
                         ticks: {
                             autoSkip: true,
                             maxTicksLimit: 10,
+                            callback: function(value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            },
                             font: { family: 'Play, sans-serif' },
-                            padding: 0
+                            padding: 0,
                         }
                     },
                     y: {
@@ -684,18 +695,16 @@ function renderPublishesChart(publishesLabels, publishesValues) {
             }
         });
     } else {
-        // For subsequent updates, update the chart data instantly (no animation)
+        // Update existing chart without animation
         PublishesChartInstance.data.labels = publishesLabels;
         PublishesChartInstance.data.datasets[0].data = publishesValues;
         PublishesChartInstance.update({ duration: 0 });
     }
-    
-    // Optionally, update a flag if you're tracking first data load
+
     if (publishesValues.length > 0) {
         isFirstPublishesLoad = false;
     }
 }
-
 
 
 function fetchChartData() {
