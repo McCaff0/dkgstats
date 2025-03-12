@@ -616,7 +616,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                     borderColor: 'rgba(146, 176, 174, 0.8)',
                     backgroundColor: 'rgba(146, 176, 174, 0.1)',
                     fill: true,
-                    tension: 0.1,
+                    tension: 0.2, // Slightly curved line for smoother feel
                     pointRadius: 0,
                     pointHoverRadius: 5,
                     borderWidth: 2
@@ -626,8 +626,8 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                 responsive: true,
                 maintainAspectRatio: false,
                 animation: {
-                    duration: 1000,  // Enable animation on first render
-                    easing: 'easeInOutQuad'
+                    duration: 1000,  // Slower but smooth on first load
+                    easing: 'easeOutCubic' // More natural easing
                 },
                 scales: {
                     x: {
@@ -643,7 +643,8 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                             maxTicksLimit: 10,
                             font: { family: 'Play, sans-serif' },
                             padding: 0,
-                        }
+                        },
+                        animation: false // Prevent axis from animating
                     },
                     y: {
                         title: {
@@ -657,7 +658,8 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                             callback: function(value) {
                                 return value >= 1000000 ? (value / 1000000) + 'M' : value;
                             }
-                        }
+                        },
+                        animation: false // Prevent axis from animating
                     }
                 },
                 plugins: {
@@ -677,8 +679,8 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             PublishesChartInstance.data.labels = publishesLabels;
             PublishesChartInstance.data.datasets[0].data = publishesValues;
             
-            // **Enable animation again on updates**
-            PublishesChartInstance.update({ duration: 1000, easing: 'easeInOutQuad' });
+            // **Enable a softer animation on updates**
+            PublishesChartInstance.update({ duration: 500, easing: 'easeOutCubic' });
         }
     }
 
