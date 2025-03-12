@@ -60,6 +60,13 @@ h1 {
       gap: 8px;
       width: 100%;
 }
+    .sub-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
 
       .container {
         background: #373737;
@@ -205,6 +212,7 @@ canvas {
 <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKGStats.io" class="title-image">
 <h1>DKGStats.io - Real-Time OriginTrail DKG Statistics</h1>
 <div class="main-container">
+  <div class="sub-container">
   <div class="container">
     <div class="stats-box">
       <h3>Current</h3>
@@ -328,7 +336,8 @@ canvas {
       </p>
     </div>
   </div>
-  
+     </div>
+    <div class="sub-container">
         <div class="container new">
           <div class="graph-box">
             <h3>TRAC PRICE (90D)</h3>
@@ -350,7 +359,7 @@ canvas {
                   <div class="graph-box"></div>
                 </div>
               </div>
-
+           </div>
   
   <script>
     function formatNumber(value, decimals = 0, isCurrency = false) {
