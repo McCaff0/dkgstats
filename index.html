@@ -780,7 +780,8 @@ function fetchChartData() {
             console.error("Error fetching publishes data:", error);
         });
 }
-
+let scaleApplied = false;
+    
 function isMobileDevice() {
     return window.innerWidth < 768; // Checks if the device is mobile based on width
 }
