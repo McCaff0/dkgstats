@@ -806,7 +806,8 @@ let mobileScaleApplied = false; // Flag to track if mobile scaling has already b
 const MIN_SCALE = 0.5; // Set a minimum scale factor (adjust as needed)
 
 function isMobileDevice() {
-    return window.innerWidth < 768;
+    // Check for touchscreen support and window width
+    return (window.innerWidth < 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0);
 }
 
 function adjustScale(force = false) {
@@ -874,6 +875,7 @@ function fetchDataAndApplyScale() {
 
 // Apply scaling on load
 adjustScale();
+
 
     
     renderPriceChart([], [], false);
