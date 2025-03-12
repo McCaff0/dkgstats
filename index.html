@@ -486,6 +486,9 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
                 animation: shouldAnimate ? { duration: 500, easing: 'easeInOutQuad' } : false,
                 scales: {
                     x: {
+                        grid: {
+                          color: 'rgba(255, 255, 255, 0.1)'
+                        },
                         type: 'time',
                         time: {
                             parser: 'yyyy-MM-dd',
@@ -505,6 +508,9 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
                         }
                     },
                     y: {
+                        grid: {
+                          color: 'rgba(255, 255, 255, 0.1)'
+                        },
                         title: {
                             display: true,
                             text: 'Price (USD)',
@@ -576,6 +582,9 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
                 animation: { duration: 500, easing: 'easeInOutQuad' },
                 scales: {
                     x: {
+                        grid: {
+                          color: 'rgba(255, 255, 255, 0.1)'
+                        },
                         type: 'time',
                         time: {
                             parser: 'yyyy-MM-dd',
@@ -595,6 +604,9 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
                         }
                     },
                     y: {
+                        grid: {
+                          color: 'rgba(255, 255, 255, 0.1)'
+                        },
                         title: {
                             display: true,
                             text: 'Spend (USD)',
@@ -666,6 +678,9 @@ function renderPublishesChart(publishesLabels, publishesValues) {
                 animation: { duration: 800, easing: 'easeInOutQuad' },
                 scales: {
                     x: {
+                        grid: {
+                          color: 'rgba(255, 255, 255, 0.1)'
+                        },
                         type: 'time',
                         time: {
                             parser: 'yyyy-MM-dd',
@@ -685,6 +700,9 @@ function renderPublishesChart(publishesLabels, publishesValues) {
                         }
                     },
                     y: {
+                        grid: {
+                          color: 'rgba(255, 255, 255, 0.1)'
+                        },
                         title: {
                             display: true,
                             text: 'Publishes',
