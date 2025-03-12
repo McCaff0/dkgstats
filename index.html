@@ -520,81 +520,91 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
     }
     const ctx = canvas.getContext('2d');
 
-    if (SpendChartInstance) {
-        SpendChartInstance.destroy();
-    }
+    // Determine if the chart is "empty" (i.e. no data loaded yet)
+    const isEmpty = !SpendChartInstance || (SpendChartInstance.data.datasets[0].data.length === 0);
 
-    const shouldAnimate = (isFirstSpendLoad && spendValues.length > 0) || animate;
-
-    SpendChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: spendLabels || [],
-            datasets: [{
-                label: 'Spend',
-                data: spendValues || [],
-                borderColor: 'rgba(146, 176, 174, 0.8)',
-                backgroundColor: 'rgba(146, 176, 174, 0.1)',
-                fill: true,
-                tension: 0.1,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: shouldAnimate ? { duration: 500, easing: 'easeInOutQuad' } : false,
-            scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        parser: 'yyyy-MM-dd',
-                        unit: 'day',
-                        tooltipFormat: 'PP',
-                        displayFormats: { day: 'MMM d' }
-                    },
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10,
-                        callback: function(value) {
-                            const date = new Date(value);
-                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    if (isEmpty) {
+        // If no chart exists or it has no data, create it with the animation (grow-in effect)
+        if (SpendChartInstance) {
+            SpendChartInstance.destroy();  // Destroy the empty chart if it exists
+        }
+        SpendChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: spendLabels || [],
+                datasets: [{
+                    label: 'Spend',
+                    data: spendValues || [],
+                    borderColor: 'rgba(146, 176, 174, 0.8)',
+                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                // Use animation on first load
+                animation: { duration: 500, easing: 'easeInOutQuad' },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            parser: 'yyyy-MM-dd',
+                            unit: 'day',
+                            tooltipFormat: 'PP',
+                            displayFormats: { day: 'MMM d' }
                         },
-                        font: { family: 'Play, sans-serif' },
-                        padding: 0,
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Spend (USD)',
-                        font: { family: 'Play, sans-serif', size: 14 }
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 10,
+                            callback: function(value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            },
+                            font: { family: 'Play, sans-serif' },
+                            padding: 0,
+                        }
                     },
-                    ticks: {
-                        beginAtZero: false,
-                        font: { family: 'Play, sans-serif' },
-                        callback: function(value) {
-                            return value >= 1000 ? (value / 1000) + 'K' : value;
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Spend (USD)',
+                            font: { family: 'Play, sans-serif', size: 14 }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            font: { family: 'Play, sans-serif' },
+                            callback: function(value) {
+                                return value >= 1000 ? (value / 1000) + 'K' : value;
+                            }
                         }
                     }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                layout: {
+                    padding: { left: 15, right: 30, top: 0, bottom: 23 }
                 }
-            },
-            plugins: {
-                legend: { display: false },
-                title: { display: false }
-            },
-            layout: {
-                padding: { left: 15, right: 30, top: 0, bottom: 23 }
             }
-        }
-    });
+        });
+    } else {
+        // For subsequent updates, update the chart data with no animation
+        SpendChartInstance.data.labels = spendLabels;
+        SpendChartInstance.data.datasets[0].data = spendValues;
+        SpendChartInstance.update({ duration: 0 });
+    }
 
     if (spendValues.length > 0) {
         isFirstSpendLoad = false;
     }
 }
+
 
 function renderPublishesChart(publishesLabels, publishesValues) {
     const canvas = document.getElementById('PublishesChart');
