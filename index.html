@@ -783,66 +783,58 @@ function fetchChartData() {
 
 let initialScaleFactor = null;
 let scaleApplied = false;
-    
+
 function isMobileDevice() {
-    return window.innerWidth < 768; // Checks if the device is mobile based on width
+    return window.innerWidth < 768;
 }
 
 function adjustScale(force = false) {
-    if (scaleApplied && !force) return; // Prevent multiple recalculations unless forced
+    if (scaleApplied && !force) return;
 
-    const globalScaleFactor = 1.06; // Base scale factor for desktops
+    const globalScaleFactor = 1.06;
     let scaleFactor;
 
     if (isMobileDevice()) {
-        const mobileReferenceHeight = 900; // Mobile reference height
+        const mobileReferenceHeight = 900;
         const currentHeight = window.innerHeight;
-        scaleFactor = currentHeight / mobileReferenceHeight; // Scale based on height
+        scaleFactor = currentHeight / mobileReferenceHeight;
 
-        if (initialScaleFactor === null) {
-            initialScaleFactor = scaleFactor;
-        } else {
-            scaleFactor = initialScaleFactor;
-        }
+        initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
 
-        document.body.style.transform = `scale(${scaleFactor})`;
+        document.body.style.transform = `scale(${initialScaleFactor})`;
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = `${window.innerHeight / scaleFactor}px`;
-
+        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
     } else {
-        const referenceHeight = 973; // Desktop reference height
+        const referenceHeight = 973;
         const currentHeight = window.innerHeight;
         scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
 
-        if (initialScaleFactor === null) {
-            initialScaleFactor = scaleFactor;
-        } else {
-            scaleFactor = initialScaleFactor;
-        }
+        initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
 
-        document.body.style.transform = `scale(${scaleFactor})`;
+        document.body.style.transform = `scale(${initialScaleFactor})`;
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = `${window.innerHeight / scaleFactor}px`;
-        document.querySelector(".main-container").style.width = `${98 / scaleFactor}vw`;
+        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
+        document.querySelector(".main-container").style.width = `${98 / initialScaleFactor}vw`;
     }
 
-    scaleApplied = true; // Mark scale as applied
+    scaleApplied = true;
 }
 
-// Ensure resizing doesn't mess up scaling
+// Recalculate scaling when resizing the window
 window.addEventListener("resize", () => {
     scaleApplied = false;
-    setTimeout(() => adjustScale(true), 50); // Reapply scale with the stored factor
+    adjustScale(true);
 });
 
-// Apply scale only **after** charts/data are loaded
+// Apply scale after charts/data are loaded
 function fetchDataAndApplyScale() {
-    fetchChartData(); // Fetch data
-    setTimeout(adjustScale, 200); // Apply scale after loading content
+    fetchChartData();
+    setTimeout(() => adjustScale(true), 200);
 }
 
-// 🚀 Ensure scale applies consistently
+// Apply scaling on load
 adjustScale();
+
 
     
     renderPriceChart([], [], false);
