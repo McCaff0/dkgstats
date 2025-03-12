@@ -814,6 +814,7 @@ function adjustScale(force = false) {
         document.body.style.transform = `scale(${scaleFactor})`;
         document.body.style.transformOrigin = "top center";
         document.body.style.height = (window.innerHeight / scaleFactor) + "px";
+        document.querySelector(".main-container").style.width = `${100 / scaleFactor}vw`;
     }
 
     scaleApplied = true; // Mark scale as applied
