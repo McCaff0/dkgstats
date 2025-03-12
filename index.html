@@ -78,10 +78,8 @@ h1 {
         align-items: flex-start;
         justify-content: center;
         gap: 8px;
-        min-width: 390px; /* Ensures it can shrink before wrapping */
-        max-width: 415px; /* Prevents excessive stretching */
-        width: 100%; /* Allows it to adjust dynamically */
-        flex-grow: 1; /* Enables expansion before wrapping */
+        width: fit-content;
+        position: relative;
 }
     
       .container::before {
