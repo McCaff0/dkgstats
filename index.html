@@ -799,15 +799,16 @@ function fetchChartData() {
         });
 }
 
+// Add this line once on load to smooth transitions
+document.body.style.transition = "transform 0.3s ease, height 0.3s ease";
+
+// Existing scaling code...
 let initialScaleFactor = null;
 let scaleApplied = false;
-let mobileScaleApplied = false; // Flag to track if mobile scaling has already been applied
-
-const MIN_SCALE = 0.5; // Set a minimum scale factor (adjust as needed)
+let mobileScaleApplied = false;
 
 function isMobileDevice() {
-    // Check for touchscreen support and window width
-    return (window.innerWidth < 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0);
+    return window.innerWidth < 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
 
 function adjustScale(force = false) {
@@ -821,34 +822,17 @@ function adjustScale(force = false) {
         const currentHeight = window.innerHeight;
         scaleFactor = currentHeight / mobileReferenceHeight;
 
-        // If scaling has already been applied on mobile, prevent further scaling
-        if (!mobileScaleApplied) {
-            initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
+        initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
 
-            // Apply minimum scale check
-            if (initialScaleFactor < MIN_SCALE) {
-                initialScaleFactor = MIN_SCALE;
-            }
-
-            document.body.style.transform = `scale(${initialScaleFactor})`;
-            document.body.style.transformOrigin = "top center";
-            document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-
-            // Mark that scaling has been applied for mobile
-            mobileScaleApplied = true;
-        }
-
+        document.body.style.transform = `scale(${initialScaleFactor})`;
+        document.body.style.transformOrigin = "top center";
+        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
     } else {
         const referenceHeight = 973;
         const currentHeight = window.innerHeight;
         scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
-
-        // Apply minimum scale check
-        if (initialScaleFactor < MIN_SCALE) {
-            initialScaleFactor = MIN_SCALE;
-        }
 
         document.body.style.transform = `scale(${initialScaleFactor})`;
         document.body.style.transformOrigin = "top center";
@@ -859,21 +843,20 @@ function adjustScale(force = false) {
     scaleApplied = true;
 }
 
-// Recalculate scaling when resizing the window (only for desktop)
+let resizeTimeout;
 window.addEventListener("resize", () => {
-    if (!isMobileDevice()) { // Only apply rescaling on desktop
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
         scaleApplied = false;
         adjustScale(true);
-    }
+    }, 100);
 });
 
-// Apply scale after charts/data are loaded
 function fetchDataAndApplyScale() {
     fetchChartData();
     setTimeout(() => adjustScale(true), 200);
 }
 
-// Apply scaling on load
 adjustScale();
 
 
