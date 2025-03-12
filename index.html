@@ -615,7 +615,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                     borderColor: 'rgba(146, 176, 174, 0.8)',
                     backgroundColor: 'rgba(146, 176, 174, 0.1)',
                     fill: true,
-                    tension: 0.2,
+                    tension: 0.1,
                     pointRadius: 0,
                     pointHoverRadius: 5,
                     borderWidth: 2
@@ -624,7 +624,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                // **No custom animation settings (uses default)**
+                // **Removing animation settings entirely to use default Chart.js behavior**
                 scales: {
                     x: {
                         type: 'time',
@@ -672,7 +672,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             PublishesChartInstance.data.labels = publishesLabels;
             PublishesChartInstance.data.datasets[0].data = publishesValues;
             
-            // **Uses default Chart.js animation**
+            // **Let Chart.js handle default animation naturally**
             PublishesChartInstance.update();
         }
     }
@@ -681,6 +681,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
         isFirstPublishesLoad = false;
     }
 }
+
 
 
 function fetchChartData() {
