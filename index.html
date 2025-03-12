@@ -803,6 +803,8 @@ let initialScaleFactor = null;
 let scaleApplied = false;
 let mobileScaleApplied = false; // Flag to track if mobile scaling has already been applied
 
+const MIN_SCALE = 0.5; // Set a minimum scale factor (adjust as needed)
+
 function isMobileDevice() {
     return window.innerWidth < 768;
 }
@@ -821,6 +823,12 @@ function adjustScale(force = false) {
         // If scaling has already been applied on mobile, prevent further scaling
         if (!mobileScaleApplied) {
             initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
+
+            // Apply minimum scale check
+            if (initialScaleFactor < MIN_SCALE) {
+                initialScaleFactor = MIN_SCALE;
+            }
+
             document.body.style.transform = `scale(${initialScaleFactor})`;
             document.body.style.transformOrigin = "top center";
             document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
@@ -835,6 +843,11 @@ function adjustScale(force = false) {
         scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
+
+        // Apply minimum scale check
+        if (initialScaleFactor < MIN_SCALE) {
+            initialScaleFactor = MIN_SCALE;
+        }
 
         document.body.style.transform = `scale(${initialScaleFactor})`;
         document.body.style.transformOrigin = "top center";
@@ -861,7 +874,6 @@ function fetchDataAndApplyScale() {
 
 // Apply scaling on load
 adjustScale();
-
 
     
     renderPriceChart([], [], false);
