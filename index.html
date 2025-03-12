@@ -823,7 +823,8 @@ function adjustScale(force = false) {
         document.body.style.transform = `scale(${scaleFactor})`;
         document.body.style.transformOrigin = "top center";
         document.body.style.height = `${window.innerHeight / scaleFactor}px`;
-        document.querySelector(".main-container").style.width = ${100 / scaleFactor}vw;
+        document.querySelector(".main-container").style.width = `${window.innerWidth / scaleFactor}px`;
+
 
         // Let width adjust naturally instead of scaling it
         document.querySelector(".main-container").style.width = `auto`;
