@@ -102,10 +102,10 @@ h1 {
         background: #0f0f0f;
         padding: 8px;
         border-radius: 8px;
-        width: min(88vw, 415px); /* Uses the smaller of 88vw or 415px */
-        min-width: 390px; /* Ensures it can shrink but not too much */
-        max-width: 415px; /* Prevents growing too large */
-        flex-grow: 1; /* Allows it to stretch before wrapping */
+          width: 88vw; /* Start by filling most of the screen on mobile */
+  min-width: 390px; /* Can shrink down to 390px */
+  max-width: 415px; /* Prevents growing too large */
+  flex-grow: 1; /* Allows it to expand/shrink inside its container */
 }
       
       .stats-box h3 {
@@ -179,8 +179,10 @@ h1 {
 .graph-box {
   background: #0f0f0f;
   border-radius: 8px;
-  max-width: 415px;
-  min-width: 415px;
+    width: 88vw; /* Start by filling most of the screen on mobile */
+  min-width: 390px; /* Can shrink down to 390px */
+  max-width: 415px; /* Prevents growing too large */
+  flex-grow: 1; /* Allows it to expand/shrink inside its container */
   height: 251px;
   box-sizing: border-box;
 }
