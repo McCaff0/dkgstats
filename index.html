@@ -78,8 +78,10 @@ h1 {
         align-items: flex-start;
         justify-content: center;
         gap: 8px;
-        width: min-content;
-        position: relative;
+        min-width: 390px; /* Ensures it can shrink before wrapping */
+        max-width: 415px; /* Prevents excessive stretching */
+        width: 100%; /* Allows it to adjust dynamically */
+        flex-grow: 1; /* Enables expansion before wrapping */
 }
     
       .container::before {
@@ -99,9 +101,10 @@ h1 {
         background: #0f0f0f;
         padding: 8px;
         border-radius: 8px;
-        width: 88vw;
-        width: clamp(390px, 88vw, 415px);
-        margin: 0 auto;
+        width: min(88vw, 415px); /* Uses the smaller of 88vw or 415px */
+        min-width: 390px; /* Ensures it can shrink but not too much */
+        max-width: 415px; /* Prevents growing too large */
+        flex-grow: 1; /* Allows it to stretch before wrapping */
 }
       
       .stats-box h3 {
