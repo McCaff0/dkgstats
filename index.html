@@ -596,7 +596,7 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
     }
 }
 
-function renderPublishesChart(publishesLabels, publishesValues) {
+function renderPublishesChart(publishesLabels, publishesValues, animate = false) {
     const canvas = document.getElementById('PublishesChart');
     if (!canvas) {
         console.error("PublishesChart canvas not found!");
@@ -604,8 +604,10 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
     const ctx = canvas.getContext('2d');
 
+    const shouldAnimate = (isFirstPublishesLoad && publishesValues.length > 0) || animate;
+
     if (!PublishesChartInstance) {
-        // **First-time chart creation**
+        // **Create the chart if it doesn't exist**
         PublishesChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -625,10 +627,7 @@ function renderPublishesChart(publishesLabels, publishesValues) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: {  // ✅ Uses default Chart.js animation
-                    duration: 800,  // Smooth but not too slow
-                    easing: 'linear'  // No flashiness, just smooth growth
-                },
+                animation: shouldAnimate ? { duration: 500, easing: 'easeInOutQuad' } : false,
                 scales: {
                     x: {
                         type: 'time',
@@ -670,16 +669,17 @@ function renderPublishesChart(publishesLabels, publishesValues) {
             }
         });
     } else {
-        // **Updating existing chart** (preserve animation but no flashy effect)
+        // **Update existing chart without destroying it**
         PublishesChartInstance.data.labels = publishesLabels;
         PublishesChartInstance.data.datasets[0].data = publishesValues;
         
         PublishesChartInstance.update({
-            animation: {  // ✅ Keep smooth animation on updates
-                duration: 800,
-                easing: 'linear'
-            }
+            animation: { duration: 500, easing: 'easeInOutQuad' } // ✅ Same as SpendChart
         });
+    }
+
+    if (publishesValues.length > 0) {
+        isFirstPublishesLoad = false;
     }
 }
 
