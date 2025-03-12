@@ -809,7 +809,7 @@ const MIN_SCALE = 0.5; // Minimum scale threshold
 
 function isMobileDevice() {
   // Check for touchscreen support or small window width
-  return (window.innerWidth < 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0);
+  return window.innerWidth < 768 && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 }
 
 function adjustScale(force = false) {
@@ -850,7 +850,6 @@ function adjustScale(force = false) {
     document.body.style.transformOrigin = "top center";
     document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
     document.querySelector(".main-container").style.width = `${96 / initialScaleFactor}vw`;
-    document.querySelector(".stats-box").style.width = "415px";
   }
 
   scaleApplied = true;
