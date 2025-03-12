@@ -596,7 +596,7 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
     }
 }
 
-function renderPublishesChart(publishesLabels, publishesValues, animate = false) {
+function renderPublishesChart(publishesLabels, publishesValues) {
     const canvas = document.getElementById('PublishesChart');
     if (!canvas) {
         console.error("PublishesChart canvas not found!");
@@ -604,10 +604,8 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
     }
     const ctx = canvas.getContext('2d');
 
-    const shouldAnimate = (isFirstPublishesLoad && publishesValues.length > 0) || animate;
-
+    // First time: create the chart with default animation (or your preferred settings)
     if (!PublishesChartInstance) {
-        // **Create chart if it doesn't exist**
         PublishesChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -627,17 +625,9 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: shouldAnimate ? {
-                    duration: 800,
-                    easing: 'easeInOutQuad'
-                } : false, // Default Chart.js animation
-                transitions: {
-                    show: {
-                        animations: {
-                            x: { from: 0 },
-                            y: { from: 0 }
-                        }
-                    }
+                animation: {
+                    duration: 800,           // This controls the initial "grow-in" animation.
+                    easing: 'easeInOutQuad'  // Default easing that you liked.
                 },
                 scales: {
                     x: {
@@ -680,22 +670,14 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             }
         });
     } else {
-        // **Update chart with animation**
+        // Subsequent updates: update data instantly (no animation)
         PublishesChartInstance.data.labels = publishesLabels;
         PublishesChartInstance.data.datasets[0].data = publishesValues;
-
-        PublishesChartInstance.options.animation = {
-            duration: 800, // 🔥 Ensure updates animate properly
-            easing: 'easeInOutQuad'
-        };
-
-        PublishesChartInstance.update();
-    }
-
-    if (publishesValues.length > 0) {
-        isFirstPublishesLoad = false;
+        // Update the chart with 0ms duration for no animation
+        PublishesChartInstance.update({ duration: 0 });
     }
 }
+
 
 
 function fetchChartData() {
