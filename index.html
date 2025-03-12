@@ -175,20 +175,22 @@ h1 {
 }
 
 .graph-box {
-  background: #0f0f0f;
-  border-radius: 8px;
-  min-width: 390px;
-  max-width: 415px;
-  flex-grow: 1;
-  height: 251px;
-  box-sizing: border-box;
+    background: #0f0f0f;
+    border-radius: 8px;
+    min-width: 390px;
+    max-width: 415px;
+    width: 100%;
+    height: 251px; /* Adjust this if needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .graph-box canvas {
     width: 100% !important;
-    height: auto !important;
+    height: 100% !important;
     max-width: 100%;
-    display: block;
+    max-height: 100%;
 }
 
 .graph-box h3 {
