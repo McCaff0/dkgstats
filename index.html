@@ -604,73 +604,83 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
     }
     const ctx = canvas.getContext('2d');
 
-    if (PublishesChartInstance) {
-        PublishesChartInstance.destroy();
-    }
-
-    PublishesChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: publishesLabels || [],
-            datasets: [{
-                label: 'Publishes',
-                data: publishesValues || [],
-                borderColor: 'rgba(146, 176, 174, 0.8)',
-                backgroundColor: 'rgba(146, 176, 174, 0.1)',
-                fill: true,
-                tension: 0.1,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-                duration: animate ? 500 : 0, // Enable animation only on the first load
-                easing: 'easeInOutQuad'
+    if (!PublishesChartInstance) {
+        // Create chart if it doesn't exist
+        PublishesChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: publishesLabels || [],
+                datasets: [{
+                    label: 'Publishes',
+                    data: publishesValues || [],
+                    borderColor: 'rgba(146, 176, 174, 0.8)',
+                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 2
+                }]
             },
-            scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        parser: 'yyyy-MM-dd',
-                        unit: 'day',
-                        tooltipFormat: 'PP',
-                        displayFormats: { day: 'MMM d' }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1000,  // Enable animation on first render
+                    easing: 'easeInOutQuad'
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            parser: 'yyyy-MM-dd',
+                            unit: 'day',
+                            tooltipFormat: 'PP',
+                            displayFormats: { day: 'MMM d' }
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 10,
+                            font: { family: 'Play, sans-serif' },
+                            padding: 0,
+                        }
                     },
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10,
-                        font: { family: 'Play, sans-serif' },
-                        padding: 0,
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Publishes',
+                            font: { family: 'Play, sans-serif', size: 14 }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            font: { family: 'Play, sans-serif' },
+                            callback: function(value) {
+                                return value >= 1000000 ? (value / 1000000) + 'M' : value;
+                            }
+                        }
                     }
                 },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Publishes',
-                        font: { family: 'Play, sans-serif', size: 14 }
-                    },
-                    ticks: {
-                        beginAtZero: false,
-                        font: { family: 'Play, sans-serif' },
-                        callback: function(value) {
-                            return value >= 1000000 ? (value / 1000000) + 'M' : value;
-                         } 
-                    }
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                layout: {
+                    padding: { left: 15, right: 30, top: 0, bottom: 23 }
                 }
-            },
-            plugins: {
-                legend: { display: false },
-                title: { display: false }
-            },
-            layout: {
-                padding: { left: 15, right: 30, top: 0, bottom: 23 }
             }
+        });
+    } else {
+        // Only update if the data has changed
+        if (JSON.stringify(PublishesChartInstance.data.labels) !== JSON.stringify(publishesLabels) ||
+            JSON.stringify(PublishesChartInstance.data.datasets[0].data) !== JSON.stringify(publishesValues)) {
+            
+            PublishesChartInstance.data.labels = publishesLabels;
+            PublishesChartInstance.data.datasets[0].data = publishesValues;
+            
+            // **Enable animation again on updates**
+            PublishesChartInstance.update({ duration: 1000, easing: 'easeInOutQuad' });
         }
-    });
+    }
 
     if (publishesValues.length > 0) {
         isFirstPublishesLoad = false;
