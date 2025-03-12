@@ -795,15 +795,16 @@ function adjustScale(force = false) {
     let scaleFactor;
 
     if (isMobileDevice()) {
-        const mobileReferenceHeight = 900;
-        const currentHeight = window.innerHeight;
-        scaleFactor = currentHeight / mobileReferenceHeight;
+        const mobileReferenceWidth = 490; // Reverted to width-based scaling for mobile
+        const currentWidth = window.innerWidth;
+        scaleFactor = currentWidth / mobileReferenceWidth;
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
 
         document.body.style.transform = `scale(${initialScaleFactor})`;
         document.body.style.transformOrigin = "top center";
         document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
+
     } else {
         const referenceHeight = 973;
         const currentHeight = window.innerHeight;
@@ -834,6 +835,7 @@ function fetchDataAndApplyScale() {
 
 // Apply scaling on load
 adjustScale();
+
 
 
     
