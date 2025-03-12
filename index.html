@@ -791,28 +791,13 @@ function isMobileDevice() {
 function adjustScale(force = false) {
     if (scaleApplied && !force) return; // Prevent multiple recalculations unless forced
 
-    const globalScaleFactor = 1.06; // Desktop scale
+    const globalScaleFactor = 1.06; // Base scale factor for desktops
     let scaleFactor;
 
     if (isMobileDevice()) {
-        const mobileReferenceWidth = 490; // Mobile reference width
-        const currentWidth = window.innerWidth;
-        scaleFactor = currentWidth / mobileReferenceWidth; // Calculate mobile scale
-
-        // 🚨 Prevent micro-differences by keeping the first calculated scale
-        if (initialScaleFactor === null) {
-            initialScaleFactor = scaleFactor;
-        } else {
-            scaleFactor = initialScaleFactor; // Use the stored value for consistency
-        }
-
-        document.body.style.transform = `scale(${scaleFactor})`;
-        document.body.style.transformOrigin = "top center";
-        document.body.style.height = (window.innerHeight / scaleFactor) + "px";
-    } else {
-        const referenceWidth = 2048; // Desktop reference width
-        const currentWidth = window.innerWidth;
-        scaleFactor = (currentWidth / referenceWidth) * globalScaleFactor; // Desktop scale factor
+        const mobileReferenceHeight = 850; // Mobile reference height
+        const currentHeight = window.innerHeight;
+        scaleFactor = currentHeight / mobileReferenceHeight; // Scale based on height
 
         if (initialScaleFactor === null) {
             initialScaleFactor = scaleFactor;
@@ -822,8 +807,25 @@ function adjustScale(force = false) {
 
         document.body.style.transform = `scale(${scaleFactor})`;
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = (window.innerHeight / scaleFactor) + "px";
-        document.querySelector(".main-container").style.width = `${100 / scaleFactor}vw`;
+        document.body.style.height = `${window.innerHeight / scaleFactor}px`;
+
+    } else {
+        const referenceHeight = 973; // Desktop reference height
+        const currentHeight = window.innerHeight;
+        scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
+
+        if (initialScaleFactor === null) {
+            initialScaleFactor = scaleFactor;
+        } else {
+            scaleFactor = initialScaleFactor;
+        }
+
+        document.body.style.transform = `scale(${scaleFactor})`;
+        document.body.style.transformOrigin = "top center";
+        document.body.style.height = `${window.innerHeight / scaleFactor}px`;
+
+        // Let width adjust naturally instead of scaling it
+        document.querySelector(".main-container").style.width = `auto`;
     }
 
     scaleApplied = true; // Mark scale as applied
