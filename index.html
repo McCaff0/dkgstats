@@ -604,7 +604,11 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
     }
     const ctx = canvas.getContext('2d');
 
+    const hasExistingData = PublishesChartInstance && PublishesChartInstance.data.datasets[0].data.length > 0;
+    const firstTimeLoadingRealData = !hasExistingData && publishesValues.length > 0;
+
     if (!PublishesChartInstance) {
+        // **First-time chart creation**
         PublishesChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -624,7 +628,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                // **Removing animation settings entirely to use default Chart.js behavior**
+                animation: firstTimeLoadingRealData ? {} : false,  // **Only animate the first real data load**
                 scales: {
                     x: {
                         type: 'time',
@@ -666,24 +670,19 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             }
         });
     } else {
-        if (JSON.stringify(PublishesChartInstance.data.labels) !== JSON.stringify(publishesLabels) ||
-            JSON.stringify(PublishesChartInstance.data.datasets[0].data) !== JSON.stringify(publishesValues)) {
-            
-            PublishesChartInstance.data.labels = publishesLabels;
-            PublishesChartInstance.data.datasets[0].data = publishesValues;
-            
-            // **Let Chart.js handle default animation naturally**
-            PublishesChartInstance.update();
-        }
+        // **Prevent animation when updating from an empty chart**
+        const animationConfig = firstTimeLoadingRealData ? {} : false;
+
+        PublishesChartInstance.data.labels = publishesLabels;
+        PublishesChartInstance.data.datasets[0].data = publishesValues;
+
+        PublishesChartInstance.update({ animation: animationConfig });
     }
 
     if (publishesValues.length > 0) {
         isFirstPublishesLoad = false;
     }
 }
-
-
-
 function fetchChartData() {
     let hasSuccessfulFetch = false;
 
