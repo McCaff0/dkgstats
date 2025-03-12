@@ -801,6 +801,7 @@ function fetchChartData() {
 
 let initialScaleFactor = null;
 let scaleApplied = false;
+let mobileScaleApplied = false; // Flag to track if mobile scaling has already been applied
 
 function isMobileDevice() {
     return window.innerWidth < 768;
@@ -817,12 +818,17 @@ function adjustScale(force = false) {
         const currentHeight = window.innerHeight;
         scaleFactor = currentHeight / mobileReferenceHeight;
 
-        initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
+        // If scaling has already been applied on mobile, prevent further scaling
+        if (!mobileScaleApplied) {
+            initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
+            document.body.style.transform = `scale(${initialScaleFactor})`;
+            document.body.style.transformOrigin = "top center";
+            document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
 
-        // Corrected syntax for template literals
-        document.body.style.transform = `scale(${initialScaleFactor})`; // use backticks
-        document.body.style.transformOrigin = "top center";
-        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`; // use backticks
+            // Mark that scaling has been applied for mobile
+            mobileScaleApplied = true;
+        }
+
     } else {
         const referenceHeight = 973;
         const currentHeight = window.innerHeight;
@@ -830,20 +836,21 @@ function adjustScale(force = false) {
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
 
-        // Corrected syntax for template literals
-        document.body.style.transform = `scale(${initialScaleFactor})`; // use backticks
+        document.body.style.transform = `scale(${initialScaleFactor})`;
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`; // use backticks
-        document.querySelector(".main-container").style.width = `${96 / initialScaleFactor}vw`; // use backticks
+        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
+        document.querySelector(".main-container").style.width = `${96 / initialScaleFactor}vw`;
     }
 
     scaleApplied = true;
 }
 
-// Recalculate scaling when resizing the window
+// Recalculate scaling when resizing the window (only for desktop)
 window.addEventListener("resize", () => {
-    scaleApplied = false;
-    adjustScale(true);
+    if (!isMobileDevice()) { // Only apply rescaling on desktop
+        scaleApplied = false;
+        adjustScale(true);
+    }
 });
 
 // Apply scale after charts/data are loaded
@@ -854,6 +861,7 @@ function fetchDataAndApplyScale() {
 
 // Apply scaling on load
 adjustScale();
+
 
     
     renderPriceChart([], [], false);
