@@ -79,10 +79,8 @@ h1 {
         align-items: flex-start;
         justify-content: center;
         gap: 8px;
-        min-width: 406px; /* Can shrink before wrapping */
-  max-width: 431px; /* Stays reasonable in size */
-   /* Lets it adjust dynamically */
-  flex-grow: 1; /* Allows containers to resize before wrapping */
+        max-width: 431px;
+        flex-grow: 1;
         position: relative;
 }
     
@@ -103,10 +101,9 @@ h1 {
         background: #0f0f0f;
         padding: 8px;
         border-radius: 8px;
-          /* Start by filling most of the screen on mobile */
-  min-width: 390px; /* Can shrink down to 390px */
-  max-width: 415px; /* Prevents growing too large */
-  flex-grow: 1; /* Allows it to expand/shrink inside its container */
+        min-width: 390px;
+        max-width: 415px;
+        width: 100%;
 }
       
       .stats-box h3 {
@@ -179,10 +176,10 @@ h1 {
 
 .graph-box {
   background: #0f0f0f;
-  border-radius: 8px; /* Start by filling most of the screen on mobile */
-  min-width: 390px; /* Can shrink down to 390px */
-  max-width: 415px; /* Prevents growing too large */
-  flex-grow: 1; /* Allows it to expand/shrink inside its container */
+  border-radius: 8px;
+  min-width: 390px;
+  max-width: 415px;
+  width: 100%;
   height: 251px;
   box-sizing: border-box;
 }
