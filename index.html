@@ -789,54 +789,62 @@ function isMobileDevice() {
 }
 
 function adjustScale(force = false) {
-    if (scaleApplied && !force) return;
+    if (scaleApplied && !force) return; // Prevent multiple recalculations unless forced
 
     const globalScaleFactor = 1.06;
     let scaleFactor;
 
     if (isMobileDevice()) {
-        const mobileReferenceWidth = 480; // Reverted to width-based scaling for mobile
+        const mobileReferenceWidth = 480;
         const currentWidth = window.innerWidth;
         scaleFactor = currentWidth / mobileReferenceWidth;
 
-        initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
+        // 🚨 Lock the first calculated scale factor to prevent micro-adjustments
+        if (initialScaleFactor === null) {
+            initialScaleFactor = scaleFactor;
+        } else {
+            scaleFactor = initialScaleFactor;
+        }
 
-        document.body.style.transform = `scale(${initialScaleFactor})`;
+        document.body.style.transform = `scale(${scaleFactor})`;
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
+        document.body.style.height = `${window.innerHeight / scaleFactor}px`;
 
     } else {
         const referenceHeight = 973;
         const currentHeight = window.innerHeight;
         scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
 
-        initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
+        // 🚨 Lock the first calculated scale factor to prevent micro-adjustments
+        if (initialScaleFactor === null) {
+            initialScaleFactor = scaleFactor;
+        } else {
+            scaleFactor = initialScaleFactor;
+        }
 
-        document.body.style.transform = `scale(${initialScaleFactor})`;
+        document.body.style.transform = `scale(${scaleFactor})`;
         document.body.style.transformOrigin = "top center";
-        document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-        document.querySelector(".main-container").style.width = `${98 / initialScaleFactor}vw`;
+        document.body.style.height = `${window.innerHeight / scaleFactor}px`;
+        document.querySelector(".main-container").style.width = `${98 / scaleFactor}vw`;
     }
 
     scaleApplied = true;
 }
 
-// Recalculate scaling when resizing the window
+// Fix the flickering issue by ensuring scale remains stable on resize
 window.addEventListener("resize", () => {
     scaleApplied = false;
-    adjustScale(true);
+    setTimeout(() => adjustScale(true), 50);
 });
 
-// Apply scale after charts/data are loaded
+// Apply scale after data loads
 function fetchDataAndApplyScale() {
     fetchChartData();
     setTimeout(() => adjustScale(true), 200);
 }
 
-// Apply scaling on load
+// Apply scale on load
 adjustScale();
-
-
 
     
     renderPriceChart([], [], false);
