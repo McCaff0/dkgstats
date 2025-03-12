@@ -739,34 +739,51 @@ function fetchChartData() {
         });
 }
 
+let scaleApplied = false; // Prevents unnecessary recalculations
+
 function isMobileDevice() {
-    return window.innerWidth < 768; // Checks if the device is mobile based on window width
+    return window.innerWidth < 768; // Checks if the device is mobile based on width
 }
 
 function adjustScale() {
+    if (scaleApplied) return; // Prevent multiple recalculations
+
     const globalScaleFactor = 1.05; // Global scaling factor for desktop
     let scaleFactor;
 
     if (isMobileDevice()) {
-        const mobileReferenceWidth = 475; // Mobile reference width
+        const mobileReferenceWidth = 475; // Reference width for mobile scaling
         const currentWidth = window.innerWidth;
-        scaleFactor = currentWidth / mobileReferenceWidth; // Calculate mobile scale factor
+        scaleFactor = currentWidth / mobileReferenceWidth; // Calculate scale
         document.body.style.transform = `scale(${scaleFactor})`;
         document.body.style.transformOrigin = "top center";
-        // Adjust body's height so that the scaled content doesn't leave extra space
         document.body.style.height = (window.innerHeight / scaleFactor) + "px";
     } else {
         const referenceWidth = 2048; // Desktop reference width
         const currentWidth = window.innerWidth;
-        scaleFactor = (currentWidth / referenceWidth) * globalScaleFactor; // Calculate desktop scale factor
+        scaleFactor = (currentWidth / referenceWidth) * globalScaleFactor; // Desktop scale factor
         document.body.style.transform = `scale(${scaleFactor})`;
         document.body.style.transformOrigin = "top center";
         document.body.style.height = (window.innerHeight / scaleFactor) + "px";
     }
+
+    scaleApplied = true; // Mark scale as applied
 }
 
+// Reset scale flag on resize, but throttle adjustments
+window.addEventListener("resize", () => {
+    scaleApplied = false;
+    setTimeout(adjustScale, 50); // Small delay prevents rapid recalculations
+});
+
+// Call scaling function only after data is loaded
+function fetchDataAndApplyScale() {
+    fetchChartData(); // Fetch data
+    setTimeout(adjustScale, 100); // Ensure scale applies after content is loaded
+}
+
+// Apply scale once on initial load
 adjustScale();
-window.addEventListener("resize", adjustScale);
 
 
     renderPriceChart([], [], false);
