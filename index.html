@@ -824,7 +824,37 @@ function adjustScale(force = false) {
         document.body.style.transform = `scale(${scaleFactor})`;
         document.body.style.transformOrigin = "top center";
         document.body.style.height = `${window.innerHeight / scaleFactor}px`;
-        document.querySelector(".main-container").style.width = `${(currentWidth / scaleFactor)}px`;
+        const referenceHeight = 1080; // Reference height that worked
+
+function adjustScale(force = false) {
+    if (scaleApplied && !force) return;
+
+    const currentHeight = window.innerHeight;
+    let scaleFactor = currentHeight / referenceHeight; // Scale based on height
+
+    // Apply scaling to the body
+    document.body.style.transform = `scale(${scaleFactor})`;
+    document.body.style.transformOrigin = "top center";
+    document.body.style.height = `${currentHeight / scaleFactor}px`;
+    document.querySelector(".main-container").style.width = `${100 / scaleFactor}vw`;
+
+    scaleApplied = true;
+}
+
+// Ensure resizing doesn't mess up scaling
+window.addEventListener("resize", () => {
+    scaleApplied = false;
+    setTimeout(() => adjustScale(true), 50); // Reapply scale with the stored factor
+});
+
+// Apply scale only after content is loaded
+function fetchDataAndApplyScale() {
+    fetchChartData();
+    setTimeout(adjustScale, 200);
+}
+
+adjustScale(); // Initial call
+
 
 
         // Let width adjust naturally instead of scaling it
