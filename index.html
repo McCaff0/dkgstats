@@ -607,7 +607,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
     const shouldAnimate = (isFirstPublishesLoad && publishesValues.length > 0) || animate;
 
     if (!PublishesChartInstance) {
-        // **Create the chart if it doesn't exist**
+        // **Create chart if it doesn't exist**
         PublishesChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -627,7 +627,18 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: shouldAnimate ? { duration: 500, easing: 'easeInOutQuad' } : false,
+                animation: shouldAnimate ? {
+                    duration: 800,
+                    easing: 'easeInOutQuad'
+                } : false, // Default Chart.js animation
+                transitions: {
+                    show: {
+                        animations: {
+                            x: { from: 0 },
+                            y: { from: 0 }
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         type: 'time',
@@ -669,19 +680,23 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             }
         });
     } else {
-        // **Update existing chart without destroying it**
+        // **Update chart with animation**
         PublishesChartInstance.data.labels = publishesLabels;
         PublishesChartInstance.data.datasets[0].data = publishesValues;
-        
-        PublishesChartInstance.update({
-            animation: { duration: 500, easing: 'easeInOutQuad' } // ✅ Same as SpendChart
-        });
+
+        PublishesChartInstance.options.animation = {
+            duration: 800, // 🔥 Ensure updates animate properly
+            easing: 'easeInOutQuad'
+        };
+
+        PublishesChartInstance.update();
     }
 
     if (publishesValues.length > 0) {
         isFirstPublishesLoad = false;
     }
 }
+
 
 function fetchChartData() {
     let hasSuccessfulFetch = false;
