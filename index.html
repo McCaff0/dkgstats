@@ -439,78 +439,84 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
     }
     const ctx = canvas.getContext('2d');
 
-    if (PriceChartInstance) {
-        PriceChartInstance.destroy();
-    }
+    // Determine whether this is the first data load (i.e. the chart is empty)
+    const isEmpty = !PriceChartInstance || (PriceChartInstance.data.datasets[0].data.length === 0);
 
-    const shouldAnimate = (isFirstDataLoad && priceValues.length > 0) || animate;
-
-    PriceChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: priceLabels || [],
-            datasets: [{
-                label: 'Price',
-                data: priceValues || [],
-                borderColor: 'rgba(146, 176, 174, 1)',
-                backgroundColor: 'rgba(146, 176, 174, 0.1)',
-                fill: true,
-                tension: 0.1,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: shouldAnimate ? { duration: 500, easing: 'easeInOutQuad' } : false,
-            scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        parser: 'yyyy-MM-dd',
-                        unit: 'day',
-                        tooltipFormat: 'PP',
-                        displayFormats: { day: 'MMM d' }
-                    },
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10,
-                        callback: function(value) {
-                            const date = new Date(value);
-                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    if (isEmpty) {
+        // Create the chart with default animation ("grow-in" effect)
+        PriceChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: priceLabels || [],
+                datasets: [{
+                    label: 'Price',
+                    data: priceValues || [],
+                    borderColor: 'rgba(146, 176, 174, 1)',
+                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 500, easing: 'easeInOutQuad' },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            parser: 'yyyy-MM-dd',
+                            unit: 'day',
+                            tooltipFormat: 'PP',
+                            displayFormats: { day: 'MMM d' }
                         },
-                        font: { family: 'Play, sans-serif' },
-                        padding: 0,
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 10,
+                            callback: function(value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            },
+                            font: { family: 'Play, sans-serif' },
+                            padding: 0,
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Price (USD)',
+                            font: { family: 'Play, sans-serif', size: 14 }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            font: { family: 'Play, sans-serif' }
+                        }
                     }
                 },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Price (USD)',
-                        font: { family: 'Play, sans-serif', size: 14 }
-                    },
-                    ticks: {
-                        beginAtZero: false,
-                        font: { family: 'Play, sans-serif' }
-                    }
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                layout: {
+                    padding: { left: 15, right: 30, top: 0, bottom: 23 }
                 }
-            },
-            plugins: {
-                legend: { display: false },
-                title: { display: false }
-            },
-            layout: {
-                padding: { left: 15, right: 30, top: 0, bottom: 23 }
             }
-        }
-    });
+        });
+    } else {
+        // For subsequent updates, update the chart data instantly (no animation)
+        PriceChartInstance.data.labels = priceLabels;
+        PriceChartInstance.data.datasets[0].data = priceValues;
+        PriceChartInstance.update({ duration: 0 });
+    }
 
     if (priceValues.length > 0) {
         isFirstDataLoad = false;
     }
 }
+
 
 function renderSpendChart(spendLabels, spendValues, animate = false) {
     const canvas = document.getElementById('SpendChart');
@@ -614,8 +620,8 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
     const ctx = canvas.getContext('2d');
 
-    // First time: create the chart with default animation (or your preferred settings)
-    if (!PublishesChartInstance) {
+    // Check if the chart instance doesn't exist or if it exists but has no data yet.
+    if (!PublishesChartInstance || PublishesChartInstance.data.datasets[0].data.length === 0) {
         PublishesChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -635,10 +641,8 @@ function renderPublishesChart(publishesLabels, publishesValues) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: {
-                    duration: 800,           // This controls the initial "grow-in" animation.
-                    easing: 'easeInOutQuad'  // Default easing that you liked.
-                },
+                // Use default animation (grow in) on first load
+                animation: { duration: 800, easing: 'easeInOutQuad' },
                 scales: {
                     x: {
                         type: 'time',
@@ -652,7 +656,7 @@ function renderPublishesChart(publishesLabels, publishesValues) {
                             autoSkip: true,
                             maxTicksLimit: 10,
                             font: { family: 'Play, sans-serif' },
-                            padding: 0,
+                            padding: 0
                         }
                     },
                     y: {
@@ -680,11 +684,15 @@ function renderPublishesChart(publishesLabels, publishesValues) {
             }
         });
     } else {
-        // Subsequent updates: update data instantly (no animation)
+        // For subsequent updates, update the chart data instantly (no animation)
         PublishesChartInstance.data.labels = publishesLabels;
         PublishesChartInstance.data.datasets[0].data = publishesValues;
-        // Update the chart with 0ms duration for no animation
         PublishesChartInstance.update({ duration: 0 });
+    }
+    
+    // Optionally, update a flag if you're tracking first data load
+    if (publishesValues.length > 0) {
+        isFirstPublishesLoad = false;
     }
 }
 
