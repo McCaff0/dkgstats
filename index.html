@@ -605,7 +605,6 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
     const ctx = canvas.getContext('2d');
 
     if (!PublishesChartInstance) {
-        // Create chart if it doesn't exist
         PublishesChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -616,7 +615,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                     borderColor: 'rgba(146, 176, 174, 0.8)',
                     backgroundColor: 'rgba(146, 176, 174, 0.1)',
                     fill: true,
-                    tension: 0.2, // Slightly curved line for smoother feel
+                    tension: 0.2,
                     pointRadius: 0,
                     pointHoverRadius: 5,
                     borderWidth: 2
@@ -625,10 +624,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: {
-                    duration: 1000,  // Slower but smooth on first load
-                    easing: 'easeOutCubic' // More natural easing
-                },
+                // **No custom animation settings (uses default)**
                 scales: {
                     x: {
                         type: 'time',
@@ -643,8 +639,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                             maxTicksLimit: 10,
                             font: { family: 'Play, sans-serif' },
                             padding: 0,
-                        },
-                        animation: false // Prevent axis from animating
+                        }
                     },
                     y: {
                         title: {
@@ -658,8 +653,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
                             callback: function(value) {
                                 return value >= 1000000 ? (value / 1000000) + 'M' : value;
                             }
-                        },
-                        animation: false // Prevent axis from animating
+                        }
                     }
                 },
                 plugins: {
@@ -672,15 +666,14 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             }
         });
     } else {
-        // Only update if the data has changed
         if (JSON.stringify(PublishesChartInstance.data.labels) !== JSON.stringify(publishesLabels) ||
             JSON.stringify(PublishesChartInstance.data.datasets[0].data) !== JSON.stringify(publishesValues)) {
             
             PublishesChartInstance.data.labels = publishesLabels;
             PublishesChartInstance.data.datasets[0].data = publishesValues;
             
-            // **Enable a softer animation on updates**
-            PublishesChartInstance.update({ duration: 500, easing: 'easeOutCubic' });
+            // **Uses default Chart.js animation**
+            PublishesChartInstance.update({ duration: 500, easing: 'easeOutQuart' });
         }
     }
 
@@ -688,6 +681,7 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
         isFirstPublishesLoad = false;
     }
 }
+
 
 function fetchChartData() {
     let hasSuccessfulFetch = false;
