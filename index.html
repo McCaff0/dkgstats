@@ -806,6 +806,10 @@ function isMobileDevice() {
     return window.innerWidth < 768;
 }
 
+function getStableHeight() {
+    return window.visualViewport?.height || window.innerHeight;
+}
+
 function adjustScale(force = false) {
     if (scaleApplied && !force) return;
 
@@ -814,7 +818,7 @@ function adjustScale(force = false) {
 
     if (isMobileDevice()) {
         const mobileReferenceHeight = 900;
-        const currentHeight = window.innerHeight;
+        const currentHeight = getStableHeight(); // Use stable height
         scaleFactor = currentHeight / mobileReferenceHeight;
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
@@ -838,7 +842,7 @@ function adjustScale(force = false) {
     scaleApplied = true;
 }
 
-// Recalculate scaling when resizing the window
+// Ensure resizing works properly
 window.addEventListener("resize", () => {
     scaleApplied = false;
     adjustScale(true);
@@ -851,10 +855,7 @@ function fetchDataAndApplyScale() {
 }
 
 // Apply scaling on load
-adjustScale();
-
-
-    
+adjustScale();    
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
     renderPublishesChart([], [], false);
