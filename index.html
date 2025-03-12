@@ -61,12 +61,12 @@ h1 {
       width: 100%;
 }
     .sub-container {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-  min-width: 820px;
-  max-width: 870px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      min-width: 406px;
+      max-width: 870px;
       flex-grow: 1;
 }
 
@@ -80,7 +80,7 @@ h1 {
         justify-content: center;
         gap: 8px;
         max-width: 431px;
-        min-width: 406px
+        min-width: 406px;
         flex-grow: 1;
         position: relative;
 }
@@ -182,7 +182,6 @@ h1 {
     width: 100%;
     height: 251px; /* Fixed height */
     position: relative; /* So the canvas can be positioned inside */
-    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -539,7 +538,7 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
                     title: { display: false }
                 },
                 layout: {
-                    padding: { left: 15, right: 30, top: 0, bottom: 23 }
+                    padding: { left: 15, right: 30, top: 25, bottom: 0 }
                 }
             }
         });
@@ -638,7 +637,7 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
                     title: { display: false }
                 },
                 layout: {
-                    padding: { left: 15, right: 30, top: 0, bottom: 23 }
+                    padding: { left: 15, right: 30, top: 25, bottom: 0 }
                 }
             }
         });
@@ -734,7 +733,7 @@ function renderPublishesChart(publishesLabels, publishesValues) {
                     title: { display: false }
                 },
                 layout: {
-                    padding: { left: 15, right: 30, top: 0, bottom: 23 }
+                    padding: { left: 15, right: 30, top: 25, bottom: 0 }
                 }
             }
         });
