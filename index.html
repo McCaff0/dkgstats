@@ -815,7 +815,7 @@ function isMobileDevice() {
 function adjustScale(force = false) {
   if (scaleApplied && !force) return; // Prevent unnecessary recalculations
 
-  const globalScaleFactor = 1.1;
+  const globalScaleFactor = 1.08;
   let scaleFactor;
 
   if (isMobileDevice()) {
@@ -849,7 +849,7 @@ function adjustScale(force = false) {
     document.body.style.transform = `scale(${initialScaleFactor})`;
     document.body.style.transformOrigin = "top center";
     document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-    document.querySelector(".main-container").style.width = `${96 / initialScaleFactor}vw`;
+    document.querySelector(".main-container").style.width = `${97 / initialScaleFactor}vw`;
   }
 
   scaleApplied = true;
