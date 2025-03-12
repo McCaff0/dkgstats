@@ -66,7 +66,7 @@ h1 {
   flex-wrap: wrap;
   justify-content: center;
   min-width: 820px
-  width: fit-content;
+  max-width 870px
       flex-grow: 1;
 }
 
@@ -81,8 +81,9 @@ h1 {
         gap: 8px;
         min-width: 406px; /* Can shrink before wrapping */
   max-width: 431px; /* Stays reasonable in size */
-  width: 100%; /* Lets it adjust dynamically */
+   /* Lets it adjust dynamically */
   flex-grow: 1; /* Allows containers to resize before wrapping */
+        position: relative;
 }
     
       .container::before {
