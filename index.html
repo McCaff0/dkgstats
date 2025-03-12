@@ -799,15 +799,13 @@ function fetchChartData() {
         });
 }
 
+let initialHeight = window.innerHeight;
 let initialScaleFactor = null;
 let scaleApplied = false;
+let lastScrollY = 0;
 
 function isMobileDevice() {
     return window.innerWidth < 768;
-}
-
-function getStableHeight() {
-    return window.visualViewport?.height || window.innerHeight;
 }
 
 function adjustScale(force = false) {
@@ -815,10 +813,19 @@ function adjustScale(force = false) {
 
     const globalScaleFactor = 1.06;
     let scaleFactor;
+    const currentHeight = window.innerHeight;
+    
+    // Detect the address bar hide scenario: only change in height, no significant window resize
+    const heightChange = Math.abs(currentHeight - initialHeight);
+
+    // Ignore the scaling if the height change is very small (address bar disappearing/appearing)
+    if (heightChange < 10) {
+        // Just return and don't adjust the scale
+        return;
+    }
 
     if (isMobileDevice()) {
         const mobileReferenceHeight = 900;
-        const currentHeight = getStableHeight(); // Use stable height
         scaleFactor = currentHeight / mobileReferenceHeight;
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
@@ -828,7 +835,6 @@ function adjustScale(force = false) {
         document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
     } else {
         const referenceHeight = 973;
-        const currentHeight = window.innerHeight;
         scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
 
         initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
@@ -840,12 +846,26 @@ function adjustScale(force = false) {
     }
 
     scaleApplied = true;
+    initialHeight = currentHeight;  // Update the initial height after scaling is applied
 }
 
-// Ensure resizing works properly
+// Listen to resize and scroll events to detect changes
 window.addEventListener("resize", () => {
     scaleApplied = false;
     adjustScale(true);
+});
+
+window.addEventListener("scroll", () => {
+    // Keep track of the scroll position to detect if the address bar is being revealed or hidden
+    const currentScrollY = window.scrollY;
+
+    // If the scroll position has changed slightly, adjust the scaling (but avoid if it's just the address bar showing)
+    if (Math.abs(currentScrollY - lastScrollY) > 0) {
+        scaleApplied = false;
+        adjustScale(true);
+    }
+
+    lastScrollY = currentScrollY;
 });
 
 // Apply scale after charts/data are loaded
@@ -855,7 +875,8 @@ function fetchDataAndApplyScale() {
 }
 
 // Apply scaling on load
-adjustScale();    
+adjustScale();
+    
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
     renderPublishesChart([], [], false);
