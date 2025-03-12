@@ -179,7 +179,7 @@ h1 {
   border-radius: 8px;
   min-width: 390px;
   max-width: 415px;
-  width: 100%;
+  flex-grow: 1;
   height: 251px;
   box-sizing: border-box;
 }
@@ -881,6 +881,12 @@ function fetchDataAndApplyScale() {
 
 // Initial scaling on load
 adjustScale();
+
+    window.addEventListener("resize", () => {
+    const canvas = document.querySelector(".graph-box canvas");
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+});
 
 
     
