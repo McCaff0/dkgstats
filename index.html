@@ -850,6 +850,7 @@ function adjustScale(force = false) {
     document.body.style.transformOrigin = "top center";
     document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
     document.querySelector(".main-container").style.width = `${96 / initialScaleFactor}vw`;
+    document.querySelector(".stats-box").style.width = "415px";
   }
 
   scaleApplied = true;
