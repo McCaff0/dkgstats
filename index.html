@@ -596,16 +596,13 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
     }
 }
 
-function renderPublishesChart(publishesLabels, publishesValues, animate = false) {
+function renderPublishesChart(publishesLabels, publishesValues) {
     const canvas = document.getElementById('PublishesChart');
     if (!canvas) {
         console.error("PublishesChart canvas not found!");
         return;
     }
     const ctx = canvas.getContext('2d');
-
-    const hasExistingData = PublishesChartInstance && PublishesChartInstance.data.datasets[0].data.length > 0;
-    const firstTimeLoadingRealData = !hasExistingData && publishesValues.length > 0;
 
     if (!PublishesChartInstance) {
         // **First-time chart creation**
@@ -628,7 +625,10 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: firstTimeLoadingRealData ? {} : false,  // **Only animate the first real data load**
+                animation: {  // ✅ Uses default Chart.js animation
+                    duration: 800,  // Smooth but not too slow
+                    easing: 'linear'  // No flashiness, just smooth growth
+                },
                 scales: {
                     x: {
                         type: 'time',
@@ -670,19 +670,19 @@ function renderPublishesChart(publishesLabels, publishesValues, animate = false)
             }
         });
     } else {
-        // **Prevent animation when updating from an empty chart**
-        const animationConfig = firstTimeLoadingRealData ? {} : false;
-
+        // **Updating existing chart** (preserve animation but no flashy effect)
         PublishesChartInstance.data.labels = publishesLabels;
         PublishesChartInstance.data.datasets[0].data = publishesValues;
-
-        PublishesChartInstance.update({ animation: animationConfig });
-    }
-
-    if (publishesValues.length > 0) {
-        isFirstPublishesLoad = false;
+        
+        PublishesChartInstance.update({
+            animation: {  // ✅ Keep smooth animation on updates
+                duration: 800,
+                easing: 'linear'
+            }
+        });
     }
 }
+
 function fetchChartData() {
     let hasSuccessfulFetch = false;
 
