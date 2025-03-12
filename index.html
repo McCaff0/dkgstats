@@ -65,7 +65,7 @@ h1 {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
-  width: 100%;
+  width: fit-content;
 }
 
       .container {
@@ -791,7 +791,7 @@ function isMobileDevice() {
 function adjustScale(force = false) {
     if (scaleApplied && !force) return; // Prevent multiple recalculations unless forced
 
-    const globalScaleFactor = 1.05; // Desktop scale
+    const globalScaleFactor = 1; // Desktop scale
     let scaleFactor;
 
     if (isMobileDevice()) {
