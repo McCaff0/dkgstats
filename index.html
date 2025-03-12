@@ -810,7 +810,8 @@ function adjustScale(force = false) {
         document.body.style.height = `${window.innerHeight / scaleFactor}px`;
 
     } else {
-        const referenceHeight = 973; // Desktop reference height
+        const referenceHeight = 973;
+        const referenceWidth = 2048;
         const currentHeight = window.innerHeight;
         scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
 
@@ -823,7 +824,7 @@ function adjustScale(force = false) {
         document.body.style.transform = `scale(${scaleFactor})`;
         document.body.style.transformOrigin = "top center";
         document.body.style.height = `${window.innerHeight / scaleFactor}px`;
-        document.querySelector(".main-container").style.width = `${2048 * scaleFactor}px`;
+        document.querySelector(".main-container").style.width = `${referenceWidth * scaleFactor}px`;
 
 
         // Let width adjust naturally instead of scaling it
