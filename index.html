@@ -818,6 +818,7 @@ document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 
 let initialScaleFactor = null;
 let scaleApplied = false;
+let mobileScaleApplied = false; // Ensures mobile scaling only applies once per session
 const MIN_SCALE = 0.5;
 const mobileGlobalScaleFactor = 0.95;
 const REFERENCE_HEIGHT = 973;
@@ -830,23 +831,6 @@ function isLandscape() {
   return window.innerWidth > window.innerHeight;
 }
 
-function resetScaling() {
-  console.log("Forcing full reset");
-  scaleApplied = false;
-  initialScaleFactor = null;
-
-  // Reset all transformation styles
-  document.body.style.transform = "";
-  document.body.style.transformOrigin = "";
-  document.body.style.height = "";
-  document.body.style.width = "100vw"; // Reset width properly
-  document.body.style.overflowX = "hidden"; // Prevent horizontal scrolling
-
-  // Reset scroll positions
-  document.documentElement.scrollLeft = 0;
-  document.documentElement.scrollTop = 0;
-}
-
 function adjustScale(force = false) {
   if (scaleApplied && !force) return;
 
@@ -855,15 +839,21 @@ function adjustScale(force = false) {
   if (isMobileDevice()) {
     scaleFactor *= mobileGlobalScaleFactor;
 
+    // Reset scale if switching **back** to portrait
     if (!isLandscape()) {
-      console.log("Switching back to portrait - Resetting scale");
-      resetScaling(); // Full reset before recalculating
+      console.log("Resetting scale: Returning to portrait mode");
+      initialScaleFactor = null;
+      mobileScaleApplied = false; // Unlock mobile scaling
     }
 
-    if (initialScaleFactor === null || force) {
+    if (!mobileScaleApplied) {
       initialScaleFactor = Math.max(scaleFactor, MIN_SCALE);
+      mobileScaleApplied = true; // Lock scaling for mobile
     }
     scaleFactor = initialScaleFactor;
+  } else {
+    initialScaleFactor = Math.max(scaleFactor, MIN_SCALE);
+    document.querySelector(".main-container").style.width = `${97 / initialScaleFactor}vw`;
   }
 
   document.body.style.transform = `scale(${scaleFactor})`;
@@ -871,25 +861,10 @@ function adjustScale(force = false) {
   document.body.style.height = `${window.innerHeight / scaleFactor}px`;
   document.body.style.width = "100vw";
 
-  if (!isMobileDevice()) {
-    document.querySelector(".main-container").style.width = `${97 / scaleFactor}vw`;
-  }
-
-  document.body.style.overflowX = isMobileDevice() && !isLandscape() ? "hidden" : "auto";
-
   scaleApplied = true;
 }
 
-// **Orientation Change - Hard Reset**
-window.addEventListener("orientationchange", () => {
-  setTimeout(() => {
-    console.log("Orientation changed - resetting everything");
-    resetScaling(); // Clear everything
-    adjustScale(true); // Reapply fresh scaling
-  }, 300);
-});
-
-// **Resize Handling**
+// Handle window resizing
 let resizeTimeout;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
@@ -897,14 +872,25 @@ window.addEventListener("resize", () => {
     if (!isMobileDevice()) {
       scaleApplied = false;
       adjustScale(true);
-    } else {
-      adjustScale();
     }
   }, 100);
 });
 
-// **Initial Scaling on Load**
+// Handle orientation change to ensure proper scaling reset
+window.addEventListener("orientationchange", () => {
+  setTimeout(() => {
+    console.log("Orientation changed - forcing full reset");
+    scaleApplied = false;
+    initialScaleFactor = null; // Completely reset initial scale factor
+    mobileScaleApplied = false; // Allow fresh mobile scaling
+
+    adjustScale(true);
+  }, 300);
+});
+
+// Initial scaling on load
 adjustScale();
+
 
 
     window.addEventListener("resize", () => {
