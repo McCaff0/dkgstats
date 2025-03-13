@@ -842,6 +842,7 @@ function adjustScale(force = false) {
   document.body.style.transform = `scale(${scaleFactor})`;
   document.body.style.transformOrigin = "top center";
   document.body.style.height = `${window.innerHeight / scaleFactor}px`;
+  document.body.style.width = "100vw"; // Ensure no horizontal overflow
 
   if (!isMobileDevice()) {
     document.querySelector(".main-container").style.width = `${97 / scaleFactor}vw`;
@@ -862,25 +863,19 @@ window.addEventListener("resize", () => {
   }, 100);
 });
 
-// Prevent rescaling when switching between portrait & landscape
+// Fix orientation change shifting content
 window.addEventListener("orientationchange", () => {
   setTimeout(() => {
     scaleApplied = false;
     adjustScale(true);
+    document.documentElement.scrollLeft = 0; // Reset scroll position
+    document.documentElement.scrollTop = 0;
   }, 300);
 });
 
 // Initial scaling on load
 adjustScale();
 
-
-
-  window.addEventListener("orientationchange", () => {
-  setTimeout(() => {
-    scaleApplied = false; // Force recalculation
-    adjustScale(true);
-  }, 300); // Delay ensures height has updated
-});
 
 
 
