@@ -833,7 +833,7 @@ function adjustScale(force = false) {
    if (isMobileDevice()) {
         const mobileReferenceWidth = 475;
         const currentWidth = window.innerWidth;
-        const minMobileWidth = 375; // Minimum width before scaling
+        const minMobileWidth = 450; // Minimum width before scaling
 
         // Ensure the scale factor doesn't shrink too much
         const adjustedWidth = Math.max(currentWidth, minMobileWidth);
