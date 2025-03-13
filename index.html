@@ -857,6 +857,13 @@ function adjustScale(force = false) {
   scaleApplied = true;
 }
 
+    console.log("---- Scaling Info ----");
+console.log("Window Dimensions: ", window.innerWidth, "x", window.innerHeight);
+console.log("Initial Scale Factor: ", initialScaleFactor);
+console.log("Calculated Scale Factor: ", scaleFactor);
+console.log("Scale Applied: ", scaleApplied);
+console.log("----------------------");
+
 // Helper function to detect when the viewport size stops changing
 function waitForViewportStabilization(callback) {
   let previousHeight = window.innerHeight;
@@ -894,20 +901,24 @@ window.addEventListener("resize", () => {
 
 // Handle orientation change with viewport stabilization
 window.addEventListener("orientationchange", () => {
-  console.log("Orientation changed - waiting for viewport to stabilize...");
+  console.log("Orientation changed - forcing recalculation");
+  console.log("Before reset - Initial Scale Factor: ", initialScaleFactor);
+  console.log("Before reset - Scale Applied: ", scaleApplied);
 
+  // Reset scale tracking
   scaleApplied = false;
   initialScaleFactor = null;
   mobileScaleApplied = false;
 
-  waitForViewportStabilization(() => {
-    console.log("Viewport stabilized - applying correct scale");
+  setTimeout(() => {
+    console.log("Reapplying scaling after orientation change...");
     adjustScale(true);
-  });
+  }, 500); // Give enough time for viewport to settle
 });
 
 // Initial scaling on load
 adjustScale();
+
 
 
 
