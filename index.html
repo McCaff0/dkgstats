@@ -854,22 +854,52 @@ function adjustScale(force = false) {
   document.body.style.height = `${window.innerHeight / scaleFactor}px`;
   document.body.style.width = "100vw";
 
-  // ✅ Move logging **here**, inside adjustScale()
-  console.log("---- Scaling Info ----");
-  console.log("Window Dimensions: ", window.innerWidth, "x", window.innerHeight);
-  console.log("Initial Scale Factor: ", initialScaleFactor);
-  console.log("Calculated Scale Factor: ", scaleFactor);
-  console.log("Scale Applied: ", scaleApplied);
-  console.log("----------------------");
-
   scaleApplied = true;
 }
 
-// Handle orientation change with viewport stabilization
+// Helper function to wait for viewport stabilization
+function waitForViewportStabilization(callback) {
+  let previousHeight = window.innerHeight;
+  let stabilizationAttempts = 0;
+
+  function checkHeight() {
+    if (window.innerHeight === previousHeight) {
+      stabilizationAttempts++;
+    } else {
+      stabilizationAttempts = 0; // Reset if height changes
+      previousHeight = window.innerHeight;
+    }
+
+    if (stabilizationAttempts > 5) {
+      callback();
+    } else {
+      requestAnimationFrame(checkHeight);
+    }
+  }
+
+  checkHeight();
+}
+
+// Handle window resizing
+let resizeTimeout;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    if (!isMobileDevice()) {
+      scaleApplied = false;
+      adjustScale(true);
+    }
+  }, 100);
+});
+
+// Handle orientation change with `.main-container` width reset
 window.addEventListener("orientationchange", () => {
   console.log("Orientation changed - forcing recalculation");
-  console.log("Before reset - Initial Scale Factor: ", initialScaleFactor);
-  console.log("Before reset - Scale Applied: ", scaleApplied);
+
+  const mainContainer = document.querySelector(".main-container");
+  if (mainContainer) {
+    console.log("Before orientation change - Main Container Width:", mainContainer.offsetWidth);
+  }
 
   // Reset scale tracking
   scaleApplied = false;
@@ -878,12 +908,21 @@ window.addEventListener("orientationchange", () => {
 
   setTimeout(() => {
     console.log("Reapplying scaling after orientation change...");
+
+    // Force main-container width recalculation
+    if (mainContainer) {
+      mainContainer.style.width = "auto"; // Reset width
+      mainContainer.style.width = `${97 / (initialScaleFactor || 1)}vw`; // Recalculate width
+      console.log("After orientation change - Main Container Width:", mainContainer.offsetWidth);
+    }
+
     adjustScale(true);
-  }, 500);
+  }, 500); // Allow viewport to settle
 });
 
 // Initial scaling on load
 adjustScale();
+
 
 
     window.addEventListener("resize", () => {
