@@ -221,6 +221,7 @@ h1 {
   
 </head>
 <body>
+  <div class="scale-wrapper">
 <img src="https://lh3.googleusercontent.com/d/16GwAKEUG5PDjljSembGyIdm7KfXxvXnW=w1000" alt="DKGStats.io" class="title-image">
 <h1>DKGStats.io - Real-Time OriginTrail DKG Statistics</h1>
 <div class="main-container">
@@ -817,43 +818,49 @@ document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 let initialScaleFactor = null;
 let scaleApplied = false;
 let mobileScaleApplied = false; // Flag: mobile scaling applied already
-const MIN_SCALE = 0.5;       // Minimum scale threshold
-const mobileGlobalScaleFactor = 1.0; // Mobile global scaling factor (adjust as needed)
+const MIN_SCALE = 0.5; // Minimum scale threshold
+const mobileGlobalScaleFactor = 1.0; // Adjust this for mobile if needed
 
 function isMobileDevice() {
-  // Consider the device mobile only if it's below 768px wide and supports touch
+  // Only treat as mobile if the viewport width is less than 768 AND it supports touch
   return window.innerWidth < 768 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 }
 
 function adjustScale(force = false) {
   if (scaleApplied && !force) return; // Prevent unnecessary recalculations
 
+  const globalScaleFactor = 1.08;
   let scaleFactor;
 
   if (isMobileDevice()) {
-    // Mobile: use height-only scaling with a theoretical reference height
-    const mobileReferenceHeight = 1200; // Theoretical height for mobile
+    // Mobile: scale based solely on height using a theoretical reference height
+    const mobileReferenceHeight = 900; // Theoretical mobile device height
     const currentHeight = window.innerHeight;
     scaleFactor = (currentHeight / mobileReferenceHeight) * mobileGlobalScaleFactor;
 
-    // Only apply mobile scaling once to lock in the initial scale
+    // Only apply mobile scaling once (lock it) to avoid address bar flicker issues
     if (!mobileScaleApplied) {
       initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
       if (initialScaleFactor < MIN_SCALE) {
         initialScaleFactor = MIN_SCALE;
       }
       
-      document.body.style.transform = `scale(${initialScaleFactor})`;
-      document.body.style.transformOrigin = "top center";
-      document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-
+      // Target the scale wrapper on mobile
+      const wrapper = document.querySelector(".scale-wrapper");
+      if (wrapper) {
+        wrapper.style.transform = `scale(${initialScaleFactor})`;
+        wrapper.style.transformOrigin = "top center";
+        // Set the wrapper's height so the layout doesn't overflow
+        wrapper.style.height = `${window.innerHeight / initialScaleFactor}px`;
+      }
+      
       mobileScaleApplied = true;
     }
   } else {
-    // Desktop: use height-based scaling as before
+    // Desktop: scaling based on height as before
     const referenceHeight = 973;
     const currentHeight = window.innerHeight;
-    scaleFactor = (currentHeight / referenceHeight) * 1.08;
+    scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
 
     initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
     if (initialScaleFactor < MIN_SCALE) {
@@ -874,12 +881,12 @@ let resizeTimeout;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
-    // On desktop, allow recalculation; mobile scaling remains locked
+    // Only reapply scaling on desktop; mobile scaling remains locked
     if (!isMobileDevice()) {
       scaleApplied = false;
       adjustScale(true);
     }
-  }, 100); // Adjust delay as needed
+  }, 100);
 });
 
 // Apply scale after charts/data are loaded
@@ -890,6 +897,7 @@ function fetchDataAndApplyScale() {
 
 // Initial scaling on load
 adjustScale();
+
 
 
 
