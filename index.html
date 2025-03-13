@@ -816,10 +816,16 @@ document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 
 let initialScaleFactor = null;
 let scaleApplied = false;
+let mobileScaleApplied = false; // Flag: mobile scaling applied already
 const MIN_SCALE = 0.5; // Minimum scale threshold
-const TARGET_MOBILE_WIDTH = 500; // Theoretical width for rendering
+
+// Global scaling factors:
+const globalScaleFactor = 1.08;       // For desktop scaling
+const mobileGlobalScaleFactor = 1.0;    // For mobile scaling (adjust this as needed)
+const TARGET_MOBILE_WIDTH = 500;        // Theoretical mobile width for rendering
 
 function isMobileDevice() {
+  // Only treat as mobile if the viewport width is less than 768 and it supports touch
   return window.innerWidth < 768 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 }
 
@@ -827,39 +833,55 @@ function adjustScale(force = false) {
   if (scaleApplied && !force) return; // Prevent unnecessary recalculations
 
   let scaleFactor;
-  
+
   if (isMobileDevice()) {
-    // Assume rendering for a device with 500px width
-    const theoreticalHeight = window.innerHeight * (TARGET_MOBILE_WIDTH / window.innerWidth);
-    scaleFactor = window.innerWidth / TARGET_MOBILE_WIDTH;
+    // Calculate mobile scaling using a theoretical width
+    const currentWidth = window.innerWidth;
+    scaleFactor = (currentWidth / TARGET_MOBILE_WIDTH) * mobileGlobalScaleFactor;
+
+    // Only apply mobile scaling once to avoid flicker from address bar changes
+    if (!mobileScaleApplied) {
+      initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
+      if (initialScaleFactor < MIN_SCALE) {
+        initialScaleFactor = MIN_SCALE;
+      }
+
+      document.body.style.transform = `scale(${initialScaleFactor})`;
+      document.body.style.transformOrigin = "top center";
+      document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
+
+      mobileScaleApplied = true;
+    }
   } else {
-    // Normal desktop scaling based on height
+    // Desktop scaling: use height-based scaling
     const referenceHeight = 973;
-    scaleFactor = (window.innerHeight / referenceHeight) * 1.08;
-  }
+    const currentHeight = window.innerHeight;
+    scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
 
-  // Ensure scale doesn't go below the minimum
-  initialScaleFactor = force ? scaleFactor : initialScaleFactor ?? scaleFactor;
-  if (initialScaleFactor < MIN_SCALE) {
-    initialScaleFactor = MIN_SCALE;
-  }
+    initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
+    if (initialScaleFactor < MIN_SCALE) {
+      initialScaleFactor = MIN_SCALE;
+    }
 
-  // Apply scaling
-  document.body.style.transform = `scale(${initialScaleFactor})`;
-  document.body.style.transformOrigin = "top center";
-  document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-  document.querySelector(".main-container").style.width = `${TARGET_MOBILE_WIDTH / initialScaleFactor}px`;
+    document.body.style.transform = `scale(${initialScaleFactor})`;
+    document.body.style.transformOrigin = "top center";
+    document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
+    document.querySelector(".main-container").style.width = `${97 / initialScaleFactor}vw`;
+  }
 
   scaleApplied = true;
 }
 
-// Debounce resize events
+// Debounce resize events so scaling is re-applied only after resizing stops
 let resizeTimeout;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
-    scaleApplied = false;
-    adjustScale(true);
+    // Only reapply scaling on desktop; mobile scaling remains locked
+    if (!isMobileDevice()) {
+      scaleApplied = false;
+      adjustScale(true);
+    }
   }, 100);
 });
 
