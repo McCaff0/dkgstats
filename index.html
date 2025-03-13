@@ -39,6 +39,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      font-size: 16px
 }
     
 h1 {
@@ -760,26 +761,20 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
 }
 
-  // Function to adjust font size based on window height
-  function adjustFontSize() {
-    const fontSize = window.innerHeight * 0.01; // 1% of window height
-    document.body.style.fontSize = `${fontSize}px`; // Set font size as calculated
-  }
+    // Function to adjust font size based on window height and reference width
+    function adjustFontSize() {
+      const referenceHeight = window.innerHeight; // Reference viewport height (vw)
+      const baseFontSize = 16; // Base font size in px (e.g., 16px)
+      const scalingFactor = referenceHeight / 1080; // Use 1080p as reference
 
-  // Call adjustFontSize on window resize and when the page loads
-  window.addEventListener('resize', adjustFontSize);
-  window.addEventListener('load', adjustFontSize);
+      const newFontSize = baseFontSize * scalingFactor; // Scale font size accordingly
 
-  // Optional: Continuously check window height with requestAnimationFrame
-  function checkWindowSize() {
-    adjustFontSize();
-    requestAnimationFrame(checkWindowSize); // Keep checking for changes
-  }
+      // Apply the new font size
+      document.body.style.fontSize = `${newFontSize}px`;
+    }
 
-  // Start constant checking after the page load
-  window.addEventListener('load', function() {
-    checkWindowSize();
-  });
+    window.addEventListener('resize', adjustFontSize);
+    window.addEventListener('load', adjustFontSize);
 
 
 function fetchChartData() {
