@@ -830,28 +830,24 @@ function adjustScale(force = false) {
   const globalScaleFactor = 1.08;
   let scaleFactor;
 
-   if (isMobileDevice()) {
-        const mobileReferenceWidth = 475;
-        const currentWidth = window.innerWidth;
-        const minMobileWidth = 475; // Minimum width before scaling
+  if (isMobileDevice()) {
+    const mobileReferenceWidth = 450; // Use width for mobile scaling
+    const currentWidth = window.innerWidth;
+    scaleFactor = currentWidth / mobileReferenceWidth;
 
-        // Ensure the scale factor doesn't shrink too much
-        const adjustedWidth = Math.max(currentWidth, minMobileWidth);
-        scaleFactor = adjustedWidth / mobileReferenceWidth;
+    // Only apply mobile scaling once to avoid flicker from address bar changes
+    if (!mobileScaleApplied) {
+      initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
+      if (initialScaleFactor < MIN_SCALE) {
+        initialScaleFactor = MIN_SCALE;
+      }
 
-        if (!mobileScaleApplied) {
-            initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
-            if (initialScaleFactor < MIN_SCALE) {
-                initialScaleFactor = MIN_SCALE;
-            }
+      document.body.style.transform = scale(${initialScaleFactor});
+      document.body.style.transformOrigin = "top center";
+      document.body.style.height = ${window.innerHeight / initialScaleFactor}px;
 
-            document.body.style.transform = `scale(${initialScaleFactor})`;
-            document.body.style.transformOrigin = "top center";
-            document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-            document.body.style.width = `${window.innerWidth / initialScaleFactor}px`; // Prevent wide viewport
-
-            mobileScaleApplied = true;
-        }
+      mobileScaleApplied = true;
+    }
   } else {
     const referenceHeight = 973; // Use height for desktop scaling
     const currentHeight = window.innerHeight;
@@ -862,10 +858,10 @@ function adjustScale(force = false) {
       initialScaleFactor = MIN_SCALE;
     }
 
-    document.body.style.transform = `scale(${initialScaleFactor})`;
+    document.body.style.transform = scale(${initialScaleFactor});
     document.body.style.transformOrigin = "top center";
-    document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-    document.querySelector(".main-container").style.width = `${97 / initialScaleFactor}vw`;
+    document.body.style.height = ${window.innerHeight / initialScaleFactor}px;
+    document.querySelector(".main-container").style.width = ${97 / initialScaleFactor}vw;
   }
 
   scaleApplied = true;
