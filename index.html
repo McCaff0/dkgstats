@@ -878,23 +878,25 @@ window.addEventListener("resize", () => {
 
 // Fix orientation change shifting content
 window.addEventListener("orientationchange", () => {
-  // Wait for a brief moment to let the browser adjust layout
   setTimeout(() => {
+    // Force a recalculation of scaling
     scaleApplied = false;
-    adjustScale(true); // Force the scaling to recalculate after orientation change
-    document.documentElement.scrollLeft = 0; // Reset scroll position
+
+    // Explicitly reset the width of the body to match the new viewport
+    document.body.style.width = "100vw"; // Ensure the width is recalculated
+    adjustScale(true); // Reapply the scale
+
+    // Reset scroll position
+    document.documentElement.scrollLeft = 0;
     document.documentElement.scrollTop = 0;
-    // Optionally, reset body overflow
-    document.body.style.overflowX = "auto"; // Ensure overflow is correct after the change
-  }, 300); // Ensure enough time for layout recalculation
+
+    // Optionally reset body overflow
+    document.body.style.overflowX = isLandscape() ? "auto" : "hidden"; // Adjust overflow behavior based on orientation
+  }, 300); // Ensure there's enough time for the layout to adjust
 });
 
 // Initial scaling on load
 adjustScale();
-
-
-
-
 
 
 
