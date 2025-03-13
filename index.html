@@ -878,16 +878,20 @@ window.addEventListener("resize", () => {
 
 // Fix orientation change shifting content
 window.addEventListener("orientationchange", () => {
+  // Wait for a brief moment to let the browser adjust layout
   setTimeout(() => {
     scaleApplied = false;
-    adjustScale(true);
+    adjustScale(true); // Force the scaling to recalculate after orientation change
     document.documentElement.scrollLeft = 0; // Reset scroll position
     document.documentElement.scrollTop = 0;
-  }, 300);
+    // Optionally, reset body overflow
+    document.body.style.overflowX = "auto"; // Ensure overflow is correct after the change
+  }, 300); // Ensure enough time for layout recalculation
 });
 
 // Initial scaling on load
 adjustScale();
+
 
 
 
