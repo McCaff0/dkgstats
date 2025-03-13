@@ -818,8 +818,8 @@ document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 let initialScaleFactor = null;
 let scaleApplied = false;
 const MIN_SCALE = 0.5;
-const mobileGlobalScaleFactor = 1; // Fine-tune mobile scaling
-const REFERENCE_HEIGHT = 1050; // Reference height for mobile scaling
+const mobileGlobalScaleFactor = 1.1; // Fine-tune mobile scaling
+const REFERENCE_HEIGHT = 900; // Reference height for mobile scaling
 
 function isMobileDevice() {
   return window.innerWidth < 768 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
