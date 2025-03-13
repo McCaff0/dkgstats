@@ -761,6 +761,29 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
 }
 
+  // Function to adjust font size based on window height
+  function adjustFontSize() {
+    const fontSize = window.innerHeight * 0.01;  // 1vh = 1% of the window height
+    document.body.style.fontSize = `${fontSize}px`;  // Set font size based on height
+  }
+
+  // Add event listener to resize the window and adjust font size
+  window.addEventListener('resize', adjustFontSize);
+
+  // Adjust font size initially when the page loads
+  window.addEventListener('load', adjustFontSize);
+
+  // Continuously check the window height and adjust font size (optional, for very dynamic adjustments)
+  function checkWindowSize() {
+    adjustFontSize();
+    requestAnimationFrame(checkWindowSize); // Keep checking for window size changes
+  }
+
+  // Start constant checking after the page load
+  window.addEventListener('load', function() {
+    checkWindowSize();
+  });
+
 
 function fetchChartData() {
     let hasSuccessfulFetch = false;
