@@ -819,15 +819,15 @@ document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 let initialScaleFactor = null;
 let scaleApplied = false;
 const MIN_SCALE = 0.5;
-const mobileGlobalScaleFactor = 0.95; // Fine-tune mobile scaling
-const REFERENCE_HEIGHT = 973; // Use the same reference height as desktop
+const mobileGlobalScaleFactor = 0.95;
+const REFERENCE_HEIGHT = 973;
 
 function isMobileDevice() {
   return window.innerWidth < 768 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 }
 
 function isLandscape() {
-  return window.innerWidth > window.innerHeight; // Checks if the device is in landscape mode
+  return window.innerWidth > window.innerHeight;
 }
 
 function adjustScale(force = false) {
@@ -836,42 +836,55 @@ function adjustScale(force = false) {
   let scaleFactor = (window.innerHeight / REFERENCE_HEIGHT) * 1.08;
 
   if (isMobileDevice()) {
-    scaleFactor *= mobileGlobalScaleFactor; // Apply mobile scaling factor
+    scaleFactor *= mobileGlobalScaleFactor;
 
-    // Reset initialScaleFactor when switching back to portrait
+    // **RESET WHEN SWITCHING BACK TO PORTRAIT**
     if (!isLandscape()) {
-      initialScaleFactor = null;
+      console.log("Resetting scale for portrait mode");
+      initialScaleFactor = null; // Force a fresh calculation
+      document.body.style.transform = ""; // Remove previous scaling
+      document.body.style.width = ""; // Reset width
     }
 
     if (initialScaleFactor === null || force) {
-      initialScaleFactor = Math.max(scaleFactor, MIN_SCALE); // Lock in scale
+      initialScaleFactor = Math.max(scaleFactor, MIN_SCALE);
     }
-    scaleFactor = initialScaleFactor; // Prevent rescaling when address bar disappears
+    scaleFactor = initialScaleFactor;
   }
 
   document.body.style.transform = `scale(${scaleFactor})`;
   document.body.style.transformOrigin = "top center";
   document.body.style.height = `${window.innerHeight / scaleFactor}px`;
-  document.body.style.width = "100vw"; // Ensure no horizontal overflow
+  document.body.style.width = "100vw";
 
   if (!isMobileDevice()) {
     document.querySelector(".main-container").style.width = `${97 / scaleFactor}vw`;
   }
 
-  // Handle mobile horizontal overflow
-  if (isMobileDevice()) {
-    if (!isLandscape()) {
-      document.body.style.overflowX = "hidden"; // Hide horizontal scroll on mobile portrait
-      document.body.style.left = "0"; // Reset position
-    } else {
-      document.body.style.overflowX = "auto"; // Allow overflow in landscape mode
-    }
-  }
+  document.body.style.overflowX = isMobileDevice() && !isLandscape() ? "hidden" : "auto";
 
   scaleApplied = true;
 }
 
-// Debounced resize handler (only for desktop)
+// **FORCE RESET ON ORIENTATION CHANGE**
+window.addEventListener("orientationchange", () => {
+  setTimeout(() => {
+    console.log("Orientation changed - forcing full reset");
+    scaleApplied = false;
+    initialScaleFactor = null; // Remove stored scaling value
+
+    document.body.style.transform = ""; // Completely reset scaling
+    document.body.style.width = "100vw"; // Reset width
+    document.body.style.overflowX = "hidden"; // Ensure no horizontal scroll
+
+    adjustScale(true); // Reapply fresh scaling
+
+    document.documentElement.scrollLeft = 0;
+    document.documentElement.scrollTop = 0;
+  }, 300);
+});
+
+// **RECALCULATE SCALE ON WINDOW RESIZE (ONLY DESKTOP)**
 let resizeTimeout;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
@@ -885,30 +898,9 @@ window.addEventListener("resize", () => {
   }, 100);
 });
 
-// Fix orientation change shifting content
-window.addEventListener("orientationchange", () => {
-  setTimeout(() => {
-    // Force a recalculation of scaling
-    scaleApplied = false;
-    initialScaleFactor = null; // Reset to ensure proper recalculation
-
-    // Reset width and positioning to avoid left-side cut-off
-    document.body.style.width = "100vw";
-    document.body.style.left = "0"; 
-
-    adjustScale(true); // Reapply the scale
-
-    // Reset scroll position
-    document.documentElement.scrollLeft = 0;
-    document.documentElement.scrollTop = 0;
-
-    // Ensure overflow is correctly set for portrait mode
-    document.body.style.overflowX = isLandscape() ? "auto" : "hidden";
-  }, 300); // Ensure there's enough time for the layout to adjust
-});
-
-// Initial scaling on load
+// **INITIAL SCALE ON PAGE LOAD**
 adjustScale();
+
 
 
 
