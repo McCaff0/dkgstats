@@ -834,7 +834,7 @@ function adjustScale(force = false) {
 
   if (isMobileDevice()) {
     // Mobile: scale based solely on height using a theoretical reference height
-    const mobileReferenceHeight = 900; // Theoretical mobile device height
+    const mobileReferenceHeight = 2000; // Theoretical mobile device height
     const currentHeight = window.innerHeight;
     scaleFactor = (currentHeight / mobileReferenceHeight) * mobileGlobalScaleFactor;
 
