@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="device-width, initial-scale=0.8">
+  <meta name="viewport" content="device-width, initial-scale=0.9">
   <link href="https://fonts.googleapis.com/css2?family=Play&display=swap" rel="stylesheet">
   <title>DKGStats.io</title>
   <meta name="description" content="Real-time statistics on the OriginTrail Decentralised Knowledge Graph.">
@@ -817,69 +817,48 @@ document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 
 let initialScaleFactor = null;
 let scaleApplied = false;
-let mobileScaleApplied = false; // Flag: mobile scaling applied already
-const MIN_SCALE = 0.5; // Minimum scale threshold
-
-// Mobile global scaling factor for fine-tuning (default 1.0 means no extra adjustment)
-const mobileGlobalScaleFactor = 1;
+const MIN_SCALE = 0.5;
+const mobileGlobalScaleFactor = 1; // Fine-tune mobile scaling
+const REFERENCE_HEIGHT = 1050; // Reference height for mobile scaling
 
 function isMobileDevice() {
-  // Consider it mobile only if the window width is less than 768 AND it supports touch
   return window.innerWidth < 768 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 }
 
 function adjustScale(force = false) {
-  if (scaleApplied && !force) return; // Prevent unnecessary recalculations
+  if (scaleApplied && !force) return; 
 
   let scaleFactor;
   
   if (isMobileDevice()) {
-    // Theoretical mobile dimensions:
-    const TARGET_MOBILE_WIDTH = 500;
-    const TARGET_MOBILE_HEIGHT = 1050;
-    
-    // Use effective dimensions: if the actual dimension is less than our target, use the target
-    const effectiveWidth = Math.max(window.innerWidth, TARGET_MOBILE_WIDTH);
-    const effectiveHeight = Math.max(window.innerHeight, TARGET_MOBILE_HEIGHT);
-    
-    // Calculate scale factor based solely on height
-    scaleFactor = (effectiveHeight / TARGET_MOBILE_HEIGHT) * mobileGlobalScaleFactor;
-    
-    // Lock mobile scaling to the initial scale factor so it doesn't change with address bar changes
-    if (!mobileScaleApplied) {
-      initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
-      if (initialScaleFactor < MIN_SCALE) {
-        initialScaleFactor = MIN_SCALE;
-      }
-      
-      document.body.style.transform = `scale(${initialScaleFactor})`;
-      document.body.style.transformOrigin = "top center";
-      // Adjust body height so the scaled content fits without extra space
-      document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-      
-      mobileScaleApplied = true;
-    }
-  } else {
-    // Desktop scaling (unchanged): calculate based on height
-    const referenceHeight = 973;
-    const currentHeight = window.innerHeight;
-    scaleFactor = (currentHeight / referenceHeight) * 1.08;
-    
+    // Scale based only on height
+    scaleFactor = (window.innerHeight / REFERENCE_HEIGHT) * mobileGlobalScaleFactor;
+
+    // Enforce minimum scale
     initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
-    if (initialScaleFactor < MIN_SCALE) {
-      initialScaleFactor = MIN_SCALE;
-    }
-    
+    initialScaleFactor = Math.max(initialScaleFactor, MIN_SCALE);
+
+    document.body.style.transform = `scale(${initialScaleFactor})`;
+    document.body.style.transformOrigin = "top center";
+    document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
+
+  } else {
+    const referenceHeight = 973;
+    scaleFactor = (window.innerHeight / referenceHeight) * 1.08;
+
+    initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
+    initialScaleFactor = Math.max(initialScaleFactor, MIN_SCALE);
+
     document.body.style.transform = `scale(${initialScaleFactor})`;
     document.body.style.transformOrigin = "top center";
     document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
     document.querySelector(".main-container").style.width = `${97 / initialScaleFactor}vw`;
   }
-  
+
   scaleApplied = true;
 }
 
-// Debounce resize events (desktop only; mobile remains locked)
+// Debounced resize handler (only for desktop)
 let resizeTimeout;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
@@ -891,14 +870,9 @@ window.addEventListener("resize", () => {
   }, 100);
 });
 
-// Apply scaling after charts/data are loaded
-function fetchDataAndApplyScale() {
-  fetchChartData();
-  setTimeout(() => adjustScale(true), 200);
-}
-
 // Initial scaling on load
 adjustScale();
+
 
 
 
