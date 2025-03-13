@@ -46,8 +46,7 @@ h1 {
 }
 
     .title-image {
-      width: 80%;
-      max-width: 465px;
+      height: 10vh;
       display: block;
       margin: -20px auto -4px auto;
 }
@@ -814,68 +813,6 @@ function fetchChartData() {
 
 // Add this line once on load to smooth transitions
 document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
-
-let initialScaleFactor = null;
-let scaleApplied = false;
-let mobileScaleApplied = false;
-const MIN_SCALE = 0.5;
-const REFERENCE_HEIGHT = 973;
-
-function isMobileDevice() {
-  return window.innerWidth < 768 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
-}
-
-function adjustScale(force = false) {
-  if (scaleApplied && !force) return;
-
-  let scaleFactor = (window.innerHeight / REFERENCE_HEIGHT) * 1.08;
-  scaleFactor = Math.max(scaleFactor, MIN_SCALE);
-
-  if (isMobileDevice()) {
-    if (!mobileScaleApplied) {
-      initialScaleFactor = scaleFactor; // Lock scale
-      mobileScaleApplied = true;
-    }
-    scaleFactor = initialScaleFactor; // Use locked value
-  } else {
-    initialScaleFactor = scaleFactor;
-    document.querySelector(".main-container").style.width = `${97 / initialScaleFactor}vw`;
-  }
-
-  document.body.style.transform = `scale(${scaleFactor})`;
-  document.body.style.transformOrigin = "top center";
-  document.body.style.height = `${window.innerHeight / scaleFactor}px`;
-  document.body.style.width = "100vw";
-
-  scaleApplied = true;
-}
-
-// Handle resize for desktop only
-window.addEventListener("resize", () => {
-  if (!isMobileDevice()) {
-    scaleApplied = false;
-    adjustScale(true);
-  }
-});
-
-// Handle full recalculation on orientation change
-window.addEventListener("orientationchange", () => {
-  console.log("Orientation changed - forcing full recalculation");
-
-  scaleApplied = false;
-  initialScaleFactor = null;
-  mobileScaleApplied = false;
-
-  setTimeout(() => {
-    console.log("Reapplying scaling after orientation change...");
-    adjustScale(true);
-  }, 500); // Allow viewport to settle
-});
-
-// Initial scaling on load
-adjustScale();
-
-
 
     window.addEventListener("resize", () => {
     const canvas = document.querySelector(".graph-box canvas");
