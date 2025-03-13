@@ -821,40 +821,31 @@ let initialScaleFactor = null;
 let scaleApplied = false;
 const MIN_SCALE = 0.5;
 const mobileGlobalScaleFactor = 1.00; // Fine-tune mobile scaling
-const REFERENCE_HEIGHT = 900; // Reference height for mobile scaling
+const REFERENCE_HEIGHT = 973; // Use the same reference height as desktop
 
 function isMobileDevice() {
   return window.innerWidth < 768 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 }
 
 function adjustScale(force = false) {
-  if (scaleApplied && !force) return; 
+  if (scaleApplied && !force) return;
 
-  let scaleFactor;
-  
+  let scaleFactor = (window.innerHeight / REFERENCE_HEIGHT) * 1.08;
+
   if (isMobileDevice()) {
-    const currentHeight = Math.min(window.innerHeight, screen.height); // More stable height reference
-    scaleFactor = (currentHeight / REFERENCE_HEIGHT) * mobileGlobalScaleFactor;
+    scaleFactor *= mobileGlobalScaleFactor; // Apply mobile scaling factor
+    if (initialScaleFactor === null || force) {
+      initialScaleFactor = Math.max(scaleFactor, MIN_SCALE); // Lock in scale
+    }
+    scaleFactor = initialScaleFactor; // Prevent rescaling when address bar disappears
+  }
 
-    initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
-    initialScaleFactor = Math.max(initialScaleFactor, MIN_SCALE);
+  document.body.style.transform = `scale(${scaleFactor})`;
+  document.body.style.transformOrigin = "top center";
+  document.body.style.height = `${window.innerHeight / scaleFactor}px`;
 
-    document.body.style.transform = `scale(${initialScaleFactor})`;
-    document.body.style.transformOrigin = "top center";
-    document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-    document.body.style.width = "100vw"; // Ensure full width without overflow
-
-  } else {
-    const referenceHeight = 973;
-    scaleFactor = (window.innerHeight / referenceHeight) * 1.08;
-
-    initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
-    initialScaleFactor = Math.max(initialScaleFactor, MIN_SCALE);
-
-    document.body.style.transform = `scale(${initialScaleFactor})`;
-    document.body.style.transformOrigin = "top center";
-    document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
-    document.querySelector(".main-container").style.width = `${97 / initialScaleFactor}vw`;
+  if (!isMobileDevice()) {
+    document.querySelector(".main-container").style.width = `${97 / scaleFactor}vw`;
   }
 
   scaleApplied = true;
@@ -872,8 +863,17 @@ window.addEventListener("resize", () => {
   }, 100);
 });
 
+// Prevent rescaling when switching between portrait & landscape
+window.addEventListener("orientationchange", () => {
+  setTimeout(() => {
+    scaleApplied = false;
+    adjustScale(true);
+  }, 300);
+});
+
 // Initial scaling on load
 adjustScale();
+
 
 
   window.addEventListener("orientationchange", () => {
