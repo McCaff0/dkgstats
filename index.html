@@ -819,32 +819,26 @@ let initialScaleFactor = null;
 let scaleApplied = false;
 let mobileScaleApplied = false;
 const MIN_SCALE = 0.5;
-const mobileGlobalScaleFactor = 1;
 const REFERENCE_HEIGHT = 973;
 
 function isMobileDevice() {
   return window.innerWidth < 768 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 }
 
-function isLandscape() {
-  return window.innerWidth > window.innerHeight;
-}
-
 function adjustScale(force = false) {
   if (scaleApplied && !force) return;
 
   let scaleFactor = (window.innerHeight / REFERENCE_HEIGHT) * 1.08;
+  scaleFactor = Math.max(scaleFactor, MIN_SCALE);
 
   if (isMobileDevice()) {
-    scaleFactor *= mobileGlobalScaleFactor;
-
     if (!mobileScaleApplied) {
-      initialScaleFactor = Math.max(scaleFactor, MIN_SCALE);
+      initialScaleFactor = scaleFactor; // Lock scale
       mobileScaleApplied = true;
     }
-    scaleFactor = initialScaleFactor;
+    scaleFactor = initialScaleFactor; // Use locked value
   } else {
-    initialScaleFactor = Math.max(scaleFactor, MIN_SCALE);
+    initialScaleFactor = scaleFactor;
     document.querySelector(".main-container").style.width = `${97 / initialScaleFactor}vw`;
   }
 
@@ -856,65 +850,24 @@ function adjustScale(force = false) {
   scaleApplied = true;
 }
 
-// Helper function to wait for viewport stabilization
-function waitForViewportStabilization(callback) {
-  let previousHeight = window.innerHeight;
-  let stabilizationAttempts = 0;
-
-  function checkHeight() {
-    if (window.innerHeight === previousHeight) {
-      stabilizationAttempts++;
-    } else {
-      stabilizationAttempts = 0; // Reset if height changes
-      previousHeight = window.innerHeight;
-    }
-
-    if (stabilizationAttempts > 5) {
-      callback();
-    } else {
-      requestAnimationFrame(checkHeight);
-    }
-  }
-
-  checkHeight();
-}
-
-// Handle window resizing
-let resizeTimeout;
+// Handle resize for desktop only
 window.addEventListener("resize", () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    if (!isMobileDevice()) {
-      scaleApplied = false;
-      adjustScale(true);
-    }
-  }, 100);
+  if (!isMobileDevice()) {
+    scaleApplied = false;
+    adjustScale(true);
+  }
 });
 
-// Handle orientation change with `.main-container` width reset
+// Handle full recalculation on orientation change
 window.addEventListener("orientationchange", () => {
-  console.log("Orientation changed - forcing recalculation");
+  console.log("Orientation changed - forcing full recalculation");
 
-  const mainContainer = document.querySelector(".main-container");
-  if (mainContainer) {
-    console.log("Before orientation change - Main Container Width:", mainContainer.offsetWidth);
-  }
-
-  // Reset scale tracking
   scaleApplied = false;
   initialScaleFactor = null;
   mobileScaleApplied = false;
 
   setTimeout(() => {
     console.log("Reapplying scaling after orientation change...");
-
-    // Force main-container width recalculation
-    if (mainContainer) {
-      mainContainer.style.width = "auto"; // Reset width
-      mainContainer.style.width = `${97 / (initialScaleFactor || 1)}vw`; // Recalculate width
-      console.log("After orientation change - Main Container Width:", mainContainer.offsetWidth);
-    }
-
     adjustScale(true);
   }, 500); // Allow viewport to settle
 });
