@@ -762,19 +762,23 @@ function renderPublishesChart(publishesLabels, publishesValues) {
 }
 
     // Function to adjust font size based on window height and reference width
-    function adjustFontSize() {
-      const referenceHeight = window.innerHeight; // Reference viewport height (vw)
-      const baseFontSize = 16; // Base font size in px (e.g., 16px)
-      const scalingFactor = referenceHeight / 1080; // Use 1080p as reference
+function adjustFontSize() {
+    const referenceHeight = window.innerHeight;
+    const baseFontSize = 16; // Base font size in px
+    const scalingFactor = referenceHeight / 1080; // Scaling factor based on viewport height (1080px assumed as the reference)
 
-      const newFontSize = baseFontSize * scalingFactor; // Scale font size accordingly
+    const newFontSize = baseFontSize * scalingFactor;
 
-      // Apply the new font size
-      document.body.style.fontSize = `${newFontSize}px`;
-    }
+    // Log to check font size
+    console.log('Setting font-size to:', newFontSize);
 
-    window.addEventListener('resize', adjustFontSize);
-    window.addEventListener('load', adjustFontSize);
+    // Apply the new font size using !important to ensure it overrides other rules
+    document.body.style.setProperty('font-size', `${newFontSize}px`, 'important');
+}
+
+// Add event listener for resizing and page load
+window.addEventListener('resize', adjustFontSize);
+window.addEventListener('load', adjustFontSize);
 
 
 function fetchChartData() {
