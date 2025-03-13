@@ -830,6 +830,23 @@ function isLandscape() {
   return window.innerWidth > window.innerHeight;
 }
 
+function resetScaling() {
+  console.log("Forcing full reset");
+  scaleApplied = false;
+  initialScaleFactor = null;
+
+  // Reset all transformation styles
+  document.body.style.transform = "";
+  document.body.style.transformOrigin = "";
+  document.body.style.height = "";
+  document.body.style.width = "100vw"; // Reset width properly
+  document.body.style.overflowX = "hidden"; // Prevent horizontal scrolling
+
+  // Reset scroll positions
+  document.documentElement.scrollLeft = 0;
+  document.documentElement.scrollTop = 0;
+}
+
 function adjustScale(force = false) {
   if (scaleApplied && !force) return;
 
@@ -838,12 +855,9 @@ function adjustScale(force = false) {
   if (isMobileDevice()) {
     scaleFactor *= mobileGlobalScaleFactor;
 
-    // **RESET WHEN SWITCHING BACK TO PORTRAIT**
     if (!isLandscape()) {
-      console.log("Resetting scale for portrait mode");
-      initialScaleFactor = null; // Force a fresh calculation
-      document.body.style.transform = ""; // Remove previous scaling
-      document.body.style.width = ""; // Reset width
+      console.log("Switching back to portrait - Resetting scale");
+      resetScaling(); // Full reset before recalculating
     }
 
     if (initialScaleFactor === null || force) {
@@ -866,25 +880,16 @@ function adjustScale(force = false) {
   scaleApplied = true;
 }
 
-// **FORCE RESET ON ORIENTATION CHANGE**
+// **Orientation Change - Hard Reset**
 window.addEventListener("orientationchange", () => {
   setTimeout(() => {
-    console.log("Orientation changed - forcing full reset");
-    scaleApplied = false;
-    initialScaleFactor = null; // Remove stored scaling value
-
-    document.body.style.transform = ""; // Completely reset scaling
-    document.body.style.width = "100vw"; // Reset width
-    document.body.style.overflowX = "hidden"; // Ensure no horizontal scroll
-
+    console.log("Orientation changed - resetting everything");
+    resetScaling(); // Clear everything
     adjustScale(true); // Reapply fresh scaling
-
-    document.documentElement.scrollLeft = 0;
-    document.documentElement.scrollTop = 0;
   }, 300);
 });
 
-// **RECALCULATE SCALE ON WINDOW RESIZE (ONLY DESKTOP)**
+// **Resize Handling**
 let resizeTimeout;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
@@ -898,12 +903,8 @@ window.addEventListener("resize", () => {
   }, 100);
 });
 
-// **INITIAL SCALE ON PAGE LOAD**
+// **Initial Scaling on Load**
 adjustScale();
-
-
-
-
 
 
     window.addEventListener("resize", () => {
