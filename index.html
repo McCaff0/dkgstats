@@ -827,11 +827,11 @@ function isMobileDevice() {
 function adjustScale(force = false) {
   if (scaleApplied && !force) return; // Prevent unnecessary recalculations
 
-  const globalScaleFactor = 2.16;
+  const globalScaleFactor = 1.08;
   let scaleFactor;
 
   if (isMobileDevice()) {
-    const mobileReferenceWidth = 900; // Use width for mobile scaling
+    const mobileReferenceWidth = 450; // Use width for mobile scaling
     const currentWidth = window.innerWidth;
     scaleFactor = currentWidth / mobileReferenceWidth;
 
