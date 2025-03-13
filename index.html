@@ -837,6 +837,12 @@ function adjustScale(force = false) {
 
   if (isMobileDevice()) {
     scaleFactor *= mobileGlobalScaleFactor; // Apply mobile scaling factor
+    
+    // Reset initialScaleFactor when switching back to portrait
+    if (!isLandscape()) {
+      initialScaleFactor = null; 
+    }
+
     if (initialScaleFactor === null || force) {
       initialScaleFactor = Math.max(scaleFactor, MIN_SCALE); // Lock in scale
     }
@@ -853,11 +859,7 @@ function adjustScale(force = false) {
   }
 
   // Handle mobile horizontal overflow
-  if (isMobileDevice() && !isLandscape()) {
-    document.body.style.overflowX = "hidden"; // Hide horizontal scroll on mobile portrait
-  } else {
-    document.body.style.overflowX = "auto"; // Allow overflow in landscape mode
-  }
+  document.body.style.overflowX = isMobileDevice() && !isLandscape() ? "hidden" : "auto";
 
   scaleApplied = true;
 }
@@ -884,6 +886,7 @@ window.addEventListener("orientationchange", () => {
 
     // Explicitly reset the width of the body to match the new viewport
     document.body.style.width = "100vw"; // Ensure the width is recalculated
+    initialScaleFactor = null; // Reset initial scaling to allow recalculation
     adjustScale(true); // Reapply the scale
 
     // Reset scroll position
@@ -897,6 +900,7 @@ window.addEventListener("orientationchange", () => {
 
 // Initial scaling on load
 adjustScale();
+
 
 
 
