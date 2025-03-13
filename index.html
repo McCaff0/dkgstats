@@ -817,15 +817,11 @@ document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 let initialScaleFactor = null;
 let scaleApplied = false;
 let mobileScaleApplied = false; // Flag: mobile scaling applied already
-const MIN_SCALE = 0.5; // Minimum scale threshold
-
-// Global scaling factors:
-const globalScaleFactor = 1.08;       // For desktop scaling
-const mobileGlobalScaleFactor = 1.0;    // For mobile scaling (adjust this as needed)
-const TARGET_MOBILE_WIDTH = 500;        // Theoretical mobile width for rendering
+const MIN_SCALE = 0.5;       // Minimum scale threshold
+const mobileGlobalScaleFactor = 1.0; // Mobile global scaling factor (adjust as needed)
 
 function isMobileDevice() {
-  // Only treat as mobile if the viewport width is less than 768 and it supports touch
+  // Consider the device mobile only if it's below 768px wide and supports touch
   return window.innerWidth < 768 && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 }
 
@@ -835,17 +831,18 @@ function adjustScale(force = false) {
   let scaleFactor;
 
   if (isMobileDevice()) {
-    // Calculate mobile scaling using a theoretical width
-    const currentWidth = window.innerWidth;
-    scaleFactor = (currentWidth / TARGET_MOBILE_WIDTH) * mobileGlobalScaleFactor;
+    // Mobile: use height-only scaling with a theoretical reference height
+    const mobileReferenceHeight = 900; // Theoretical height for mobile
+    const currentHeight = window.innerHeight;
+    scaleFactor = (currentHeight / mobileReferenceHeight) * mobileGlobalScaleFactor;
 
-    // Only apply mobile scaling once to avoid flicker from address bar changes
+    // Only apply mobile scaling once to lock in the initial scale
     if (!mobileScaleApplied) {
       initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
       if (initialScaleFactor < MIN_SCALE) {
         initialScaleFactor = MIN_SCALE;
       }
-
+      
       document.body.style.transform = `scale(${initialScaleFactor})`;
       document.body.style.transformOrigin = "top center";
       document.body.style.height = `${window.innerHeight / initialScaleFactor}px`;
@@ -853,10 +850,10 @@ function adjustScale(force = false) {
       mobileScaleApplied = true;
     }
   } else {
-    // Desktop scaling: use height-based scaling
+    // Desktop: use height-based scaling as before
     const referenceHeight = 973;
     const currentHeight = window.innerHeight;
-    scaleFactor = (currentHeight / referenceHeight) * globalScaleFactor;
+    scaleFactor = (currentHeight / referenceHeight) * 1.08;
 
     initialScaleFactor = force ? scaleFactor : (initialScaleFactor ?? scaleFactor);
     if (initialScaleFactor < MIN_SCALE) {
@@ -877,12 +874,12 @@ let resizeTimeout;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
-    // Only reapply scaling on desktop; mobile scaling remains locked
+    // On desktop, allow recalculation; mobile scaling remains locked
     if (!isMobileDevice()) {
       scaleApplied = false;
       adjustScale(true);
     }
-  }, 100);
+  }, 100); // Adjust delay as needed
 });
 
 // Apply scale after charts/data are loaded
@@ -893,6 +890,7 @@ function fetchDataAndApplyScale() {
 
 // Initial scaling on load
 adjustScale();
+
 
 
 
