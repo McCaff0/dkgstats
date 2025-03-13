@@ -839,12 +839,6 @@ function adjustScale(force = false) {
   if (isMobileDevice()) {
     scaleFactor *= mobileGlobalScaleFactor;
 
-    if (!isLandscape()) {
-      console.log("Resetting scale: Returning to portrait mode");
-      initialScaleFactor = 1; // Force it to match initial load
-      mobileScaleApplied = false; // Unlock scaling for recalculation
-    }
-
     if (!mobileScaleApplied) {
       initialScaleFactor = Math.max(scaleFactor, MIN_SCALE);
       mobileScaleApplied = true;
@@ -863,6 +857,29 @@ function adjustScale(force = false) {
   scaleApplied = true;
 }
 
+// Helper function to detect when the viewport size stops changing
+function waitForViewportStabilization(callback) {
+  let previousHeight = window.innerHeight;
+  let stabilizationAttempts = 0;
+
+  function checkHeight() {
+    if (window.innerHeight === previousHeight) {
+      stabilizationAttempts++;
+    } else {
+      stabilizationAttempts = 0; // Reset if height changes
+      previousHeight = window.innerHeight;
+    }
+
+    if (stabilizationAttempts > 5) {
+      callback();
+    } else {
+      requestAnimationFrame(checkHeight);
+    }
+  }
+
+  checkHeight();
+}
+
 // Handle window resizing
 let resizeTimeout;
 window.addEventListener("resize", () => {
@@ -875,27 +892,22 @@ window.addEventListener("resize", () => {
   }, 100);
 });
 
-// Handle orientation change to ensure proper scaling reset
+// Handle orientation change with viewport stabilization
 window.addEventListener("orientationchange", () => {
-  setTimeout(() => {
-    console.log("Orientation changed - forcing full reset");
-    scaleApplied = false;
-    initialScaleFactor = null;
-    mobileScaleApplied = false;
+  console.log("Orientation changed - waiting for viewport to stabilize...");
 
-    // Ensure the scale is exactly 1 when switching back to portrait
-    if (!isLandscape()) {
-      console.log("Forcing initial scale back to 1");
-      initialScaleFactor = 1;
-    }
+  scaleApplied = false;
+  initialScaleFactor = null;
+  mobileScaleApplied = false;
 
+  waitForViewportStabilization(() => {
+    console.log("Viewport stabilized - applying correct scale");
     adjustScale(true);
-  }, 300);
+  });
 });
 
 // Initial scaling on load
 adjustScale();
-
 
 
 
