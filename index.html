@@ -818,7 +818,7 @@ document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 
 let initialScaleFactor = null;
 let scaleApplied = false;
-let mobileScaleApplied = false; // Ensures mobile scaling only applies once per session
+let mobileScaleApplied = false;
 const MIN_SCALE = 0.5;
 const mobileGlobalScaleFactor = 0.95;
 const REFERENCE_HEIGHT = 973;
@@ -839,16 +839,15 @@ function adjustScale(force = false) {
   if (isMobileDevice()) {
     scaleFactor *= mobileGlobalScaleFactor;
 
-    // Reset scale if switching **back** to portrait
     if (!isLandscape()) {
       console.log("Resetting scale: Returning to portrait mode");
-      initialScaleFactor = null;
-      mobileScaleApplied = false; // Unlock mobile scaling
+      initialScaleFactor = 1; // Force it to match initial load
+      mobileScaleApplied = false; // Unlock scaling for recalculation
     }
 
     if (!mobileScaleApplied) {
       initialScaleFactor = Math.max(scaleFactor, MIN_SCALE);
-      mobileScaleApplied = true; // Lock scaling for mobile
+      mobileScaleApplied = true;
     }
     scaleFactor = initialScaleFactor;
   } else {
@@ -881,8 +880,14 @@ window.addEventListener("orientationchange", () => {
   setTimeout(() => {
     console.log("Orientation changed - forcing full reset");
     scaleApplied = false;
-    initialScaleFactor = null; // Completely reset initial scale factor
-    mobileScaleApplied = false; // Allow fresh mobile scaling
+    initialScaleFactor = null;
+    mobileScaleApplied = false;
+
+    // Ensure the scale is exactly 1 when switching back to portrait
+    if (!isLandscape()) {
+      console.log("Forcing initial scale back to 1");
+      initialScaleFactor = 1;
+    }
 
     adjustScale(true);
   }, 300);
@@ -890,6 +895,7 @@ window.addEventListener("orientationchange", () => {
 
 // Initial scaling on load
 adjustScale();
+
 
 
 
