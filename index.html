@@ -837,10 +837,10 @@ function adjustScale(force = false) {
 
   if (isMobileDevice()) {
     scaleFactor *= mobileGlobalScaleFactor; // Apply mobile scaling factor
-    
+
     // Reset initialScaleFactor when switching back to portrait
     if (!isLandscape()) {
-      initialScaleFactor = null; 
+      initialScaleFactor = null;
     }
 
     if (initialScaleFactor === null || force) {
@@ -859,7 +859,14 @@ function adjustScale(force = false) {
   }
 
   // Handle mobile horizontal overflow
-  document.body.style.overflowX = isMobileDevice() && !isLandscape() ? "hidden" : "auto";
+  if (isMobileDevice()) {
+    if (!isLandscape()) {
+      document.body.style.overflowX = "hidden"; // Hide horizontal scroll on mobile portrait
+      document.body.style.left = "0"; // Reset position
+    } else {
+      document.body.style.overflowX = "auto"; // Allow overflow in landscape mode
+    }
+  }
 
   scaleApplied = true;
 }
@@ -883,23 +890,26 @@ window.addEventListener("orientationchange", () => {
   setTimeout(() => {
     // Force a recalculation of scaling
     scaleApplied = false;
+    initialScaleFactor = null; // Reset to ensure proper recalculation
 
-    // Explicitly reset the width of the body to match the new viewport
-    document.body.style.width = "100vw"; // Ensure the width is recalculated
-    initialScaleFactor = null; // Reset initial scaling to allow recalculation
+    // Reset width and positioning to avoid left-side cut-off
+    document.body.style.width = "100vw";
+    document.body.style.left = "0"; 
+
     adjustScale(true); // Reapply the scale
 
     // Reset scroll position
     document.documentElement.scrollLeft = 0;
     document.documentElement.scrollTop = 0;
 
-    // Optionally reset body overflow
-    document.body.style.overflowX = isLandscape() ? "auto" : "hidden"; // Adjust overflow behavior based on orientation
+    // Ensure overflow is correctly set for portrait mode
+    document.body.style.overflowX = isLandscape() ? "auto" : "hidden";
   }, 300); // Ensure there's enough time for the layout to adjust
 });
 
 // Initial scaling on load
 adjustScale();
+
 
 
 
