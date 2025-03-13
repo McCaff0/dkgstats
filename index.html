@@ -854,50 +854,16 @@ function adjustScale(force = false) {
   document.body.style.height = `${window.innerHeight / scaleFactor}px`;
   document.body.style.width = "100vw";
 
+  // ✅ Move logging **here**, inside adjustScale()
+  console.log("---- Scaling Info ----");
+  console.log("Window Dimensions: ", window.innerWidth, "x", window.innerHeight);
+  console.log("Initial Scale Factor: ", initialScaleFactor);
+  console.log("Calculated Scale Factor: ", scaleFactor);
+  console.log("Scale Applied: ", scaleApplied);
+  console.log("----------------------");
+
   scaleApplied = true;
 }
-
-    console.log("---- Scaling Info ----");
-console.log("Window Dimensions: ", window.innerWidth, "x", window.innerHeight);
-console.log("Initial Scale Factor: ", initialScaleFactor);
-console.log("Calculated Scale Factor: ", scaleFactor);
-console.log("Scale Applied: ", scaleApplied);
-console.log("----------------------");
-
-// Helper function to detect when the viewport size stops changing
-function waitForViewportStabilization(callback) {
-  let previousHeight = window.innerHeight;
-  let stabilizationAttempts = 0;
-
-  function checkHeight() {
-    if (window.innerHeight === previousHeight) {
-      stabilizationAttempts++;
-    } else {
-      stabilizationAttempts = 0; // Reset if height changes
-      previousHeight = window.innerHeight;
-    }
-
-    if (stabilizationAttempts > 5) {
-      callback();
-    } else {
-      requestAnimationFrame(checkHeight);
-    }
-  }
-
-  checkHeight();
-}
-
-// Handle window resizing
-let resizeTimeout;
-window.addEventListener("resize", () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    if (!isMobileDevice()) {
-      scaleApplied = false;
-      adjustScale(true);
-    }
-  }, 100);
-});
 
 // Handle orientation change with viewport stabilization
 window.addEventListener("orientationchange", () => {
@@ -913,13 +879,11 @@ window.addEventListener("orientationchange", () => {
   setTimeout(() => {
     console.log("Reapplying scaling after orientation change...");
     adjustScale(true);
-  }, 500); // Give enough time for viewport to settle
+  }, 500);
 });
 
 // Initial scaling on load
 adjustScale();
-
-
 
 
     window.addEventListener("resize", () => {
