@@ -762,21 +762,6 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
 }
 
-function adjustFontSize() {
-  const referenceHeight = window.innerHeight; // current viewport height
-  const baseFontSize = 16;                    // base font size in px at reference height (973)
-  const scalingFactor = referenceHeight / 973;
-  const newFontSize = baseFontSize * scalingFactor * 1.07;  // computed root font size
-  
-  // Set the root font-size (affects rem units)
-  document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
-}
-
-// Add listeners to adjust font size on window resize and load
-window.addEventListener('resize', adjustFontSize);
-window.addEventListener('load', adjustFontSize);
-
-
 
 function fetchChartData() {
     let hasSuccessfulFetch = false;
@@ -841,6 +826,19 @@ function fetchChartData() {
 // Add this line once on load to smooth transitions
 document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 
+function adjustFontSize() {
+    const referenceHeight = Math.min(window.innerHeight, window.screen.height); 
+    const baseFontSize = 16;
+    const scalingFactor = referenceHeight / 973;
+    const newFontSize = baseFontSize * scalingFactor * 1.07;
+
+    document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+}
+
+window.addEventListener('resize', adjustFontSize);
+window.addEventListener('load', adjustFontSize);
+
+    
 function resizeCharts() {
     const canvas = document.querySelector(".graph-box canvas");
     if (canvas) {
