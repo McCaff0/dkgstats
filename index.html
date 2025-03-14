@@ -587,7 +587,7 @@ function renderPriceChart(priceLabels, priceValues, animate = false) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: shouldAnimate ? { duration: 500, easing: 'easeInOutQuad' } : false,
+                animation: shouldAnimate ? { duration: 300, easing: 'easeInOutQuad' } : false,
                 scales: {
                     x: {
                         grid: {
@@ -683,7 +683,7 @@ function renderSpendChart(spendLabels, spendValues, animate = false) {
                 responsive: true,
                 maintainAspectRatio: false,
                 // Use animation on first load
-                animation: { duration: 500, easing: 'easeInOutQuad' },
+                animation: { duration: 300, easing: 'easeInOutQuad' },
                 scales: {
                     x: {
                         grid: {
@@ -779,7 +779,7 @@ function renderPublishesChart(publishesLabels, publishesValues) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 800, easing: 'easeInOutQuad' },
+                animation: { duration: 300, easing: 'easeInOutQuad' },
                 scales: {
                     x: {
                         grid: {
