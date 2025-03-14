@@ -472,6 +472,35 @@ h1 {
               let isFirstSpendLoad = true;
               let isFirstPublishesLoad = true;
 
+function resizeCharts() {
+    // Get the root font size in pixels
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+    // Calculate dynamic font sizes based on rem
+    const tickFontSize = rootFontSize * 0.75;  // 0.75rem = 12px when base is 16px
+    const labelFontSize = rootFontSize * 0.875; // 0.875rem = 14px when base is 16px
+
+    // Array of chart instances to update
+    const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
+
+    chartInstances.forEach(chart => {
+        if (chart) {
+            chart.options.scales.x.ticks.font.size = tickFontSize;
+            chart.options.scales.y.ticks.font.size = tickFontSize;
+            chart.options.scales.y.title.font.size = labelFontSize;
+            chart.update();
+        }
+    });
+}
+
+// Resize event listeners
+window.addEventListener("resize", resizeCharts);
+window.addEventListener("orientationchange", () => setTimeout(resizeCharts, 200));
+
+// Run once to set initial sizes
+resizeCharts();
+    
+
 function renderPriceChart(priceLabels, priceValues, animate = false) {
     const canvas = document.getElementById('PriceChart');
     if (!canvas) {
@@ -838,34 +867,6 @@ function adjustFontSize() {
 
 window.addEventListener('resize', adjustFontSize);
 window.addEventListener('load', adjustFontSize);
-    
-function resizeCharts() {
-    // Get the root font size in pixels
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-
-    // Calculate dynamic font sizes based on rem
-    const tickFontSize = rootFontSize * 0.75;  // 0.75rem = 12px when base is 16px
-    const labelFontSize = rootFontSize * 0.875; // 0.875rem = 14px when base is 16px
-
-    // Array of chart instances to update
-    const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
-
-    chartInstances.forEach(chart => {
-        if (chart) {
-            chart.options.scales.x.ticks.font.size = tickFontSize;
-            chart.options.scales.y.ticks.font.size = tickFontSize;
-            chart.options.scales.y.title.font.size = labelFontSize;
-            chart.update();
-        }
-    });
-}
-
-// Resize event listeners
-window.addEventListener("resize", resizeCharts);
-window.addEventListener("orientationchange", () => setTimeout(resizeCharts, 200));
-
-// Run once to set initial sizes
-resizeCharts();
     
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
