@@ -491,8 +491,33 @@ function updateFontSizesAndPadding() {
     };
 }
 
+let stableHeight = null; // Store the locked height for mobile devices
+
+// ✅ Detect if the device allows true window resizing
+function hasTrueWindowResizing() {
+    // If no touch support → it's a desktop/laptop (true resizing allowed)
+    if (!('ontouchstart' in window)) return true;
+
+    // If the device is large enough (tablet in desktop mode) → allow resizing
+    return window.matchMedia("(min-width: 1024px)").matches;
+}
+
+// ✅ Adjusts font size based on a stable height reference
 function adjustFontSize() {
-    const referenceHeight = Math.min(window.innerHeight, window.screen.height);
+    let referenceHeight;
+
+    if (hasTrueWindowResizing()) {
+        // Desktop & resizable tablets → allow dynamic scaling
+        referenceHeight = Math.min(window.innerHeight, window.screen.height);
+        stableHeight = null; // Ensure it remains dynamic
+    } else {
+        // Mobile devices → lock height to prevent address bar effect
+        if (stableHeight === null) {
+            stableHeight = Math.min(window.innerHeight, window.screen.height);
+        }
+        referenceHeight = stableHeight; // Lock scaling
+    }
+
     const baseFontSize = 16;
     const scalingFactor = referenceHeight / 973;
     let newFontSize = baseFontSize * scalingFactor * 1.07;
@@ -507,25 +532,19 @@ function adjustFontSize() {
         const maxWidth = 0.98 * viewportWidth;
 
         if (containerWidth > maxWidth) {
-            const widthRatio = maxWidth / containerWidth; // **Fix the ratio calculation**
-            newFontSize *= widthRatio; // Scale **down**, not up
+            const widthRatio = maxWidth / containerWidth;
+            newFontSize *= widthRatio; // Scale down
         }
 
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
-        
         updateFontSizesAndPadding(); // Update font sizes & padding
         resizeCharts(); // Resize charts
     });
 }
 
-
-// Run `adjustFontSize()` on resize, but prevent unnecessary rescaling
-window.addEventListener("resize", adjustFontSize);
-
-
-// Function to resize charts dynamically
+// ✅ Resize charts dynamically
 function resizeCharts() {
-    updateFontSizesAndPadding(); // Ensure font sizes & padding are updated before applying them
+    updateFontSizesAndPadding();
 
     const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
 
@@ -534,21 +553,21 @@ function resizeCharts() {
             chart.options.scales.x.ticks.font.size = tickFontSize;
             chart.options.scales.y.ticks.font.size = tickFontSize;
             chart.options.scales.y.title.font.size = labelFontSize;
-
-            // Apply dynamic padding
             chart.options.layout.padding = chartPadding;
-
             chart.update();
         }
     });
 }
 
-// ✅ Improved event listeners to ensure real-time resizing
+// ✅ Event listeners
 window.addEventListener('resize', adjustFontSize);
-window.addEventListener('orientationchange', () => setTimeout(adjustFontSize, 200));
+window.addEventListener('orientationchange', () => {
+    stableHeight = null; // Reset for new orientation
+    setTimeout(adjustFontSize, 200); // Delay to allow correct height detection
+});
 window.addEventListener('load', () => {
-    adjustFontSize(); // Ensures initial font & padding setup
-    resizeCharts();   // Ensures charts start with correct settings
+    adjustFontSize();
+    resizeCharts();
 
     // Render charts with empty data initially
     renderPriceChart([], [], false);
@@ -559,7 +578,6 @@ window.addEventListener('load', () => {
     fetchChartData();
     fetchData();
 });
-
 
    
 
