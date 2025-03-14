@@ -477,7 +477,7 @@ let isFirstPublishesLoad = true;
 let tickFontSize;
 let labelFontSize;
 
-// Function to calculate font sizes
+// Function to calculate font sizes based on REM scaling
 function updateFontSizes() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
     tickFontSize = rootFontSize * 0.75;  // 0.75rem (12px if base is 16px)
@@ -491,10 +491,14 @@ function adjustFontSize() {
     const scalingFactor = referenceHeight / 973;
     const newFontSize = baseFontSize * scalingFactor * 1.07;
 
+    // Apply new root font size
     document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
 
-    // Update font sizes after changing root font size
+    // Update font sizes **AFTER** changing root font size
     updateFontSizes();
+
+    // Trigger chart resizing to apply new font sizes
+    resizeCharts();
 }
 
 // Function to resize charts dynamically
@@ -513,9 +517,9 @@ function resizeCharts() {
     });
 }
 
-// Event listeners for resizing and loading
-window.addEventListener('resize', adjustFontSize);
-window.addEventListener('orientationchange', () => setTimeout(resizeCharts, 200));
+// ✅ Improved event listeners to ensure real-time resizing
+window.addEventListener('resize', adjustFontSize);  // Adjust root font + update charts
+window.addEventListener('orientationchange', () => setTimeout(adjustFontSize, 200));
 window.addEventListener('load', () => {
     adjustFontSize(); // Ensures initial font size setup
     resizeCharts();   // Ensures charts start with correct font size
@@ -529,6 +533,7 @@ window.addEventListener('load', () => {
     fetchChartData();
     fetchData();
 });
+
    
 
 function renderPriceChart(priceLabels, priceValues, animate = false) {
