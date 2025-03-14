@@ -491,32 +491,45 @@ function updateFontSizesAndPadding() {
     };
 }
 
+let lastKnownHeight = window.innerHeight; // Store the initial height
+
 function adjustFontSize() {
-    const referenceHeight = Math.min(window.innerHeight, window.screen.height);
+    const currentHeight = window.innerHeight;
+    const heightDifference = Math.abs(currentHeight - lastKnownHeight);
+
+    // Ignore small height changes (less than 100px) to prevent rescaling from the address bar
+    if (heightDifference < 100) return; 
+
+    lastKnownHeight = currentHeight; // Update stored height
+
+    const referenceHeight = Math.min(currentHeight, window.screen.height);
     const baseFontSize = 16;
     const scalingFactor = referenceHeight / 973;
     let newFontSize = baseFontSize * scalingFactor * 1.07;
 
     const container = document.querySelector('.container');
-    if (!container) return; // Ensure container exists
+    if (!container) return;
 
-    // Wait for the next frame to ensure layout is updated
     requestAnimationFrame(() => {
         const containerWidth = container.offsetWidth;
         const viewportWidth = window.innerWidth;
         const maxWidth = 0.98 * viewportWidth;
 
         if (containerWidth > maxWidth) {
-            const widthRatio = maxWidth / containerWidth; // **Fix the ratio calculation**
-            newFontSize *= widthRatio; // Scale **down**, not up
+            const widthRatio = maxWidth / containerWidth;
+            newFontSize *= widthRatio;
         }
 
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
         
-        updateFontSizesAndPadding(); // Update font sizes & padding
-        resizeCharts(); // Resize charts
+        updateFontSizesAndPadding();
+        resizeCharts();
     });
 }
+
+// Run `adjustFontSize()` on resize, but prevent unnecessary rescaling
+window.addEventListener("resize", adjustFontSize);
+
 
 // Function to resize charts dynamically
 function resizeCharts() {
