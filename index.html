@@ -763,71 +763,61 @@ function renderPublishesChart(publishesLabels, publishesValues) {
 }
 
 function adjustFontSize() {
-  const referenceHeight = window.innerHeight; // current viewport height
-  const baseFontSize = 16;                    // base font size in px at reference height (973)
-  const scalingFactor = referenceHeight / 973;
-  const newFontSize = baseFontSize * scalingFactor * 1.07;  // your computed root font size
-  
-  // Set the root font-size (affects rem units)
-  document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
-  
-  // Now, calculate the font size for ticks and axis labels
-  const newTickFontSize = 12 * scalingFactor;    // Ticks should remain proportionally 12px
-  const newAxisLabelFontSize = 14 * scalingFactor;  // Axis labels should remain proportionally 14px
-
-  // Update Chart.js global defaults for font sizes
-  Chart.defaults.font.size = newFontSize;  // Default font size for the chart
-
-  // Update x and y axis tick font size
-  if (!Chart.defaults.scales.x) Chart.defaults.scales.x = {};
-  if (!Chart.defaults.scales.x.ticks) Chart.defaults.scales.x.ticks = {};
-  Chart.defaults.scales.x.ticks.font = { size: newTickFontSize, family: 'Play, sans-serif' };
-  
-  if (!Chart.defaults.scales.y) Chart.defaults.scales.y = {};
-  if (!Chart.defaults.scales.y.ticks) Chart.defaults.scales.y.ticks = {};
-  Chart.defaults.scales.y.ticks.font = { size: newTickFontSize, family: 'Play, sans-serif' };
-
-  // Update axis labels font size (for x and y axis titles)
-  if (!Chart.defaults.scales.x.title) Chart.defaults.scales.x.title = {};
-  Chart.defaults.scales.x.title.font = { size: newAxisLabelFontSize, family: 'Play, sans-serif' };
-
-  if (!Chart.defaults.scales.y.title) Chart.defaults.scales.y.title = {};
-  Chart.defaults.scales.y.title.font = { size: newAxisLabelFontSize, family: 'Play, sans-serif' };
-
-  // Update title and legend font size for Chart.js plugins (if you want to set custom sizes)
-  if (!Chart.defaults.plugins.title) Chart.defaults.plugins.title = {};
-  Chart.defaults.plugins.title.font = { size: newFontSize, family: 'Play, sans-serif' };
-
-  if (!Chart.defaults.plugins.legend) Chart.defaults.plugins.legend = {};
-  Chart.defaults.plugins.legend.labels = { font: { size: newFontSize, family: 'Play, sans-serif' } };
-
-  // If you have a specific chart instance (e.g., PublishesChartInstance), update its options
-  if (typeof PublishesChartInstance !== 'undefined' && PublishesChartInstance) {
-    PublishesChartInstance.options.font = { size: newFontSize, family: 'Play, sans-serif' };
+    const referenceHeight = window.innerHeight; // current viewport height
+    const baseFontSize = 16;                    // base font size at reference height (973)
+    const scalingFactor = referenceHeight / 973;
+    const newFontSize = baseFontSize * scalingFactor * 1.07; // Computed root font size
     
-    if (PublishesChartInstance.options.scales && PublishesChartInstance.options.scales.x && PublishesChartInstance.options.scales.x.ticks) {
-      PublishesChartInstance.options.scales.x.ticks.font = { size: newTickFontSize, family: 'Play, sans-serif' };
-    }
+    // Set the root font-size (affects rem units)
+    document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
     
-    if (PublishesChartInstance.options.scales && PublishesChartInstance.options.scales.y && PublishesChartInstance.options.scales.y.ticks) {
-      PublishesChartInstance.options.scales.y.ticks.font = { size: newTickFontSize, family: 'Play, sans-serif' };
+    // Adjust Chart Font Sizes
+    const newTickFontSize = Math.max(12 * scalingFactor, 10); // Ensure it doesn't get too small
+    const newAxisTitleFontSize = Math.max(14 * scalingFactor, 12); // Ensure it stays readable
+    const newChartElementSize = Math.max(2 * scalingFactor, 1.5); // Line thickness, point radius, etc.
+
+    // Apply to Chart.js Global Defaults
+    Chart.defaults.font.size = newFontSize;
+    
+    Chart.defaults.scales.x.ticks.font = { size: newTickFontSize, family: 'Play, sans-serif' };
+    Chart.defaults.scales.y.ticks.font = { size: newTickFontSize, family: 'Play, sans-serif' };
+
+    Chart.defaults.scales.x.title.font = { size: newAxisTitleFontSize, family: 'Play, sans-serif' };
+    Chart.defaults.scales.y.title.font = { size: newAxisTitleFontSize, family: 'Play, sans-serif' };
+
+    Chart.defaults.plugins.title.font = { size: newAxisTitleFontSize, family: 'Play, sans-serif' };
+    Chart.defaults.plugins.legend.labels.font = { size: newFontSize, family: 'Play, sans-serif' };
+
+    // Function to update each chart instance
+    function updateChartInstance(chartInstance) {
+        if (chartInstance) {
+            chartInstance.options.scales.x.ticks.font.size = newTickFontSize;
+            chartInstance.options.scales.y.ticks.font.size = newTickFontSize;
+
+            chartInstance.options.scales.x.title.font.size = newAxisTitleFontSize;
+            chartInstance.options.scales.y.title.font.size = newAxisTitleFontSize;
+
+            // Scale the chart elements (line thickness, point radius)
+            chartInstance.data.datasets.forEach(dataset => {
+                dataset.borderWidth = newChartElementSize;
+                dataset.pointRadius = newChartElementSize * 2; // Adjust point radius
+                dataset.pointHoverRadius = newChartElementSize * 3;
+            });
+
+            chartInstance.update();
+        }
     }
 
-    if (PublishesChartInstance.options.scales && PublishesChartInstance.options.scales.x && PublishesChartInstance.options.scales.x.title) {
-      PublishesChartInstance.options.scales.x.title.font = { size: newAxisLabelFontSize, family: 'Play, sans-serif' };
-    }
-
-    if (PublishesChartInstance.options.scales && PublishesChartInstance.options.scales.y && PublishesChartInstance.options.scales.y.title) {
-      PublishesChartInstance.options.scales.y.title.font = { size: newAxisLabelFontSize, family: 'Play, sans-serif' };
-    }
-    
-    PublishesChartInstance.update();
-  }
+    // Update all three charts
+    updateChartInstance(PublishesChartInstance);
+    updateChartInstance(PriceChartInstance);
+    updateChartInstance(SpendChartInstance);
 }
 
-// Add listeners to adjust font size on window resize and load
+// Apply on resize and page load
 window.addEventListener('resize', adjustFontSize);
 window.addEventListener('load', adjustFontSize);
+
 
 function fetchChartData() {
     let hasSuccessfulFetch = false;
