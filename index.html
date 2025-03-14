@@ -473,15 +473,22 @@ let isFirstDataLoad = true;
 let isFirstSpendLoad = true;
 let isFirstPublishesLoad = true;
 
-// Global font size variables
-let tickFontSize;
-let labelFontSize;
+// Global font size & padding variables
+let tickFontSize, labelFontSize, chartPadding;
 
-// Function to calculate font sizes based on REM scaling
-function updateFontSizes() {
+// Function to calculate font sizes & padding dynamically
+function updateFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
     tickFontSize = rootFontSize * 0.75;  // 0.75rem (12px if base is 16px)
     labelFontSize = rootFontSize * 0.875; // 0.875rem (14px if base is 16px)
+
+    // Scale padding dynamically (base padding * scaling factor)
+    chartPadding = {
+        left: rootFontSize * 0.625,   // 10px when base is 16px
+        right: rootFontSize * 1.5625, // 25px when base is 16px
+        top: rootFontSize * 1.5625,   // 25px when base is 16px
+        bottom: rootFontSize * 0      // No bottom padding
+    };
 }
 
 // Function to adjust root font size based on window height
@@ -494,16 +501,16 @@ function adjustFontSize() {
     // Apply new root font size
     document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
 
-    // Update font sizes **AFTER** changing root font size
-    updateFontSizes();
+    // Update font sizes & padding **AFTER** changing root font size
+    updateFontSizesAndPadding();
 
-    // Trigger chart resizing to apply new font sizes
+    // Trigger chart resizing to apply new font sizes & padding
     resizeCharts();
 }
 
 // Function to resize charts dynamically
 function resizeCharts() {
-    updateFontSizes(); // Ensure font sizes are updated before applying them
+    updateFontSizesAndPadding(); // Ensure font sizes & padding are updated before applying them
 
     const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
 
@@ -512,17 +519,21 @@ function resizeCharts() {
             chart.options.scales.x.ticks.font.size = tickFontSize;
             chart.options.scales.y.ticks.font.size = tickFontSize;
             chart.options.scales.y.title.font.size = labelFontSize;
+
+            // Apply dynamic padding
+            chart.options.layout.padding = chartPadding;
+
             chart.update();
         }
     });
 }
 
 // ✅ Improved event listeners to ensure real-time resizing
-window.addEventListener('resize', adjustFontSize);  // Adjust root font + update charts
+window.addEventListener('resize', adjustFontSize);
 window.addEventListener('orientationchange', () => setTimeout(adjustFontSize, 200));
 window.addEventListener('load', () => {
-    adjustFontSize(); // Ensures initial font size setup
-    resizeCharts();   // Ensures charts start with correct font size
+    adjustFontSize(); // Ensures initial font & padding setup
+    resizeCharts();   // Ensures charts start with correct settings
 
     // Render charts with empty data initially
     renderPriceChart([], [], false);
@@ -533,6 +544,7 @@ window.addEventListener('load', () => {
     fetchChartData();
     fetchData();
 });
+
 
    
 
