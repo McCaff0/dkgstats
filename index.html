@@ -847,16 +847,34 @@ function getRemSize(rem) {
 }
     
 function resizeCharts() {
-    const canvas = document.querySelector(".graph-box canvas");
-    if (canvas) {
-        canvas.style.width = "100%"; // Ensures it fills the container
-        canvas.style.height = "100%"; // Keeps aspect ratio
+    // Get all canvas elements inside the graph-box
+    const canvases = document.querySelectorAll(".graph-box canvas");
+
+    canvases.forEach((canvas) => {
+        if (canvas) {
+            canvas.style.width = "100%"; // Ensures it fills the container
+            canvas.style.height = "100%"; // Keeps aspect ratio, you can modify this if you want to lock aspect ratio
+        }
+    });
+
+    // Trigger chart resize for each chart instance
+    if (PriceChartInstance) {
+        PriceChartInstance.resize();
+    }
+    if (SpendChartInstance) {
+        SpendChartInstance.resize();
+    }
+    if (PublishesChartInstance) {
+        PublishesChartInstance.resize();
     }
 }
 
+// Add resize listener
 window.addEventListener("resize", resizeCharts);
+
+// Add orientationchange listener for mobile landscape/portrait changes
 window.addEventListener("orientationchange", () => {
-    setTimeout(resizeCharts, 200); // Small delay to let reflow happen
+    setTimeout(resizeCharts, 200); // Small delay to allow reflow to happen before resizing
 });
     
     renderPriceChart([], [], false);
