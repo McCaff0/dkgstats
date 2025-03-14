@@ -547,12 +547,32 @@ function adjustFontSize() {
     });
 }
 
-// ✅ Event listeners for resizing and orientation changes
+// ✅ Resize charts dynamically
+function resizeCharts() {
+    updateFontSizesAndPadding();
+
+    const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
+
+    chartInstances.forEach(chart => {
+        if (chart) {
+            chart.options.scales.x.ticks.font.size = tickFontSize;
+            chart.options.scales.y.ticks.font.size = tickFontSize;
+            chart.options.scales.y.title.font.size = labelFontSize;
+            chart.options.layout.padding = chartPadding;
+            chart.update();
+        }
+    });
+}
+
+// ✅ Event listeners
 window.addEventListener('resize', adjustFontSize);
-window.addEventListener('orientationchange', () => setTimeout(adjustFontSize, 200));
+window.addEventListener('orientationchange', () => {
+    stableHeight = null; // Reset for new orientation
+    setTimeout(adjustFontSize, 200); // Delay to allow correct height detection
+});
 window.addEventListener('load', () => {
-    adjustFontSize(); // Ensures initial font & padding setup
-    resizeCharts();   // Ensures charts start with correct settings
+    adjustFontSize();
+    resizeCharts();
 
     // Render charts with empty data initially
     renderPriceChart([], [], false);
@@ -563,7 +583,6 @@ window.addEventListener('load', () => {
     fetchChartData();
     fetchData();
 });
-
 
    
 
