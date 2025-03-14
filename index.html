@@ -763,60 +763,19 @@ function renderPublishesChart(publishesLabels, publishesValues) {
 }
 
 function adjustFontSize() {
-    const referenceHeight = window.innerHeight; // current viewport height
-    const baseFontSize = 16;                    // base font size at reference height (973)
-    const scalingFactor = referenceHeight / 973;
-    const newFontSize = baseFontSize * scalingFactor * 1.07; // Computed root font size
-    
-    // Set the root font-size (affects rem units)
-    document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
-    
-    // Adjust Chart Font Sizes
-    const newTickFontSize = Math.max(12 * scalingFactor, 10); // Ensure it doesn't get too small
-    const newAxisTitleFontSize = Math.max(14 * scalingFactor, 12); // Ensure it stays readable
-    const newChartElementSize = Math.max(2 * scalingFactor, 1.5); // Line thickness, point radius, etc.
-
-    // Apply to Chart.js Global Defaults
-    Chart.defaults.font.size = newFontSize;
-    
-    Chart.defaults.scales.x.ticks.font = { size: newTickFontSize, family: 'Play, sans-serif' };
-    Chart.defaults.scales.y.ticks.font = { size: newTickFontSize, family: 'Play, sans-serif' };
-
-    Chart.defaults.scales.x.title.font = { size: newAxisTitleFontSize, family: 'Play, sans-serif' };
-    Chart.defaults.scales.y.title.font = { size: newAxisTitleFontSize, family: 'Play, sans-serif' };
-
-    Chart.defaults.plugins.title.font = { size: newAxisTitleFontSize, family: 'Play, sans-serif' };
-    Chart.defaults.plugins.legend.labels.font = { size: newFontSize, family: 'Play, sans-serif' };
-
-    // Function to update each chart instance
-    function updateChartInstance(chartInstance) {
-        if (chartInstance) {
-            chartInstance.options.scales.x.ticks.font.size = newTickFontSize;
-            chartInstance.options.scales.y.ticks.font.size = newTickFontSize;
-
-            chartInstance.options.scales.x.title.font.size = newAxisTitleFontSize;
-            chartInstance.options.scales.y.title.font.size = newAxisTitleFontSize;
-
-            // Scale the chart elements (line thickness, point radius)
-            chartInstance.data.datasets.forEach(dataset => {
-                dataset.borderWidth = newChartElementSize;
-                dataset.pointRadius = newChartElementSize * 2; // Adjust point radius
-                dataset.pointHoverRadius = newChartElementSize * 3;
-            });
-
-            chartInstance.update();
-        }
-    }
-
-    // Update all three charts
-    updateChartInstance(PublishesChartInstance);
-    updateChartInstance(PriceChartInstance);
-    updateChartInstance(SpendChartInstance);
+  const referenceHeight = window.innerHeight; // current viewport height
+  const baseFontSize = 16;                    // base font size in px at reference height (973)
+  const scalingFactor = referenceHeight / 973;
+  const newFontSize = baseFontSize * scalingFactor * 1.07;  // computed root font size
+  
+  // Set the root font-size (affects rem units)
+  document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
 }
 
-// Apply on resize and page load
+// Add listeners to adjust font size on window resize and load
 window.addEventListener('resize', adjustFontSize);
 window.addEventListener('load', adjustFontSize);
+
 
 
 function fetchChartData() {
