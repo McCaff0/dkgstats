@@ -841,12 +841,18 @@ function fetchChartData() {
 // Add this line once on load to smooth transitions
 document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
 
-    window.addEventListener("resize", () => {
+function resizeCharts() {
     const canvas = document.querySelector(".graph-box canvas");
-      
+    if (canvas) {
+        canvas.style.width = "100%"; // Ensures it fills the container
+        canvas.style.height = "100%"; // Keeps aspect ratio
+    }
+}
+
+window.addEventListener("resize", resizeCharts);
+window.addEventListener("orientationchange", () => {
+    setTimeout(resizeCharts, 200); // Small delay to let reflow happen
 });
-
-
     
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
