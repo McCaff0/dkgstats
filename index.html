@@ -523,7 +523,7 @@ function adjustFontSize() {
     let newFontSize = baseFontSize * scalingFactor * 1.07;
 
     // ✅ Minimum scaling logic (50% of screen height)
-    const minScaleFactor = 0.5; // Minimum scale factor (50% of screen height)
+    const minScaleFactor = 0.6; // Minimum scale factor (50% of screen height)
     const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
     newFontSize = Math.max(newFontSize, minFontSize); // Ensure the font size doesn't go below the minimum
 
