@@ -763,16 +763,45 @@ function renderPublishesChart(publishesLabels, publishesValues) {
 }
 
 function adjustFontSize() {
-  const referenceHeight = window.innerHeight; // viewport height
-  const baseFontSize = 16; // base font size in px for a reference height (e.g., 973)
-  const scalingFactor = referenceHeight / 973; // using 973 as the reference height
-  const newFontSize = baseFontSize * scalingFactor * 1.07; // scale up by 7%
-
-  // Set the font size on the root element (html) so that rem units scale accordingly.
+  const referenceHeight = window.innerHeight; // current viewport height
+  const baseFontSize = 16;                // base font size in px at reference height (973)
+  const scalingFactor = referenceHeight / 973;
+  const newFontSize = baseFontSize * scalingFactor * 1.07;  // your computed root font size
+  
+  // Set the root font-size (affects rem units)
   document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
-
-  const chartFontSize = newFontSize * (11 / 16);
-  Chart.defaults.font.size = chartFontSize;
+  
+  // Now, calculate a new chart font size.
+  // For example, if your design uses 14px when base is 16px:
+  const newChartFontSize = newFontSize * (12 / 16);
+  
+  // Update Chart.js global defaults for font sizes
+  Chart.defaults.font.size = newChartFontSize;
+  if (!Chart.defaults.scales.x) Chart.defaults.scales.x = {};
+  if (!Chart.defaults.scales.x.ticks) Chart.defaults.scales.x.ticks = {};
+  Chart.defaults.scales.x.ticks.font = { size: newChartFontSize, family: 'Play, sans-serif' };
+  
+  if (!Chart.defaults.scales.y) Chart.defaults.scales.y = {};
+  if (!Chart.defaults.scales.y.ticks) Chart.defaults.scales.y.ticks = {};
+  Chart.defaults.scales.y.ticks.font = { size: newChartFontSize, family: 'Play, sans-serif' };
+  
+  if (!Chart.defaults.plugins.title) Chart.defaults.plugins.title = {};
+  Chart.defaults.plugins.title.font = { size: newChartFontSize, family: 'Play, sans-serif' };
+  
+  if (!Chart.defaults.plugins.legend) Chart.defaults.plugins.legend = {};
+  Chart.defaults.plugins.legend.labels = { font: { size: newChartFontSize, family: 'Play, sans-serif' } };
+  
+  // If you have a specific chart instance (say PublishesChartInstance), update its options:
+  if (typeof PublishesChartInstance !== 'undefined' && PublishesChartInstance) {
+    PublishesChartInstance.options.font = { size: newChartFontSize, family: 'Play, sans-serif' };
+    if (PublishesChartInstance.options.scales && PublishesChartInstance.options.scales.x && PublishesChartInstance.options.scales.x.ticks) {
+      PublishesChartInstance.options.scales.x.ticks.font = { size: newChartFontSize, family: 'Play, sans-serif' };
+    }
+    if (PublishesChartInstance.options.scales && PublishesChartInstance.options.scales.y && PublishesChartInstance.options.scales.y.ticks) {
+      PublishesChartInstance.options.scales.y.ticks.font = { size: newChartFontSize, family: 'Play, sans-serif' };
+    }
+    PublishesChartInstance.update();
+  }
 }
 
 window.addEventListener('resize', adjustFontSize);
