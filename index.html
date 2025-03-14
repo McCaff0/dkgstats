@@ -841,22 +841,34 @@ function adjustFontSize() {
 
 window.addEventListener('resize', adjustFontSize);
 window.addEventListener('load', adjustFontSize);
-
-function getRemSize(rem) {
-    return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-}
     
-this is my resize chart function it looks different to yours function resizeCharts() {
-    const canvas = document.querySelector(".graph-box canvas");
-    if (canvas) {
-        canvas.style.width = "100%"; // Ensures it fills the container
-        canvas.style.height = "100%"; // Keeps aspect ratio
-    }
+function resizeCharts() {
+    // Get the root font size in pixels
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+    // Calculate dynamic font sizes based on rem
+    const tickFontSize = rootFontSize * 0.75;  // 0.75rem = 12px when base is 16px
+    const labelFontSize = rootFontSize * 0.875; // 0.875rem = 14px when base is 16px
+
+    // Array of chart instances to update
+    const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
+
+    chartInstances.forEach(chart => {
+        if (chart) {
+            chart.options.scales.x.ticks.font.size = tickFontSize;
+            chart.options.scales.y.ticks.font.size = tickFontSize;
+            chart.options.scales.y.title.font.size = labelFontSize;
+            chart.update();
+        }
+    });
 }
 
+// Resize event listeners
 window.addEventListener("resize", resizeCharts);
-window.addEventListener("orientationchange", () => {
-    setTimeout(resizeCharts, 200); // Small delay to let reflow happen
+window.addEventListener("orientationchange", () => setTimeout(resizeCharts, 200));
+
+// Run once to set initial sizes
+resizeCharts();
 });
     
     renderPriceChart([], [], false);
