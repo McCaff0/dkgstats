@@ -763,18 +763,17 @@ function renderPublishesChart(publishesLabels, publishesValues) {
 }
 
 function adjustFontSize() {
-  const referenceHeight = window.innerHeight; // viewport height
-  const baseFontSize = 16; // base font size in px for a reference height (e.g., 1080p)
-  const scalingFactor = referenceHeight / 973; // adjust if needed
-  const newFontSize = baseFontSize * scalingFactor;
-  
-  // Set the font size on the html element
+  const referenceHeight = window.innerHeight; // current viewport height
+  const baseFontSize = 16; // base font size in px for the reference height
+  const scalingFactor = referenceHeight / 973; // using 973 as the reference height
+  const newFontSize = baseFontSize * scalingFactor * 1.07; // scale up by 7%
+
+  // Set the font size on the html element (affects rem units)
   document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
 }
 
 window.addEventListener('resize', adjustFontSize);
 window.addEventListener('load', adjustFontSize);
-
 
 function fetchChartData() {
     let hasSuccessfulFetch = false;
