@@ -763,13 +763,21 @@ function renderPublishesChart(publishesLabels, publishesValues) {
 }
 
 function adjustFontSize() {
-  const referenceHeight = window.innerHeight; // current viewport height
-  const baseFontSize = 16; // base font size in px for the reference height
-  const scalingFactor = referenceHeight / 973; // using 973 as the reference height
-  const newFontSize = baseFontSize * scalingFactor * 1.07; // scale up by 7%
+  const referenceHeight = 973;          // Reference height
+  const baseFontSize = 16;              // Base font size in px
+  const scalingMultiplier = 1.07;       // Additional scale factor
 
-  // Set the font size on the html element (affects rem units)
-  document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+  // Calculate the font size based on the viewport height.
+  const computedFontSize = baseFontSize * (window.innerHeight / referenceHeight) * scalingMultiplier;
+  
+  // Calculate the maximum font size allowed so that container's max width (27.5625rem) doesn't exceed 96vw.
+  const maxFontSize = (0.96 * window.innerWidth) / 27.5625;
+  
+  // Final font size is the smaller of the two.
+  const finalFontSize = Math.min(computedFontSize, maxFontSize);
+  
+  // Set the font size on the root element (html) so that rem units scale accordingly.
+  document.documentElement.style.setProperty('font-size', `${finalFontSize}px`, 'important');
 }
 
 window.addEventListener('resize', adjustFontSize);
