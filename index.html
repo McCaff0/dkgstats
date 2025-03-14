@@ -522,6 +522,11 @@ function adjustFontSize() {
     const scalingFactor = referenceHeight / 973;
     let newFontSize = baseFontSize * scalingFactor * 1.07;
 
+    // ✅ Minimum scaling logic (50% of screen height)
+    const minScaleFactor = 0.5; // Minimum scale factor (50% of screen height)
+    const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
+    newFontSize = Math.max(newFontSize, minFontSize); // Ensure the font size doesn't go below the minimum
+
     const container = document.querySelector('.container');
     if (!container) return; // Ensure container exists
 
@@ -542,32 +547,12 @@ function adjustFontSize() {
     });
 }
 
-// ✅ Resize charts dynamically
-function resizeCharts() {
-    updateFontSizesAndPadding();
-
-    const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
-
-    chartInstances.forEach(chart => {
-        if (chart) {
-            chart.options.scales.x.ticks.font.size = tickFontSize;
-            chart.options.scales.y.ticks.font.size = tickFontSize;
-            chart.options.scales.y.title.font.size = labelFontSize;
-            chart.options.layout.padding = chartPadding;
-            chart.update();
-        }
-    });
-}
-
-// ✅ Event listeners
+// ✅ Event listeners for resizing and orientation changes
 window.addEventListener('resize', adjustFontSize);
-window.addEventListener('orientationchange', () => {
-    stableHeight = null; // Reset for new orientation
-    setTimeout(adjustFontSize, 200); // Delay to allow correct height detection
-});
+window.addEventListener('orientationchange', () => setTimeout(adjustFontSize, 200));
 window.addEventListener('load', () => {
-    adjustFontSize();
-    resizeCharts();
+    adjustFontSize(); // Ensures initial font & padding setup
+    resizeCharts();   // Ensures charts start with correct settings
 
     // Render charts with empty data initially
     renderPriceChart([], [], false);
@@ -578,6 +563,7 @@ window.addEventListener('load', () => {
     fetchChartData();
     fetchData();
 });
+
 
    
 
