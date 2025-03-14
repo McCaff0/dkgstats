@@ -492,7 +492,9 @@ function updateFontSizesAndPadding() {
 }
 
 function adjustFontSize() {
-    const referenceHeight = Math.min(window.innerHeight, window.screen.height);
+    // Use visualViewport height if available, else fallback to window.innerHeight
+    const referenceHeight = window.visualViewport ? window.visualViewport.height : Math.min(window.innerHeight, window.screen.height);
+
     const baseFontSize = 16;
     const scalingFactor = referenceHeight / 973;
     let newFontSize = baseFontSize * scalingFactor * 1.07;
@@ -511,12 +513,14 @@ function adjustFontSize() {
             newFontSize *= widthRatio; // Scale **down**, not up
         }
 
+        // Apply the new font size
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
         
         updateFontSizesAndPadding(); // Update font sizes & padding
         resizeCharts(); // Resize charts
     });
 }
+
 
 // Run `adjustFontSize()` on resize, but prevent unnecessary rescaling
 window.addEventListener("resize", adjustFontSize);
