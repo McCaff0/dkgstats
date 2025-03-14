@@ -495,28 +495,27 @@ function adjustFontSize() {
     const referenceHeight = Math.min(window.innerHeight, window.screen.height);
     const baseFontSize = 16;
     const scalingFactor = referenceHeight / 973;
-    let newFontSize = baseFontSize * scalingFactor * 1.07; // Change to `let` here for mutability
+    let newFontSize = baseFontSize * scalingFactor * 1.07;
 
     const container = document.querySelector('.container');
-    const containerWidth = container.offsetWidth;
-    const viewportWidth = window.innerWidth;
-    const maxWidth = 0.98 * viewportWidth;
+    if (!container) return; // Ensure container exists
 
-    // If the container width exceeds 98% of the viewport width, apply proportional scaling
-    if (containerWidth > maxWidth) {
-        const widthRatio = containerWidth / maxWidth;
-        // Scale the font size proportionally based on how much wider the container is
-        newFontSize *= widthRatio;
-    }
+    // Wait for the next frame to ensure layout is updated
+    requestAnimationFrame(() => {
+        const containerWidth = container.offsetWidth;
+        const viewportWidth = window.innerWidth;
+        const maxWidth = 0.98 * viewportWidth;
 
-    // Apply new root font size
-    document.documentElement.style.setProperty('font-size', `${newFontSize}px`, 'important');
+        if (containerWidth > maxWidth) {
+            const widthRatio = maxWidth / containerWidth; // **Fix the ratio calculation**
+            newFontSize *= widthRatio; // Scale **down**, not up
+        }
 
-    // Update font sizes & padding **AFTER** changing root font size
-    updateFontSizesAndPadding();
-
-    // Trigger chart resizing to apply new font sizes & padding
-    resizeCharts();
+        document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
+        
+        updateFontSizesAndPadding(); // Update font sizes & padding
+        resizeCharts(); // Resize charts
+    });
 }
 
 // Function to resize charts dynamically
