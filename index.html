@@ -765,7 +765,7 @@ function renderPublishesChart(publishesLabels, publishesValues) {
 function adjustFontSize() {
   const referenceHeight = window.innerHeight; // viewport height
   const baseFontSize = 16; // base font size in px for a reference height (e.g., 1080p)
-  const scalingFactor = referenceHeight / 1080; // adjust if needed
+  const scalingFactor = referenceHeight / 973; // adjust if needed
   const newFontSize = baseFontSize * scalingFactor;
   
   // Set the font size on the html element
@@ -838,7 +838,6 @@ function fetchChartData() {
 
 // Add this line once on load to smooth transitions
 document.body.style.transition = "transform 0.2s ease, height 0.2s ease";
-    document.body.style.fontSize = '16px';
 
     window.addEventListener("resize", () => {
     const canvas = document.querySelector(".graph-box canvas");
