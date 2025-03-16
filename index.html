@@ -508,11 +508,23 @@ function handleData(sheetData, chains) {
   const base = chains.base || {};
   const gnosis = chains.gnosis || {};
   
-  document.getElementById('neurowebstaked').innerText = formatNumber(neuroweb.stakedAmount, 0, true);
-  document.getElementById('baseapy').innerText = formatNumber(base.apy * 100, 2) + '%';
-  document.getElementById('gnosisepochrewards').innerText = formatNumber(gnosis.epochRewards, 0);
-  document.getElementById('neurowebepochpublishes').innerText = formatNumber(neuroweb.epochPublishes, 0);
-  // Repeat as necessary for other chains and their data
+    document.getElementById('neurowebstaked').innerText = formatNumber(chains.neuroweb.stakedAmount, 0, true);
+    document.getElementById('neurowebepochrewards').innerText = formatNumber(chains.neuroweb.epochRewards, 0, true);
+    document.getElementById('neurowebepochpublishes').innerText = formatNumber(chains.neuroweb.epochPublishes, 0);
+    document.getElementById('neurowebapy').innerText = formatNumber(chains.neuroweb.apy * 100, 2) + '%';
+    document.getElementById('neuroweboperatorfee').innerText = formatNumber(chains.neuroweb.operatorFee * 100, 2) + '%';
+  
+    document.getElementById('basestaked').innerText = formatNumber(chains.base.stakedAmount, 0, true);
+    document.getElementById('baseepochrewards').innerText = formatNumber(chains.base.epochRewards, 0, true);
+    document.getElementById('baseepochpublishes').innerText = formatNumber(chains.base.epochPublishes, 0);
+    document.getElementById('baseapy').innerText = formatNumber(chains.base.apy * 100, 2) + '%';
+    document.getElementById('baseoperatorfee').innerText = formatNumber(chains.base.operatorFee * 100, 2) + '%';
+
+    document.getElementById('gnosisstaked').innerText = formatNumber(chains.gnosis.stakedAmount, 0, true);
+    document.getElementById('gnosisepochrewards').innerText = formatNumber(chains.gnosis.epochRewards, 0, true);
+    document.getElementById('gnosisepochpublishes').innerText = formatNumber(chains.gnosis.epochPublishes, 0);
+    document.getElementById('gnosisapy').innerText = formatNumber(chains.gnosis.apy * 100, 2) + '%';
+    document.getElementById('gnosisoperatorfee').innerText = formatNumber(chains.gnosis.operatorFee * 100, 2) + '%';
 }
 
     
