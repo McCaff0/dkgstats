@@ -592,10 +592,10 @@ function handleData(sheetData, chains, records) {
   // Update the record values in the DOM
   document.getElementById('publishRecordDate').innerHTML = formatDate(publishRecord.date);
   document.getElementById('publishRecordValue').innerHTML = formatNumber(publishRecord.value, 0);
-
+if (tracspendrecord) {
   document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
   document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord?.value, 0) || 'N/A';
-
+}
   document.getElementById('usdSpendRecordDate').innerText = formatDate(usdSpendRecord?.date) || 'N/A';
   document.getElementById('usdSpendRecordValue').innerText = formatNumber(usdSpendRecord?.value, 2, true) || 'N/A';
   console.log("Publish Record Date Value:", publishRecord?.date);
