@@ -579,6 +579,7 @@ function handleData(sheetData, chains, records) {
   // ✅ Handle Records Data (New)
   if (records) {
     // Safely handle and format records
+    console.log('Records Data:', records); // Log records data for debugging
     const publishRecord = records.publishRecord || {};
     const tracSpendRecord = records.tracSpendRecord || {};
     const usdSpendRecord = records.usdSpendRecord || {};
