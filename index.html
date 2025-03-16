@@ -565,11 +565,21 @@ function resizeCharts() {
 }
 
 // ✅ Event listeners
-window.addEventListener('resize', adjustFontSize);
+window.addEventListener('resize', () => {
+    requestAnimationFrame(() => {
+        adjustFontSize();
+        resizeCharts();
+    });
+});
+
 window.addEventListener('orientationchange', () => {
     stableHeight = null; // Reset for new orientation
-    setTimeout(adjustFontSize, 200); // Delay to allow correct height detection
+    setTimeout(() => {
+        adjustFontSize();
+        resizeCharts();
+    }, 200); // Delay to allow correct height detection
 });
+
 window.addEventListener('load', () => {
     adjustFontSize();
     resizeCharts();
@@ -583,6 +593,7 @@ window.addEventListener('load', () => {
     fetchChartData();
     fetchData();
 });
+
 
    
 
