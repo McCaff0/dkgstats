@@ -542,7 +542,7 @@ function adjustFontSize() {
         // Directly update the font size
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
         updateFontSizesAndPadding(); // Update font sizes & padding
-        resizeCharts(); // Resize charts
+        resizeCharts(); // Resize charts immediately after font update
     });
 }
 
@@ -574,14 +574,8 @@ function handleResize() {
     // Smooth updates with requestAnimationFrame (recalculate font size and charts)
     requestAnimationFrame(() => {
         adjustFontSize();
-        resizeCharts();
+        resizeCharts(); // Resize charts immediately after font size is adjusted
     });
-
-    // 🔹 Apply final recalibration after animation completes
-    resizeTimeout = setTimeout(() => {
-        adjustFontSize();
-        resizeCharts();
-    }, 120); // Slightly longer than transition time
 }
 
 // ✅ Event Listeners
@@ -605,6 +599,7 @@ window.addEventListener('load', () => {
     fetchChartData();
     fetchData();
 });
+
 
 
 function renderPriceChart(priceLabels, priceValues, animate = false) {
