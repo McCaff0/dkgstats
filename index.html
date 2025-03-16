@@ -587,8 +587,8 @@ function handleData(sheetData, chains, records) {
   console.log("USD Spend Record:", records.usdSpendRecord);
 
   // Update the record values in the DOM
-  document.getElementById('publishRecordDate').innerHTML = formatDate(publishRecord?.date) || 'N/A';
-  document.getElementById('publishRecordValue').innerHTML = formatNumber(publishRecord?.value, 0) || 'N/A';
+  document.getElementById('publishRecordDate').innerText = formatDate(publishRecord?.date) || 'N/A';
+  document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord?.value, 0) || 'N/A';
 
   document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
   document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord?.value, 0) || 'N/A';
@@ -627,7 +627,9 @@ function fetchData() {
     })
     .catch(error => console.error('Error fetching data:', error));
 }
-
+document.addEventListener('DOMContentLoaded', function() {
+  fetchData();
+});
 // Chart instances
 let PriceChartInstance = null;
 let SpendChartInstance = null;
