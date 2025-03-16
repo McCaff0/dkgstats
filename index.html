@@ -132,11 +132,11 @@ h1 {
         color: #b4b7b8;
 }
       .stats-box:nth-of-type(1) {
-        height: 38rem;
+        height: 38.25rem;
 }
 
       .stats-box:nth-of-type(2) {
-        height:10.5rem;
+        height:10.25rem;
 }
 
       .half-line {
@@ -478,7 +478,7 @@ h1 {
              (label ? ' <span class="' + className + '">' + label + '</span>' : '');
       
     }
-function handleData(sheetData, chains) {
+function handleData(sheetData, chains, records) {
   if (!sheetData || !chains) return;
 
   // Handle general sheetData
@@ -503,11 +503,10 @@ function handleData(sheetData, chains) {
   document.getElementById('annualspendchange28d').innerHTML = formatPercentage(sheetData.annualspendchange28d, '28D');
   
   // Handle chains data
-  const neuroweb = chains.neuroweb || {}; // Default to empty object if neuroweb data is not available
-  const base = chains.base || {}; // Default to empty object if base data is not available
-  const gnosis = chains.gnosis || {}; // Default to empty object if gnosis data is not available
+  const neuroweb = chains.neuroweb || {};
+  const base = chains.base || {};
+  const gnosis = chains.gnosis || {};
   
-  // Neuroweb chain data
   if (neuroweb) {
     document.getElementById('neurowebstaked').innerText = formatNumber(neuroweb.stakedAmount, 0, true);
     document.getElementById('neurowebepochrewards').innerText = formatNumber(neuroweb.epochRewards, 0, true);
@@ -516,7 +515,6 @@ function handleData(sheetData, chains) {
     document.getElementById('neuroweboperatorfee').innerText = formatNumber(neuroweb.operatorFee * 100, 2) + '%';
   }
 
-  // Base chain data
   if (base) {
     document.getElementById('basestaked').innerText = formatNumber(base.stakedAmount, 0, true);
     document.getElementById('baseepochrewards').innerText = formatNumber(base.epochRewards, 0, true);
@@ -525,7 +523,6 @@ function handleData(sheetData, chains) {
     document.getElementById('baseoperatorfee').innerText = formatNumber(base.operatorFee * 100, 2) + '%';
   }
 
-  // Gnosis chain data
   if (gnosis) {
     document.getElementById('gnosisstaked').innerText = formatNumber(gnosis.stakedAmount, 0, true);
     document.getElementById('gnosisepochrewards').innerText = formatNumber(gnosis.epochRewards, 0, true);
@@ -533,27 +530,39 @@ function handleData(sheetData, chains) {
     document.getElementById('gnosisapy').innerText = formatNumber(gnosis.apy * 100, 2) + '%';
     document.getElementById('gnosisoperatorfee').innerText = formatNumber(gnosis.operatorFee * 100, 2) + '%';
   }
+
+  // ✅ Handle Records Data (New)
+  if (records) {
+    document.getElementById('publishRecordDate').innerText = records.publishRecord?.date || 'N/A';
+    document.getElementById('publishRecordValue').innerText = formatNumber(records.publishRecord?.value, 0);
+
+    document.getElementById('tracSpendRecordDate').innerText = records.tracSpendRecord?.date || 'N/A';
+    document.getElementById('tracSpendRecordValue').innerText = formatNumber(records.tracSpendRecord?.value, 0);
+
+    document.getElementById('usdSpendRecordDate').innerText = records.usdSpendRecord?.date || 'N/A';
+    document.getElementById('usdSpendRecordValue').innerText = formatNumber(records.usdSpendRecord?.value, 2, true);
+  }
 }
 
-    
 function fetchData() {
   const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
   
   fetch(FIREBASE_URL)
     .then(response => response.json())
     .then(data => {
-      // Extract the sheetData and chains from the response
       const sheetData = data.sheetData;
       const chains = data.chains;
-      
+      const records = data.records; // ✅ Fetch records data
+
       if (sheetData) {
-        handleData(sheetData, chains); // Pass both sheetData and chains to the handler
+        handleData(sheetData, chains, records); // ✅ Pass records to handler
       } else {
         console.error("Error: sheetData not found");
       }
     })
     .catch(error => console.error('Error fetching data:', error));
 }
+
 
 // Chart instances
 let PriceChartInstance = null;
