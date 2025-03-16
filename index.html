@@ -587,6 +587,7 @@ function handleData(sheetData, chains, records) {
   console.log("Publish Record:", records.publishRecord);
   console.log("Trac Spend Record:", records.tracSpendRecord);
   console.log("USD Spend Record:", records.usdSpendRecord);
+  console.log("Publish Record Structure:", publishRecord);
 
   // Update the record values in the DOM
   document.getElementById('publishRecordDate').innerText = formatDate(publishRecord?.date) || 'N/A';
