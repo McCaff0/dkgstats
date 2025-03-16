@@ -577,7 +577,7 @@ function handleData(sheetData, chains, records) {
   }
 
   // Handle Records Data (Publish, trac, USD Spend)
-  const publishRecord = records.publishRecord || {};
+  const publishRecord = records?.publishRecord || {};
   const tracSpendRecord = records.tracSpendRecord || {};
   const usdSpendRecord = records.usdSpendRecord || {};
 
