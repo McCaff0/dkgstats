@@ -564,20 +564,26 @@ function resizeCharts() {
     });
 }
 
-// ✅ Event listeners
-window.addEventListener('resize', () => {
+// ✅ Reliable Resize Handling
+function handleResize() {
     requestAnimationFrame(() => {
         adjustFontSize();
         resizeCharts();
     });
-});
 
-window.addEventListener('orientationchange', () => {
-    stableHeight = null; // Reset for new orientation
+    // Handle abrupt changes like maximize/restore on desktop
     setTimeout(() => {
         adjustFontSize();
         resizeCharts();
-    }, 200); // Delay to allow correct height detection
+    }, 50);
+}
+
+// ✅ Event Listeners
+window.addEventListener('resize', handleResize);
+
+window.addEventListener('orientationchange', () => {
+    stableHeight = null; // Reset for new orientation
+    setTimeout(handleResize, 200); // Delay to allow correct height detection
 });
 
 window.addEventListener('load', () => {
