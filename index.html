@@ -539,6 +539,7 @@ function adjustFontSize() {
             newFontSize *= widthRatio; // Scale down
         }
 
+        // Directly update the font size
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
         updateFontSizesAndPadding(); // Update font sizes & padding
         resizeCharts(); // Resize charts
@@ -547,7 +548,7 @@ function adjustFontSize() {
 
 // ✅ Resize charts dynamically
 function resizeCharts() {
-    updateFontSizesAndPadding();
+    updateFontSizesAndPadding(); // Update padding and font sizes
 
     const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
 
@@ -557,12 +558,12 @@ function resizeCharts() {
             chart.options.scales.y.ticks.font.size = tickFontSize;
             chart.options.scales.y.title.font.size = labelFontSize;
             chart.options.layout.padding = chartPadding;
-            chart.update();
+            chart.update(); // Directly update chart sizes
         }
     });
 }
 
-// ✅ Smooth Resize Handling
+// ✅ Smooth Resize Handling (No throttling)
 let resizeTimeout;
 let lastWidth = window.innerWidth;
 let lastHeight = window.innerHeight;
@@ -570,15 +571,7 @@ let lastHeight = window.innerHeight;
 function handleResize() {
     clearTimeout(resizeTimeout);
 
-    // Prevent excessive calculations by checking if size changed significantly
-    if (Math.abs(window.innerWidth - lastWidth) < 5 && Math.abs(window.innerHeight - lastHeight) < 5) {
-        return;
-    }
-
-    lastWidth = window.innerWidth;
-    lastHeight = window.innerHeight;
-
-    // Smooth updates with requestAnimationFrame
+    // Smooth updates with requestAnimationFrame (recalculate font size and charts)
     requestAnimationFrame(() => {
         adjustFontSize();
         resizeCharts();
@@ -600,8 +593,8 @@ window.addEventListener('orientationchange', () => {
 });
 
 window.addEventListener('load', () => {
-    adjustFontSize();
-    resizeCharts();
+    adjustFontSize(); // Initial font size adjustment
+    resizeCharts();   // Initial chart resize
 
     // Render charts with empty data initially
     renderPriceChart([], [], false);
@@ -613,8 +606,6 @@ window.addEventListener('load', () => {
     fetchData();
 });
 
-
-   
 
 function renderPriceChart(priceLabels, priceValues, animate = false) {
     const canvas = document.getElementById('PriceChart');
