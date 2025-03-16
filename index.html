@@ -583,8 +583,8 @@ function handleData(sheetData, chains, records) {
     const tracSpendRecord = records.tracSpendRecord || {};
     const usdSpendRecord = records.usdSpendRecord || {};
 
-    document.getElementById('publishRecordDate').innerText = formatDate(publishRecord?.date) || 'N/A';
-    document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord?.value, 0) || 'N/A';
+    document.getElementById('publishRecordDate').innerText = formatDate(publishRecord.date) || 'N/A';
+    document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord.value, 0) || 'N/A';
 
     document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
     document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord?.value, 0) || 'N/A';
