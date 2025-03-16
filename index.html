@@ -564,18 +564,22 @@ function resizeCharts() {
     });
 }
 
-// ✅ Reliable Resize Handling
+// ✅ Reliable Resize Handling with Animation Fix
+let resizeTimeout;
 function handleResize() {
+    clearTimeout(resizeTimeout);
+
+    // First, apply immediate updates
     requestAnimationFrame(() => {
         adjustFontSize();
         resizeCharts();
     });
 
-    // Handle abrupt changes like maximize/restore on desktop
-    setTimeout(() => {
+    // 🔹 Delay final adjustment to ensure animation is done (adjust this if needed)
+    resizeTimeout = setTimeout(() => {
         adjustFontSize();
         resizeCharts();
-    }, 50);
+    }, 120); // Wait slightly longer than your animation time (100ms → 120ms)
 }
 
 // ✅ Event Listeners
