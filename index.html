@@ -493,7 +493,7 @@ function handleData(sheetData, chains) {
   document.getElementById('publishpricetrac').innerText = formatNumber(sheetData.publishpricetrac, 6);
   document.getElementById('publishpriceusd').innerText = formatNumber(sheetData.publishpriceusd, 6);
   document.getElementById('stakingfee').innerText = formatNumber(sheetData.stakingfee * 100, 2) + '%';
-  document.getElementById('totalkas').innerText = formatNumber(sheetData.totalkas, 0)
+  document.getElementById('totalkas').innerText = formatNumber(sheetData.totalkas, 0);
   document.getElementById('kas24h').innerHTML = formatNumberChange(sheetData.kas24h, '(24H)');
   document.getElementById('totaltracspent').innerText = formatNumber(sheetData.totaltracspent, 0);
   document.getElementById('spend24h').innerHTML = formatNumberChange(sheetData.spend24h, '(24H)');
@@ -503,28 +503,36 @@ function handleData(sheetData, chains) {
   document.getElementById('annualspendchange28d').innerHTML = formatPercentage(sheetData.annualspendchange28d, '28D');
   
   // Handle chains data
-  // Access specific chains like neuroweb, base, or gnosis
-  const neuroweb = chains.neuroweb || {};
-  const base = chains.base || {};
-  const gnosis = chains.gnosis || {};
+  const neuroweb = chains.neuroweb || {}; // Default to empty object if neuroweb data is not available
+  const base = chains.base || {}; // Default to empty object if base data is not available
+  const gnosis = chains.gnosis || {}; // Default to empty object if gnosis data is not available
   
-    document.getElementById('neurowebstaked').innerText = formatNumber(chains.neuroweb.stakedAmount, 0, true);
-    document.getElementById('neurowebepochrewards').innerText = formatNumber(chains.neuroweb.epochRewards, 0, true);
-    document.getElementById('neurowebepochpublishes').innerText = formatNumber(chains.neuroweb.epochPublishes, 0);
-    document.getElementById('neurowebapy').innerText = formatNumber(chains.neuroweb.apy * 100, 2) + '%';
-    document.getElementById('neuroweboperatorfee').innerText = formatNumber(chains.neuroweb.operatorFee * 100, 2) + '%';
-  
-    document.getElementById('basestaked').innerText = formatNumber(chains.base.stakedAmount, 0, true);
-    document.getElementById('baseepochrewards').innerText = formatNumber(chains.base.epochRewards, 0, true);
-    document.getElementById('baseepochpublishes').innerText = formatNumber(chains.base.epochPublishes, 0);
-    document.getElementById('baseapy').innerText = formatNumber(chains.base.apy * 100, 2) + '%';
-    document.getElementById('baseoperatorfee').innerText = formatNumber(chains.base.operatorFee * 100, 2) + '%';
+  // Neuroweb chain data
+  if (neuroweb) {
+    document.getElementById('neurowebstaked').innerText = formatNumber(neuroweb.stakedAmount, 0, true);
+    document.getElementById('neurowebepochrewards').innerText = formatNumber(neuroweb.epochRewards, 0, true);
+    document.getElementById('neurowebepochpublishes').innerText = formatNumber(neuroweb.epochPublishes, 0);
+    document.getElementById('neurowebapy').innerText = formatNumber(neuroweb.apy * 100, 2) + '%';
+    document.getElementById('neuroweboperatorfee').innerText = formatNumber(neuroweb.operatorFee * 100, 2) + '%';
+  }
 
-    document.getElementById('gnosisstaked').innerText = formatNumber(chains.gnosis.stakedAmount, 0, true);
-    document.getElementById('gnosisepochrewards').innerText = formatNumber(chains.gnosis.epochRewards, 0, true);
-    document.getElementById('gnosisepochpublishes').innerText = formatNumber(chains.gnosis.epochPublishes, 0);
-    document.getElementById('gnosisapy').innerText = formatNumber(chains.gnosis.apy * 100, 2) + '%';
-    document.getElementById('gnosisoperatorfee').innerText = formatNumber(chains.gnosis.operatorFee * 100, 2) + '%';
+  // Base chain data
+  if (base) {
+    document.getElementById('basestaked').innerText = formatNumber(base.stakedAmount, 0, true);
+    document.getElementById('baseepochrewards').innerText = formatNumber(base.epochRewards, 0, true);
+    document.getElementById('baseepochpublishes').innerText = formatNumber(base.epochPublishes, 0);
+    document.getElementById('baseapy').innerText = formatNumber(base.apy * 100, 2) + '%';
+    document.getElementById('baseoperatorfee').innerText = formatNumber(base.operatorFee * 100, 2) + '%';
+  }
+
+  // Gnosis chain data
+  if (gnosis) {
+    document.getElementById('gnosisstaked').innerText = formatNumber(gnosis.stakedAmount, 0, true);
+    document.getElementById('gnosisepochrewards').innerText = formatNumber(gnosis.epochRewards, 0, true);
+    document.getElementById('gnosisepochpublishes').innerText = formatNumber(gnosis.epochPublishes, 0);
+    document.getElementById('gnosisapy').innerText = formatNumber(gnosis.apy * 100, 2) + '%';
+    document.getElementById('gnosisoperatorfee').innerText = formatNumber(gnosis.operatorFee * 100, 2) + '%';
+  }
 }
 
     
