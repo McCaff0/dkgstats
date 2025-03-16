@@ -590,8 +590,8 @@ function handleData(sheetData, chains, records) {
   console.log("Publish Record Structure:", publishRecord);
 
   // Update the record values in the DOM
-  document.getElementById('publishRecordDate').innerText = formatDate(publishRecord.date);
-  document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord.value, 0);
+  document.getElementById('publishRecordDate').innerHTML = formatDate(publishRecord.date);
+  document.getElementById('publishRecordValue').innerHTML = formatNumber(publishRecord.value, 0);
 
   document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
   document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord?.value, 0) || 'N/A';
