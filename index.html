@@ -26,7 +26,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html {
-        transition: font-size 0.1s ease;
+        transition: font-size 0.1s ease, padding 0.1s ease;
   }
         html, body {
         padding: 0;
@@ -199,6 +199,7 @@ h1 {
     position: relative; /* So the canvas can be positioned inside */
     align-items: center;
     justify-content: center;
+    transition: width 0.1s ease, height 0.1s ease, padding 0.1s ease;
 }
 
 .graph-box canvas {
@@ -564,22 +565,33 @@ function resizeCharts() {
     });
 }
 
-// ✅ Reliable Resize Handling with Animation Fix
+// ✅ Smooth Resize Handling
 let resizeTimeout;
+let lastWidth = window.innerWidth;
+let lastHeight = window.innerHeight;
+
 function handleResize() {
     clearTimeout(resizeTimeout);
 
-    // First, apply immediate updates
+    // Prevent excessive calculations by checking if size changed significantly
+    if (Math.abs(window.innerWidth - lastWidth) < 5 && Math.abs(window.innerHeight - lastHeight) < 5) {
+        return;
+    }
+
+    lastWidth = window.innerWidth;
+    lastHeight = window.innerHeight;
+
+    // Smooth updates with requestAnimationFrame
     requestAnimationFrame(() => {
         adjustFontSize();
         resizeCharts();
     });
 
-    // 🔹 Delay final adjustment to ensure animation is done (adjust this if needed)
+    // 🔹 Apply final recalibration after animation completes
     resizeTimeout = setTimeout(() => {
         adjustFontSize();
         resizeCharts();
-    }, 120); // Wait slightly longer than your animation time (100ms → 120ms)
+    }, 120); // Slightly longer than transition time
 }
 
 // ✅ Event Listeners
@@ -587,7 +599,7 @@ window.addEventListener('resize', handleResize);
 
 window.addEventListener('orientationchange', () => {
     stableHeight = null; // Reset for new orientation
-    setTimeout(handleResize, 200); // Delay to allow correct height detection
+    setTimeout(handleResize, 200); // Allow correct height detection
 });
 
 window.addEventListener('load', () => {
