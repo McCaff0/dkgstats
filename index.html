@@ -478,57 +478,62 @@ h1 {
              (label ? ' <span class="' + className + '">' + label + '</span>' : '');
       
     }
-function handleData(data) {
-  if (!data) return;
+function handleData(sheetData, chains) {
+  if (!sheetData || !chains) return;
 
-  document.getElementById('tracprice').innerText = formatNumber(data.tracprice, 4);
-  document.getElementById('marketcap').innerText = formatNumber(data.marketcap, 0, true);
-  document.getElementById('peratio').innerText = formatNumber(data.peratio, 1);
-  document.getElementById('tracstaked').innerText = formatNumber(data.tracstaked, 0, true);
-  document.getElementById('stakingapy').innerText = formatNumber(data.stakingapy * 100, 2) + '%';
-  document.getElementById('annualspend').innerText = formatNumber(data.annualspend, 0, true);
-  document.getElementById('dailyspend').innerText = formatNumber(data.dailyspend, 0, true);
-  document.getElementById('dailypublishes').innerText = formatNumber(data.dailypublishes, 0);
-  document.getElementById('publishpricetrac').innerText = formatNumber(data.publishpricetrac, 6);
-  document.getElementById('publishpriceusd').innerText = formatNumber(data.publishpriceusd, 6);
-  document.getElementById('stakingfee').innerText = formatNumber(data.stakingfee * 100, 2) + '%';
-  document.getElementById('totalkas').innerText = formatNumber(data.totalkas, 0);
-  document.getElementById('kas24h').innerHTML = formatNumberChange(data.kas24h, '(24H)');
-  document.getElementById('totaltracspent').innerText = formatNumber(data.totaltracspent, 0);
-  document.getElementById('spend24h').innerHTML = formatNumberChange(data.spend24h, '(24H)');
-  document.getElementById('activenodes').innerText = formatNumber(data.activenodes, 0);
-  document.getElementById('pricechange1d').innerHTML = formatPercentage(data.pricechange1d, '24H');
-  document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(data.dailypublisheschange28d, '28D');
-  document.getElementById('annualspendchange28d').innerHTML = formatPercentage(data.annualspendchange28d, '28D');
+  // Handle general sheetData
+  document.getElementById('tracprice').innerText = formatNumber(sheetData.tracprice, 4);
+  document.getElementById('marketcap').innerText = formatNumber(sheetData.marketcap, 0, true);
+  document.getElementById('peratio').innerText = formatNumber(sheetData.peratio, 1);
+  document.getElementById('tracstaked').innerText = formatNumber(sheetData.tracstaked, 0, true);
+  document.getElementById('stakingapy').innerText = formatNumber(sheetData.stakingapy * 100, 2) + '%';
+  document.getElementById('annualspend').innerText = formatNumber(sheetData.annualspend, 0, true);
+  document.getElementById('dailyspend').innerText = formatNumber(sheetData.dailyspend, 0, true);
+  document.getElementById('dailypublishes').innerText = formatNumber(sheetData.dailypublishes, 0);
+  document.getElementById('publishpricetrac').innerText = formatNumber(sheetData.publishpricetrac, 6);
+  document.getElementById('publishpriceusd').innerText = formatNumber(sheetData.publishpriceusd, 6);
+  document.getElementById('stakingfee').innerText = formatNumber(sheetData.stakingfee * 100, 2) + '%';
+  document.getElementById('totalkas').innerText = formatNumber(sheetData.totalkas, 0)
+  document.getElementById('kas24h').innerHTML = formatNumberChange(sheetData.kas24h, '(24H)');
+  document.getElementById('totaltracspent').innerText = formatNumber(sheetData.totaltracspent, 0);
+  document.getElementById('spend24h').innerHTML = formatNumberChange(sheetData.spend24h, '(24H)');
+  document.getElementById('activenodes').innerText = formatNumber(sheetData.activenodes, 0);
+  document.getElementById('pricechange1d').innerHTML = formatPercentage(sheetData.pricechange1d, '24H');
+  document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(sheetData.dailypublisheschange28d, '28D');
+  document.getElementById('annualspendchange28d').innerHTML = formatPercentage(sheetData.annualspendchange28d, '28D');
   
-  document.getElementById('neurowebstaked').innerText = formatNumber(data.chains.neuroweb.stakedAmount, 0, true);
-  document.getElementById('neurowebepochrewards').innerText = formatNumber(data.chains.neuroweb.epochRewards, 0);
-  document.getElementById('neurowebepochpublishes').innerText = formatNumber(data.chains.neuroweb.epochPublishes, 0);
-  document.getElementById('neurowebapy').innerText = formatNumber(data.chains.neuroweb.apy * 100, 2) + '%';
-  document.getElementById('neuroweboperatorfee').innerText = formatNumber(data.chains.neuroweb.operatorFee * 100, 2) + '%';
+  // Handle chains data
+  // Access specific chains like neuroweb, base, or gnosis
+  const neuroweb = chains.neuroweb || {};
+  const base = chains.base || {};
+  const gnosis = chains.gnosis || {};
   
-  document.getElementById('basestaked').innerText = formatNumber(data.chains.base.stakedAmount, 0, true);
-  document.getElementById('baseepochrewards').innerText = formatNumber(data.chains.base.epochRewards, 0);
-  document.getElementById('baseepochpublishes').innerText = formatNumber(data.chains.base.epochPublishes, 0);
-  document.getElementById('baseapy').innerText = formatNumber(data.chains.base.apy * 100, 2) + '%';
-  document.getElementById('baseoperatorfee').innerText = formatNumber(data.chains.base.operatorFee * 100, 2) + '%';
-  
-  document.getElementById('gnosisstaked').innerText = formatNumber(data.chains.gnosis.stakedAmount, 0, true);
-  document.getElementById('gnosisepochrewards').innerText = formatNumber(data.chains.gnosis.epochRewards, 0);
-  document.getElementById('gnosisepochpublishes').innerText = formatNumber(data.chains.gnosis.epochPublishes, 0);
-  document.getElementById('gnosisapy').innerText = formatNumber(data.chains.gnosis.apy * 100, 2) + '%';
-  document.getElementById('gnosisoperatorfee').innerText = formatNumber(data.chains.gnosis.operatorFee * 100, 2) + '%';
+  document.getElementById('neurowebstaked').innerText = formatNumber(neuroweb.stakedAmount, 0, true);
+  document.getElementById('baseapy').innerText = formatNumber(base.apy * 100, 2) + '%';
+  document.getElementById('gnosisepochrewards').innerText = formatNumber(gnosis.epochRewards, 0);
+  document.getElementById('neurowebepochpublishes').innerText = formatNumber(neuroweb.epochPublishes, 0);
+  // Repeat as necessary for other chains and their data
 }
 
     
-    function fetchData() {
-      const FIREBASE_URL = "https://dkgstats-b5839-default-rtdb.firebaseio.com/data/sheetData.json";
+function fetchData() {
+  const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
+  
+  fetch(FIREBASE_URL)
+    .then(response => response.json())
+    .then(data => {
+      // Extract the sheetData and chains from the response
+      const sheetData = data.sheetData;
+      const chains = data.chains;
       
-      fetch(FIREBASE_URL)
-        .then(response => response.json())
-        .then(data => handleData(data))
-        .catch(error => console.error('Error fetching data:', error));
-    }
+      if (sheetData) {
+        handleData(sheetData, chains); // Pass both sheetData and chains to the handler
+      } else {
+        console.error("Error: sheetData not found");
+      }
+    })
+    .catch(error => console.error('Error fetching data:', error));
+}
 
 // Chart instances
 let PriceChartInstance = null;
