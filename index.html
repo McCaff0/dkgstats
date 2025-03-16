@@ -580,6 +580,10 @@ function handleData(sheetData, chains, records) {
   const publishRecord = records.publishRecord || {};
   const tracSpendRecord = records.tracSpendRecord || {};
   const usdSpendRecord = records.usdSpendRecord || {};
+  console.log("Records Data:", records); 
+  console.log("Publish Record:", records.publishRecord);
+console.log("Trac Spend Record:", records.tracSpendRecord);
+console.log("USD Spend Record:", records.usdSpendRecord);
 
   // Update the record values in the DOM
   document.getElementById('publishRecordDate').innerText = formatDate(publishRecord?.date) || 'N/A';
