@@ -266,6 +266,11 @@ h1 {
 .epoch-box:nth-of-type(3) {
     height: 13rem; /* Adjust the height of the second epoch-box */
 }
+    .date-value {
+  font-size: 0.9em;
+  color: #888; /* Lighter color for the date */
+  margin-left: 8px;
+}
 
 </style>
 
@@ -418,7 +423,34 @@ h1 {
   <div class="sub-container">
     <!-- Third container with empty graph-boxes -->
     <div class="container new">
-      <div class="stats-box new"></div>
+      <div class="stats-box new">
+  <h3>RECORDS</h3>
+  
+  <p>
+    <span>Publish Record</span>
+    <span class="value-container">
+      <span id="publishRecordValue" class="number-value">Loading...</span>
+      <span id="publishRecordDate" class="date-value"></span>
+    </span>
+  </p>
+  
+  <p>
+    <span>TRAC Spend Record</span>
+    <span class="value-container">
+      <span id="tracSpendRecordValue" class="number-value">Loading...</span>
+      <span id="tracSpendRecordDate" class="date-value"></span>
+    </span>
+  </p>
+
+  <p>
+    <span>USD Spend Record</span>
+    <span class="value-container">
+      <span id="usdSpendRecordValue" class="number-value">Loading...</span>
+      <span id="usdSpendRecordDate" class="date-value"></span>
+    </span>
+  </p>
+
+</div>
       <div class="epoch-box"></div>
       <div class="epoch-box"></div>
     </div>
@@ -478,6 +510,12 @@ h1 {
              (label ? ' <span class="' + className + '">' + label + '</span>' : '');
       
     }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return "N/A";
+      const date = new Date(timestamp);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
 function handleData(sheetData, chains, records) {
   if (!sheetData || !chains) return;
 
@@ -532,16 +570,17 @@ function handleData(sheetData, chains, records) {
   }
 
   // ✅ Handle Records Data (New)
-  if (records) {
-    document.getElementById('publishRecordDate').innerText = records.publishRecord?.date || 'N/A';
+if (records) {
+    document.getElementById('publishRecordDate').innerText = formatDate(records.publishRecord?.date);
     document.getElementById('publishRecordValue').innerText = formatNumber(records.publishRecord?.value, 0);
 
-    document.getElementById('tracSpendRecordDate').innerText = records.tracSpendRecord?.date || 'N/A';
+    document.getElementById('tracSpendRecordDate').innerText = formatDate(records.tracSpendRecord?.date);
     document.getElementById('tracSpendRecordValue').innerText = formatNumber(records.tracSpendRecord?.value, 0);
 
-    document.getElementById('usdSpendRecordDate').innerText = records.usdSpendRecord?.date || 'N/A';
+    document.getElementById('usdSpendRecordDate').innerText = formatDate(records.usdSpendRecord?.date);
     document.getElementById('usdSpendRecordValue').innerText = formatNumber(records.usdSpendRecord?.value, 2, true);
-  }
+}
+
 }
 
 function fetchData() {
