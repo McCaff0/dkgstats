@@ -427,7 +427,7 @@ h1 {
   <h3>RECORDS</h3>
   
   <p>
-    <span>Publish Record</span>
+    <span>Daily Publishes</span>
     <span class="value-container">
       <span id="publishRecordValue" class="number-value">Loading...</span>
       <span id="publishRecordDate" class="date-value"></span>
@@ -435,7 +435,7 @@ h1 {
   </p>
   
   <p>
-    <span>TRAC Spend Record</span>
+    <span>Daily Spend (TRAC)</span>
     <span class="value-container">
       <span id="tracSpendRecordValue" class="number-value">Loading...</span>
       <span id="tracSpendRecordDate" class="date-value"></span>
@@ -443,7 +443,7 @@ h1 {
   </p>
 
   <p>
-    <span>USD Spend Record</span>
+    <span>Daily Spend (USD)</span>
     <span class="value-container">
       <span id="usdSpendRecordValue" class="number-value">Loading...</span>
       <span id="usdSpendRecordDate" class="date-value"></span>
@@ -577,17 +577,21 @@ function handleData(sheetData, chains, records) {
   }
 
   // ✅ Handle Records Data (New)
-if (records) {
-    document.getElementById('publishRecordDate').innerText = formatDate(records.publishRecord?.date);
-    document.getElementById('publishRecordValue').innerText = formatNumber(records.publishRecord?.value, 0);
+  if (records) {
+    // Safely handle and format records
+    const publishRecord = records.publishRecord || {};
+    const tracSpendRecord = records.tracSpendRecord || {};
+    const usdSpendRecord = records.usdSpendRecord || {};
 
-    document.getElementById('tracSpendRecordDate').innerText = formatDate(records.tracSpendRecord?.date);
-    document.getElementById('tracSpendRecordValue').innerText = formatNumber(records.tracSpendRecord?.value, 0);
+    document.getElementById('publishRecordDate').innerText = formatDate(publishRecord?.date) || 'N/A';
+    document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord?.value, 0) || 'N/A';
 
-    document.getElementById('usdSpendRecordDate').innerText = formatDate(records.usdSpendRecord?.date);
-    document.getElementById('usdSpendRecordValue').innerText = formatNumber(records.usdSpendRecord?.value, 2, true);
-}
+    document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
+    document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord?.value, 0) || 'N/A';
 
+    document.getElementById('usdSpendRecordDate').innerText = formatDate(usdSpendRecord?.date) || 'N/A';
+    document.getElementById('usdSpendRecordValue').innerText = formatNumber(usdSpendRecord?.value, 2, true) || 'N/A';
+  }
 }
 
 function fetchData() {
