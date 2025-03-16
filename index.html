@@ -576,7 +576,7 @@ function handleData(sheetData, chains, records) {
     document.getElementById('gnosisepochpublishes').innerText = formatNumber(gnosis.epochPublishes, 0);
     document.getElementById('gnosisapy').innerText = formatNumber(gnosis.apy * 100, 2) + '%';
     document.getElementById('gnosisoperatorfee').innerText = formatNumber(gnosis.operatorFee * 100, 2) + '%';
-  }
+  
 
   // Handle Records Data (Publish, trac, USD Spend)
   const publishRecord = records.publishRecord || {};
