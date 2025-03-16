@@ -524,7 +524,7 @@ h1 {
   });
 }
 function handleData(sheetData, chains, records) {
-  if (!sheetData || !chains) return;
+  if (!sheetData || !chains || !records) return;
 
   // Handle general sheetData
   document.getElementById('tracprice').innerText = formatNumber(sheetData.tracprice, 4);
@@ -546,12 +546,12 @@ function handleData(sheetData, chains, records) {
   document.getElementById('pricechange1d').innerHTML = formatPercentage(sheetData.pricechange1d, '24H');
   document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(sheetData.dailypublisheschange28d, '28D');
   document.getElementById('annualspendchange28d').innerHTML = formatPercentage(sheetData.annualspendchange28d, '28D');
-  
-  // Handle chains data
+
+  // Handle chains data (Neuroweb, Base, Gnosis)
   const neuroweb = chains.neuroweb || {};
   const base = chains.base || {};
   const gnosis = chains.gnosis || {};
-  
+
   if (neuroweb) {
     document.getElementById('neurowebstaked').innerText = formatNumber(neuroweb.stakedAmount, 0, true);
     document.getElementById('neurowebepochrewards').innerText = formatNumber(neuroweb.epochRewards, 0, true);
@@ -576,23 +576,20 @@ function handleData(sheetData, chains, records) {
     document.getElementById('gnosisoperatorfee').innerText = formatNumber(gnosis.operatorFee * 100, 2) + '%';
   }
 
-  // ✅ Handle Records Data (New)
-  if (records) {
-    // Safely handle and format records
-    console.log('Records Data:', records); // Log records data for debugging
-    const publishRecord = records.publishRecord || {};
-    const tracSpendRecord = records.tracSpendRecord || {};
-    const usdSpendRecord = records.usdSpendRecord || {};
+  // Handle Records Data (Publish, trac, USD Spend)
+  const publishRecord = records.publishRecord || {};
+  const tracSpendRecord = records.tracSpendRecord || {};
+  const usdSpendRecord = records.usdSpendRecord || {};
 
-    document.getElementById('publishRecordDate').innerText = formatDate(publishRecord?.date) || 'N/A';
-    document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord?.value, 0) || 'N/A';
+  // Update the record values in the DOM
+  document.getElementById('publishRecordDate').innerText = formatDate(publishRecord?.date) || 'N/A';
+  document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord?.value, 0) || 'N/A';
 
-    document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
-    document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord?.value, 0) || 'N/A';
+  document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
+  document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord?.value, 0) || 'N/A';
 
-    document.getElementById('usdSpendRecordDate').innerText = formatDate(usdSpendRecord?.date) || 'N/A';
-    document.getElementById('usdSpendRecordValue').innerText = formatNumber(usdSpendRecord?.value, 2, true) || 'N/A';
-  }
+  document.getElementById('usdSpendRecordDate').innerText = formatDate(usdSpendRecord?.date) || 'N/A';
+  document.getElementById('usdSpendRecordValue').innerText = formatNumber(usdSpendRecord?.value, 2, true) || 'N/A';
 }
 
 function fetchData() {
