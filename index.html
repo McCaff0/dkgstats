@@ -597,6 +597,7 @@ function handleData(sheetData, chains, records) {
 
   document.getElementById('usdSpendRecordDate').innerText = formatDate(usdSpendRecord?.date) || 'N/A';
   document.getElementById('usdSpendRecordValue').innerText = formatNumber(usdSpendRecord?.value, 2, true) || 'N/A';
+  console.log("Publish Record Date Value:", publishRecord?.date);
 }
 
 
