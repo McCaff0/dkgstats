@@ -623,19 +623,19 @@ function handleData(sheetData, chains, records) {
     // Render the three pie charts using the aggregated data.
     // Make sure you have container elements (or canvases) with these IDs in your HTML:
     // "publishespiechart", "rewardspiechart", and "stakedpiechart"
-    publishespiechartInstance = renderPieChart(
+    publishespiechartInstance = renderpiechart(
         document.getElementById('publishespiechart'),
         publishespiechartInstance,
         ['Neuroweb', 'Base', 'Gnosis'],
         publishValues
     );
-    rewardspiechartInstance = renderPieChart(
+    rewardspiechartInstance = renderpiechart(
         document.getElementById('rewardspiechart'),
         rewardspiechartInstance,
         ['Neuroweb', 'Base', 'Gnosis'],
         rewardValues
     );
-    stakedpiechartInstance = renderPieChart(
+    stakedpiechartInstance = renderpiechart(
         document.getElementById('stakedpiechart'),
         stakedpiechartInstance,
         ['Neuroweb', 'Base', 'Gnosis'],
@@ -827,9 +827,6 @@ window.addEventListener('load', () => {
     renderPriceChart([], [], false);
     renderSpendChart([], [], false);
     renderPublishesChart([], [], false);
-    renderpublishespiechart([], [], false);
-    renderrewardspiechart([], [], false);
-    renderstakedpiechart([], [], false);
 
     // Fetch actual data
     fetchChartData();
