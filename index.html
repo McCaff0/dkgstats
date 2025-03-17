@@ -1186,7 +1186,6 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
 }
 
-// Function to render Publishes Pie Chart
 function renderPublishesPieChart(data) {
     const ctx = document.getElementById("publishesPieChart").getContext("2d");
 
@@ -1195,42 +1194,20 @@ function renderPublishesPieChart(data) {
     }
 
     const total = data.reduce((sum, value) => sum + value, 0);
-    const labels = ["Neuroweb", "Base", "Gnosis"];
-    const imageUrls = [
-        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
-        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
-        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
-    ];
-    const colors = ["#262626", "#1f62a1", "#119949"]; // Grey, Blue, Green
-
-    // Combine labels, data, imageUrls, and colors into an array of objects
-    let combinedData = labels.map((label, i) => ({
-        label: label,
-        data: data[i],
-        percentage: (data[i] / total * 100).toFixed(2),
-        imageUrl: imageUrls[i],
-        color: colors[i]
-    }));
-
-    // Sort by percentage in descending order
-    combinedData.sort((a, b) => b.percentage - a.percentage);
-
-    // Extract sorted labels, data, imageUrls, and colors
-    const sortedLabels = combinedData.map(item => `${item.label} - ${item.percentage}%`);
-    const sortedData = combinedData.map(item => item.data);
-    const sortedImageUrls = combinedData.map(item => item.imageUrl);
-    const sortedColors = combinedData.map(item => item.color);
+    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
+        ${label} - ${(data[i] / total * 100).toFixed(2)}%
+    );
 
     window.publishesPieChartInstance = new Chart(ctx, {
-        type: "doughnut",
+        type: "doughnut", // Change "pie" to "doughnut" for a hollow ring
         data: {
-            labels: sortedLabels,
+            labels: labelsWithPercentages,
             datasets: [{
-                data: sortedData,
-                backgroundColor: sortedColors,
+                data: data,
+                backgroundColor: ["#262626", "#1f62a1", "#119949"],
                 hoverOffset: 10,
-                borderWidth: pieChartBorderWidth,
-                cutout: "50%"
+                borderWidth: pieChartBorderWidth,  // Removes outline
+                cutout: "50%" // Controls the size of the hole in the middle
             }]
         },
         options: {
@@ -1243,35 +1220,15 @@ function renderPublishesPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start",
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif",
-                            weight: "bold"
-                        },
-                        color: "#acafb0",
-                        padding: pieChartLegendPadding,
-                        generateLabels: (chart) => {
-                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-                            return labels.map((label, i) => {
-                                // Replace the default label with custom HTML
-                                label.text = sortedLabels[i];
-                                label.image = sortedImageUrls[i];
-                                label.fillStyle = sortedColors[i];
-                                return label;
-                            });
-                        },
-                        usePointStyle: true, // Use point style to remove the box
-                        pointStyle: 'circle', // Use circle as the point style
-                        render: (label) => {
-                            // Custom render function to include the image
-                            const img = new Image();
-                            img.src = label.image;
-                            img.width = 20;
-                            img.height = 20;
-                            return `${img.outerHTML} ${label.text}`;
-                        }
+            align: "start", // Ensures labels stack vertically
+            labels: {
+                font: {
+                    size: pieChartFontSize,
+                    family: "Play, sans-serif",
+                    weight: "bold"  // This makes the font bold
+                },
+                color: "#acafb0", // <-- Added missing comma here
+                padding: pieChartLegendPadding
                     }
                 }
             }
@@ -1288,39 +1245,17 @@ function renderRewardsPieChart(data) {
     }
 
     const total = data.reduce((sum, value) => sum + value, 0);
-    const labels = ["Neuroweb", "Base", "Gnosis"];
-    const imageUrls = [
-        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
-        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
-        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
-    ];
-    const colors = ["#262626", "#1f62a1", "#119949"]; // Grey, Blue, Green
-
-    // Combine labels, data, imageUrls, and colors into an array of objects
-    let combinedData = labels.map((label, i) => ({
-        label: label,
-        data: data[i],
-        percentage: (data[i] / total * 100).toFixed(2),
-        imageUrl: imageUrls[i],
-        color: colors[i]
-    }));
-
-    // Sort by percentage in descending order
-    combinedData.sort((a, b) => b.percentage - a.percentage);
-
-    // Extract sorted labels, data, imageUrls, and colors
-    const sortedLabels = combinedData.map(item => `${item.label} - ${item.percentage}%`);
-    const sortedData = combinedData.map(item => item.data);
-    const sortedImageUrls = combinedData.map(item => item.imageUrl);
-    const sortedColors = combinedData.map(item => item.color);
+    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
+        ${label} - ${(data[i] / total * 100).toFixed(2)}%
+    );
 
     window.rewardsPieChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: sortedLabels,
+            labels: labelsWithPercentages,
             datasets: [{
-                data: sortedData,
-                backgroundColor: sortedColors,
+                data: data,
+                backgroundColor: ["#262626", "#1f62a1", "#119949"],
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
                 cutout: "50%"
@@ -1336,35 +1271,15 @@ function renderRewardsPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start",
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif",
-                            weight: "bold"
-                        },
-                        color: "#acafb0",
-                        padding: pieChartLegendPadding,
-                        generateLabels: (chart) => {
-                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-                            return labels.map((label, i) => {
-                                // Replace the default label with custom HTML
-                                label.text = sortedLabels[i];
-                                label.image = sortedImageUrls[i];
-                                label.fillStyle = sortedColors[i];
-                                return label;
-                            });
-                        },
-                        usePointStyle: true, // Use point style to remove the box
-                        pointStyle: 'circle', // Use circle as the point style
-                        render: (label) => {
-                            // Custom render function to include the image
-                            const img = new Image();
-                            img.src = label.image;
-                            img.width = 20;
-                            img.height = 20;
-                            return `${img.outerHTML} ${label.text}`;
-                        }
+            align: "start", // Ensures labels stack vertically
+            labels: {
+                font: {
+                    size: pieChartFontSize,
+                    family: "Play, sans-serif",
+                    weight: "bold"  // This makes the font bold
+                },
+                color: "#acafb0", // <-- Added missing comma here
+                padding: pieChartLegendPadding
                     }
                 }
             }
@@ -1381,39 +1296,17 @@ function renderStakedPieChart(data) {
     }
 
     const total = data.reduce((sum, value) => sum + value, 0);
-    const labels = ["Neuroweb", "Base", "Gnosis"];
-    const imageUrls = [
-        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
-        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
-        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
-    ];
-    const colors = ["#262626", "#1f62a1", "#119949"]; // Grey, Blue, Green
-
-    // Combine labels, data, imageUrls, and colors into an array of objects
-    let combinedData = labels.map((label, i) => ({
-        label: label,
-        data: data[i],
-        percentage: (data[i] / total * 100).toFixed(2),
-        imageUrl: imageUrls[i],
-        color: colors[i]
-    }));
-
-    // Sort by percentage in descending order
-    combinedData.sort((a, b) => b.percentage - a.percentage);
-
-    // Extract sorted labels, data, imageUrls, and colors
-    const sortedLabels = combinedData.map(item => `${item.label} - ${item.percentage}%`);
-    const sortedData = combinedData.map(item => item.data);
-    const sortedImageUrls = combinedData.map(item => item.imageUrl);
-    const sortedColors = combinedData.map(item => item.color);
+    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
+        ${label} - ${(data[i] / total * 100).toFixed(2)}%
+    );
 
     window.stakedPieChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: sortedLabels,
+            labels: labelsWithPercentages,
             datasets: [{
-                data: sortedData,
-                backgroundColor: sortedColors,
+                data: data,
+                backgroundColor: ["#262626", "#1f62a1", "#119949"],
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
                 cutout: "50%"
@@ -1425,39 +1318,20 @@ function renderStakedPieChart(data) {
             aspectRatio: 1.5,
             layout: {
                 padding: pieChartLayoutPadding
+                
             },
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start",
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif",
-                            weight: "bold"
-                        },
-                        color: "#acafb0",
-                        padding: pieChartLegendPadding,
-                        generateLabels: (chart) => {
-                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-                            return labels.map((label, i) => {
-                                // Replace the default label with custom HTML
-                                label.text = sortedLabels[i];
-                                label.image = sortedImageUrls[i];
-                                label.fillStyle = sortedColors[i];
-                                return label;
-                            });
-                        },
-                        usePointStyle: true, // Use point style to remove the box
-                        pointStyle: 'circle', // Use circle as the point style
-                        render: (label) => {
-                            // Custom render function to include the image
-                            const img = new Image();
-                            img.src = label.image;
-                            img.width = 20;
-                            img.height = 20;
-                            return `${img.outerHTML} ${label.text}`;
-                        }
+            align: "start", // Ensures labels stack vertically
+            labels: {
+                font: {
+                    size: pieChartFontSize,
+                    family: "Play, sans-serif",
+                    weight: "bold"  // This makes the font bold
+                },
+                color: "#acafb0", // <-- Added missing comma here
+                padding: pieChartLegendPadding
                     }
                 }
             }
