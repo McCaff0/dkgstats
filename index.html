@@ -526,6 +526,10 @@ function formatDate(isoDate) {
   return result;
 }
 function handleData(sheetData, chains, records) {
+      console.log("✅ handleData received:");
+    console.log("➡ sheetData:", sheetData);
+    console.log("➡ chains:", chains);
+    console.log("➡ records:", records);
   if (!sheetData || !chains || !records) return;
 
   // Handle general sheetData
@@ -589,12 +593,12 @@ if (publishRecord) {
   document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord.value, 0);
 } 
 if (tracSpendRecord) {
-  document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
-  document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord?.value, 0) || 'N/A';
+  document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord.date);
+  document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord.value, 0);
 }
 if (usdSpendRecord) {  
-  document.getElementById('usdSpendRecordDate').innerText = formatDate(usdSpendRecord?.date) || 'N/A';
-  document.getElementById('usdSpendRecordValue').innerText = formatNumber(usdSpendRecord?.value, 2, true) || 'N/A';
+  document.getElementById('usdSpendRecordDate').innerText = formatDate(usdSpendRecord.date);
+  document.getElementById('usdSpendRecordValue').innerText = formatNumber(usdSpendRecord.value, 2, true);
 }
 }
 
