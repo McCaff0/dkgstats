@@ -1157,28 +1157,41 @@ function renderPublishesPieChart(data) {
         window.publishesPieChartInstance.destroy();
     }
 
+    const total = data.reduce((sum, value) => sum + value, 0);
+    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
+        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
+    );
+
     window.publishesPieChartInstance = new Chart(ctx, {
         type: "pie",
         data: {
-            labels: ["Neuroweb", "Base", "Gnosis"],
+            labels: labelsWithPercentages,
             datasets: [{
                 data: data,
                 backgroundColor: ["#595959", "#1f62a1", "#194029"],
-                hoverOffset: 10
+                hoverOffset: 10,
+                borderWidth: 0  // Removes outline
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false, // Allows custom sizing
+            aspectRatio: 1.5, // Makes the entire chart larger without distorting the circle
+            layout: {
+                padding: {
+                    top: 30 // Adjust spacing if needed
+                }
+            },
             plugins: {
                 legend: {
                     position: "right",
                     labels: {
                         font: {
-                            family: "Play",
-                            weight: "bold",
-                            size: 14
+                            size: labelFontSize,
+                            family: "Play, sans-serif"
                         },
-                        color: "#ffffff"  // White text for contrast
+                        color: "#acafb0",
+                        padding: 10 // Adjust spacing to fit labels better
                     }
                 }
             }
@@ -1194,28 +1207,41 @@ function renderRewardsPieChart(data) {
         window.rewardsPieChartInstance.destroy();
     }
 
+    const total = data.reduce((sum, value) => sum + value, 0);
+    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
+        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
+    );
+
     window.rewardsPieChartInstance = new Chart(ctx, {
         type: "pie",
         data: {
-            labels: ["Neuroweb", "Base", "Gnosis"],
+            labels: labelsWithPercentages,
             datasets: [{
                 data: data,
                 backgroundColor: ["#595959", "#1f62a1", "#194029"],
-                hoverOffset: 10
+                hoverOffset: 10,
+                borderWidth: 0
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            aspectRatio: 1.5,
+            layout: {
+                padding: {
+                    top: 30
+                }
+            },
             plugins: {
                 legend: {
                     position: "right",
                     labels: {
                         font: {
-                            family: "Play",
-                            weight: "bold",
-                            size: 14
+                            size: labelFontSize,
+                            family: "Play, sans-serif"
                         },
-                        color: "#ffffff"
+                        color: "#acafb0",
+                        padding: 10
                     }
                 }
             }
@@ -1231,35 +1257,47 @@ function renderStakedPieChart(data) {
         window.stakedPieChartInstance.destroy();
     }
 
+    const total = data.reduce((sum, value) => sum + value, 0);
+    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
+        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
+    );
+
     window.stakedPieChartInstance = new Chart(ctx, {
         type: "pie",
         data: {
-            labels: ["Neuroweb", "Base", "Gnosis"],
+            labels: labelsWithPercentages,
             datasets: [{
                 data: data,
                 backgroundColor: ["#595959", "#1f62a1", "#194029"],
-                hoverOffset: 10
+                hoverOffset: 10,
+                borderWidth: 0
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            aspectRatio: 1.5,
+            layout: {
+                padding: {
+                    top: 30
+                }
+            },
             plugins: {
                 legend: {
                     position: "right",
                     labels: {
                         font: {
-                            family: "Play",
-                            weight: "bold",
-                            size: 14
+                            size: labelFontSize,
+                            family: "Play, sans-serif"
                         },
-                        color: "#ffffff"
+                        color: "#acafb0",
+                        padding: 10
                     }
                 }
             }
         }
     });
 }
-
 
     
 function fetchChartData() {
