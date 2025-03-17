@@ -490,12 +490,9 @@ h1 {
     <span class="pie-space"></span>
   </div>
 
-  <!-- Third empty epoch-box -->
   <div class="epoch-box"></div>
-</div> <!-- Close the main container div -->
+</div>
 
-
-    <!-- Fourth container with empty graph-boxes -->
     <div class="container new">
       <div class="graph-box"></div>
       <div class="graph-box"></div>
@@ -554,13 +551,13 @@ h1 {
 
 function formatDate(isoDate) {
   console.log("formatDate input:", isoDate);
-  if (!isoDate) return 'N/A'; // Handle missing dates
+  if (!isoDate) return 'N/A';
   const date = new Date(isoDate);
-  if (isNaN(date.getTime())) return 'N/A'; // Handle invalid dates
+  if (isNaN(date.getTime())) return 'N/A';
   let result = date.toLocaleDateString('en-US', {
     year: 'numeric',
-    month: 'short', // "Feb"
-    day: '2-digit'  // "13"
+    month: 'short',
+    day: '2-digit'
   });
   console.log("formatDate output:", result);
   return result;
@@ -575,21 +572,18 @@ function handleData(sheetData, records) {
         return;
     }
 
-    // Function to update text content
     const updateText = (id, value) => {
         const element = document.getElementById(id);
         if (element) element.innerText = value;
         else console.warn(`⚠️ Element #${id} not found in DOM.`);
     };
 
-    // Function to update HTML content (for percentage values)
     const updateHTML = (id, value) => {
         const element = document.getElementById(id);
-        if (element) element.innerHTML = value;  // Uses innerHTML instead of innerText
+        if (element) element.innerHTML = value;
         else console.warn(`⚠️ Element #${id} not found in DOM.`);
     };
 
-    // Updating normal numeric values
     updateText('tracprice', formatNumber(sheetData.tracprice, 4));
     updateText('marketcap', formatNumber(sheetData.marketcap, 0, true));
     updateText('peratio', formatNumber(sheetData.peratio, 1));
@@ -605,14 +599,12 @@ function handleData(sheetData, records) {
     updateText('totaltracspent', formatNumber(sheetData.totaltracspent, 0));
     updateText('activenodes', formatNumber(sheetData.activenodes, 0));
 
-    // Updating percentage & change values (use updateHTML)
     updateHTML('pricechange1d', formatPercentage(sheetData.pricechange1d, '24H'));
     updateHTML('dailypublisheschange30d', formatPercentage(sheetData.dailypublisheschange30d, '30D'));
     updateHTML('annualspendchange30d', formatPercentage(sheetData.annualspendchange30d, '30D'));
     updateHTML('kas24h', formatNumberChange(sheetData.kas24h, '(24H)'));
     updateHTML('spend24h', formatNumberChange(sheetData.spend24h, '(24H)'));
 
-    // Update Records Data (Publish, TRAC Spend, USD Spend)
     const updateRecordData = (record, dateId, valueId, decimals = 0, currency = false) => {
         if (!record) {
             console.warn(`⚠️ Missing record data for ${dateId} and ${valueId}`);
@@ -638,21 +630,18 @@ function fetchData() {
   fetch(FIREBASE_URL)
     .then(response => response.json())
     .then(data => {
-      // Log the entire fetched data
+
       console.log("Fetched Data:", data);
 
-      // Extract sheetData and records
       const sheetData = data.sheetData;
       const records = data.records;
 
-      // Log individual data components
       console.log("Sheet Data:", sheetData);
       console.log("Records Data:", records);
 
-      // Check if data exists before handling it
       if (sheetData) {
         console.log("Handling Data with sheetData...");
-        handleData(sheetData, records);  // ✅ Pass only sheetData and records
+        handleData(sheetData, records);
       } else {
         console.error("Error: sheetData not found");
       }
@@ -664,7 +653,6 @@ document.addEventListener('DOMContentLoaded', function() {
   fetchData();
 });
     
-// Chart instances
 let PriceChartInstance = null;
 let SpendChartInstance = null;
 let PublishesChartInstance = null;
@@ -672,41 +660,30 @@ let isFirstDataLoad = true;
 let isFirstSpendLoad = true;
 let isFirstPublishesLoad = true;
 
-// Global font size & padding variables
 let tickFontSize, labelFontSize, chartPadding;
 
-// Function to calculate font sizes & padding dynamically
 function updateFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    tickFontSize = rootFontSize * 0.75;  // 0.75rem (12px if base is 16px)
-    labelFontSize = rootFontSize * 0.875; // 0.875rem (14px if base is 16px)
+    tickFontSize = rootFontSize * 0.75;
+    labelFontSize = rootFontSize * 0.875;
 
-    // Scale padding dynamically (base padding * scaling factor)
     chartPadding = {
-        left: rootFontSize * 0.625,   // 10px when base is 16px
-        right: rootFontSize * 1.5625, // 25px when base is 16px
-        top: rootFontSize * 1.8,   // 25px when base is 16px
-        bottom: rootFontSize * 0      // No bottom padding
+        left: rootFontSize * 0.625,
+        right: rootFontSize * 1.5625,
+        top: rootFontSize * 1.8,
+        bottom: rootFontSize * 0
     };
 }
 
-// Global font size & padding variables for pie charts
+
 let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
 
-// ✅ Function to calculate font sizes & padding dynamically for pie charts
 function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-
-    // ✅ Scale everything relative to `rootFontSize`
+  
     pieChartFontSize = rootFontSize * 1.1;
-    
-    // ✅ Scale layout padding
-    pieChartLayoutPadding = rootFontSize * 1.5;
-    
-    // ✅ Scale legend label padding
+    pieChartLayoutPadding = rootFontSize * 1.3;
     pieChartLegendPadding = rootFontSize * 0.6;
-    
-    // ✅ Scale border width, ensuring a minimum value
     pieChartBorderWidth = Math.max(1, rootFontSize * 0.0625);
 }
 
