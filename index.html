@@ -802,7 +802,9 @@ window.addEventListener('orientationchange', () => {
 });
 
 window.addEventListener('load', () => {
-    isFirstLoad = true;
+    isFirstLoadPublishes = true;
+    isFirstLoadRewards = true;
+    isFirstLoadStaked = true;
     adjustFontSize(); // Initial font size adjustment
     resizeCharts();   // Initial chart resize
 
@@ -1168,7 +1170,7 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
 }
 
-let isFirstLoad = true; // Flag to track first load
+let isFirstLoadPublishes = true; // Flag to track first load
 
 function renderPublishesPieChart(data = []) {
     const ctx = document.getElementById("publishesPieChart").getContext("2d");
@@ -1192,7 +1194,7 @@ function renderPublishesPieChart(data = []) {
     const sortedColors = combinedData.map(item => item.color);
 
     // If it's the first load, create the chart with default animations
-    if (isFirstLoad) {
+    if (isFirstLoadPublishes) {
         window.publishesPieChartInstance = new Chart(ctx, {
             type: "doughnut",
             data: {
@@ -1233,7 +1235,7 @@ function renderPublishesPieChart(data = []) {
             }
         });
 
-        isFirstLoad = false; // Mark first load as complete
+        isFirstLoadPublishes = false; // Mark first load as complete
     } else {
         // On updates, update the existing chart's data without recreating it
         if (window.publishesPieChartInstance) {
@@ -1245,25 +1247,38 @@ function renderPublishesPieChart(data = []) {
     }
 }
     
-function renderRewardsPieChart(data = [], isInitialLoad = true) {
+let isFirstLoadRewards = true; // Flag to track first load for rewards chart
+
+function renderRewardsPieChart(data = []) {
     const ctx = document.getElementById("rewardsPieChart").getContext("2d");
 
-    if (window.rewardsPieChartInstance) {
-        window.rewardsPieChartInstance.destroy();
-    }
+    const total = data.reduce((sum, value) => sum + value, 0);
 
-    // Default grey colors for empty state
-    const defaultColors = ["#666666", "#999999", "#CCCCCC"];
+    // Combine labels, data, and colors into an array of objects for sorting
+    const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
+        label: label,
+        value: data[i],
+        percentage: (data[i] / total * 100).toFixed(2),
+        color: ["#262626", "#1f62a1", "#119949"][i] // Use actual colors for data
+    }));
 
-    // If it's the initial load and data is empty, render an empty chart
-    if (isInitialLoad && data.length === 0) {
+    // Sort by percentage in descending order
+    combinedData.sort((a, b) => b.percentage - a.percentage);
+
+    // Extract sorted labels, data, and colors
+    const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = combinedData.map(item => item.value);
+    const sortedColors = combinedData.map(item => item.color);
+
+    // If it's the first load, create the chart with default animations
+    if (isFirstLoadRewards) {
         window.rewardsPieChartInstance = new Chart(ctx, {
             type: "doughnut",
             data: {
-                labels: ["Neuroweb", "Base", "Gnosis"],
+                labels: sortedLabelsWithPercentages,
                 datasets: [{
-                    data: [1, 1, 1], // Equal dummy data for empty state
-                    backgroundColor: defaultColors,
+                    data: sortedData,
+                    backgroundColor: sortedColors,
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
                     cutout: "50%"
@@ -1294,81 +1309,27 @@ function renderRewardsPieChart(data = [], isInitialLoad = true) {
                         }
                     },
                     tooltip: {
-                        enabled: false // Disable tooltips for empty state
+                        enabled: true // Enable tooltips for actual data
                     }
                 }
             }
         });
-        return; // Exit the function after rendering the empty chart
-    }
 
-    // If data is available, render the actual chart
-    const total = data.reduce((sum, value) => sum + value, 0);
-
-    const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
-        label: label,
-        value: data[i],
-        percentage: (data[i] / total * 100).toFixed(2),
-        color: ["#262626", "#1f62a1", "#119949"][i] // Use actual colors for data
-    }));
-
-    combinedData.sort((a, b) => b.percentage - a.percentage);
-
-    const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
-    const sortedData = combinedData.map(item => item.value);
-    const sortedColors = combinedData.map(item => item.color);
-
-    window.rewardsPieChartInstance = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: sortedLabelsWithPercentages,
-            datasets: [{
-                data: sortedData,
-                backgroundColor: sortedColors,
-                hoverOffset: 10,
-                borderWidth: pieChartBorderWidth,
-                cutout: "50%"
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            aspectRatio: 1.5,
-            layout: {
-                padding: pieChartLayoutPadding
-            },
-            plugins: {
-                legend: {
-                    position: "right",
-                    align: "start",
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif"
-                        },
-                        color: "#acafb0",
-                        padding: pieChartLegendPadding,
-                        usePointStyle: true,
-                        pointStyle: "circle",
-                        boxWidth: pieChartFontSize / 1.5,
-                        boxHeight: pieChartFontSize / 1.5
-                    }
-                },
-                tooltip: {
-                    enabled: true // Enable tooltips for actual data
-                }
-            }
+        isFirstLoadRewards = false; // Mark first load as complete
+    } else {
+        // On updates, update the existing chart's data without recreating it
+        if (window.rewardsPieChartInstance) {
+            window.rewardsPieChartInstance.data.labels = sortedLabelsWithPercentages;
+            window.rewardsPieChartInstance.data.datasets[0].data = sortedData;
+            window.rewardsPieChartInstance.data.datasets[0].backgroundColor = sortedColors;
+            window.rewardsPieChartInstance.update(); // Update without animation
         }
-    });
-}
-
-// Function to render Staked Pie Chart
-function renderStakedPieChart(data) {
-    const ctx = document.getElementById("stakedPieChart").getContext("2d");
-
-    if (window.stakedPieChartInstance) {
-        window.stakedPieChartInstance.destroy();
     }
+}
+let isFirstLoadStaked = true; // Flag to track first load for staked chart
+
+function renderStakedPieChart(data = []) {
+    const ctx = document.getElementById("stakedPieChart").getContext("2d");
 
     const total = data.reduce((sum, value) => sum + value, 0);
 
@@ -1388,45 +1349,58 @@ function renderStakedPieChart(data) {
     const sortedData = combinedData.map(item => item.value);
     const sortedColors = combinedData.map(item => item.color);
 
-    window.stakedPieChartInstance = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: sortedLabelsWithPercentages,
-            datasets: [{
-                data: sortedData,
-                backgroundColor: sortedColors,
-                hoverOffset: 10,
-                borderWidth: pieChartBorderWidth,
-                cutout: "50%"
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            aspectRatio: 1.5,
-            layout: {
-                padding: pieChartLayoutPadding
+    // If it's the first load, create the chart with default animations
+    if (isFirstLoadStaked) {
+        window.stakedPieChartInstance = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                labels: sortedLabelsWithPercentages,
+                datasets: [{
+                    data: sortedData,
+                    backgroundColor: sortedColors,
+                    hoverOffset: 10,
+                    borderWidth: pieChartBorderWidth,
+                    cutout: "50%"
+                }]
             },
-            plugins: {
-                legend: {
-                    position: "right",
-                    align: "start",
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif"
-                        },
-                        color: "#acafb0",
-                        padding: pieChartLegendPadding,
-                        usePointStyle: true,
-                        pointStyle: "circle",
-                        boxWidth: pieChartFontSize / 1.5, // Adjust the width of the legend icon
-                        boxHeight: pieChartFontSize / 1.5// Adjust the height of the legend icon
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                aspectRatio: 1.5,
+                layout: {
+                    padding: pieChartLayoutPadding
+                },
+                plugins: {
+                    legend: {
+                        position: "right",
+                        align: "start",
+                        labels: {
+                            font: {
+                                size: pieChartFontSize,
+                                family: "Play, sans-serif"
+                            },
+                            color: "#acafb0",
+                            padding: pieChartLegendPadding,
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            boxWidth: pieChartFontSize / 1.5,
+                            boxHeight: pieChartFontSize / 1.5
+                        }
                     }
                 }
             }
+        });
+
+        isFirstLoadStaked = false; // Mark first load as complete
+    } else {
+        // On updates, update the existing chart's data without recreating it
+        if (window.stakedPieChartInstance) {
+            window.stakedPieChartInstance.data.labels = sortedLabelsWithPercentages;
+            window.stakedPieChartInstance.data.datasets[0].data = sortedData;
+            window.stakedPieChartInstance.data.datasets[0].backgroundColor = sortedColors;
+            window.stakedPieChartInstance.update(); // Update without animation
         }
-    });
+    }
 }
     
 function fetchChartData() {
