@@ -544,66 +544,52 @@ function formatDate(isoDate) {
   console.log("formatDate output:", result);
   return result;
 }
-function handleData(sheetData, chains, records) {
+function handleData(sheetData, records) {
     console.log("✅ handleData received:");
     console.log("➡ sheetData:", sheetData);
-    console.log("➡ chains:", chains);
     console.log("➡ records:", records);
 
-    if (!sheetData || !chains || !records) {
-        console.error("❌ Missing required data:", { sheetData, chains, records });
+    if (!sheetData || !records) {
+        console.error("❌ Missing required data:", { sheetData, records });
         return;
     }
 
-// Function to update text content
-const updateText = (id, value) => {
-    const element = document.getElementById(id);
-    if (element) element.innerText = value;
-    else console.warn(`⚠️ Element #${id} not found in DOM.`);
-};
-
-// Function to update HTML content (for percentage values)
-const updateHTML = (id, value) => {
-    const element = document.getElementById(id);
-    if (element) element.innerHTML = value;  // Uses innerHTML instead of innerText
-    else console.warn(`⚠️ Element #${id} not found in DOM.`);
-};
-
-// Updating normal numeric values
-updateText('tracprice', formatNumber(sheetData.tracprice, 4));
-updateText('marketcap', formatNumber(sheetData.marketcap, 0, true));
-updateText('peratio', formatNumber(sheetData.peratio, 1));
-updateText('tracstaked', formatNumber(sheetData.tracstaked, 0, true));
-updateText('stakingapy', formatNumber(sheetData.stakingapy * 100, 2) + '%');
-updateText('annualspend', formatNumber(sheetData.annualspend, 0, true));
-updateText('dailyspend', formatNumber(sheetData.dailyspend, 0, true));
-updateText('dailypublishes', formatNumber(sheetData.dailypublishes, 0));
-updateText('publishpricetrac', formatNumber(sheetData.publishpricetrac, 6));
-updateText('publishpriceusd', formatNumber(sheetData.publishpriceusd, 6));
-updateText('stakingfee', formatNumber(sheetData.stakingfee * 100, 2) + '%');
-updateText('totalkas', formatNumber(sheetData.totalkas, 0));
-updateText('totaltracspent', formatNumber(sheetData.totaltracspent, 0));
-updateText('activenodes', formatNumber(sheetData.activenodes, 0));
-
-// Updating percentage & change values (use updateHTML)
-updateHTML('pricechange1d', formatPercentage(sheetData.pricechange1d, '24H'));
-updateHTML('dailypublisheschange30d', formatPercentage(sheetData.dailypublisheschange30d, '30D'));
-updateHTML('annualspendchange30d', formatPercentage(sheetData.annualspendchange30d, '30D'));
-updateHTML('kas24h', formatNumberChange(sheetData.kas24h, '(24H)'));
-updateHTML('spend24h', formatNumberChange(sheetData.spend24h, '(24H)'));
-    // Update Chains Data (Neuroweb, Base, Gnosis)
-    const updateChainData = (chain, prefix) => {
-        if (!chain) return;
-        updateText(`${prefix}staked`, formatNumber(chain.stakedAmount, 0, true));
-        updateText(`${prefix}epochrewards`, formatNumber(chain.epochRewards, 0, true));
-        updateText(`${prefix}epochpublishes`, formatNumber(chain.epochPublishes, 0));
-        updateText(`${prefix}apy`, formatNumber(chain.apy * 100, 2) + '%');
-        updateText(`${prefix}operatorfee`, formatNumber(chain.operatorFee * 100, 2) + '%');
+    // Function to update text content
+    const updateText = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.innerText = value;
+        else console.warn(`⚠️ Element #${id} not found in DOM.`);
     };
 
-    updateChainData(chains.neuroweb, 'neuroweb');
-    updateChainData(chains.base, 'base');
-    updateChainData(chains.gnosis, 'gnosis');
+    // Function to update HTML content (for percentage values)
+    const updateHTML = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.innerHTML = value;  // Uses innerHTML instead of innerText
+        else console.warn(`⚠️ Element #${id} not found in DOM.`);
+    };
+
+    // Updating normal numeric values
+    updateText('tracprice', formatNumber(sheetData.tracprice, 4));
+    updateText('marketcap', formatNumber(sheetData.marketcap, 0, true));
+    updateText('peratio', formatNumber(sheetData.peratio, 1));
+    updateText('tracstaked', formatNumber(sheetData.tracstaked, 0, true));
+    updateText('stakingapy', formatNumber(sheetData.stakingapy * 100, 2) + '%');
+    updateText('annualspend', formatNumber(sheetData.annualspend, 0, true));
+    updateText('dailyspend', formatNumber(sheetData.dailyspend, 0, true));
+    updateText('dailypublishes', formatNumber(sheetData.dailypublishes, 0));
+    updateText('publishpricetrac', formatNumber(sheetData.publishpricetrac, 6));
+    updateText('publishpriceusd', formatNumber(sheetData.publishpriceusd, 6));
+    updateText('stakingfee', formatNumber(sheetData.stakingfee * 100, 2) + '%');
+    updateText('totalkas', formatNumber(sheetData.totalkas, 0));
+    updateText('totaltracspent', formatNumber(sheetData.totaltracspent, 0));
+    updateText('activenodes', formatNumber(sheetData.activenodes, 0));
+
+    // Updating percentage & change values (use updateHTML)
+    updateHTML('pricechange1d', formatPercentage(sheetData.pricechange1d, '24H'));
+    updateHTML('dailypublisheschange30d', formatPercentage(sheetData.dailypublisheschange30d, '30D'));
+    updateHTML('annualspendchange30d', formatPercentage(sheetData.annualspendchange30d, '30D'));
+    updateHTML('kas24h', formatNumberChange(sheetData.kas24h, '(24H)'));
+    updateHTML('spend24h', formatNumberChange(sheetData.spend24h, '(24H)'));
 
     // Update Records Data (Publish, TRAC Spend, USD Spend)
     const updateRecordData = (record, dateId, valueId, decimals = 0, currency = false) => {
@@ -624,7 +610,6 @@ updateHTML('spend24h', formatNumberChange(sheetData.spend24h, '(24H)'));
     updateRecordData(records.tracSpendRecord, 'tracSpendRecordDate', 'tracSpendRecordValue');
     updateRecordData(records.usdSpendRecord, 'usdSpendRecordDate', 'usdSpendRecordValue', 2, true);
 }
-
 
 
 
