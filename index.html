@@ -838,25 +838,28 @@ let PublishesPieChartInstance = null;
 let RewardsPieChartInstance = null;
 let StakedPieChartInstance = null;
 
-// Function to render the pie charts
 function renderPieChart(container, chartInstance, labels, values) {
+    // Check if the container exists (i.e., the canvas should be inside a parent container with a specific ID)
     if (!container) {
         console.error("Epoch box container not found!");
         return;
     }
-    
+
+    // Check for the canvas element within the container and create one if not found
     let canvas = container.querySelector('canvas');
     if (!canvas) {
-        canvas = document.createElement('canvas');
-        container.appendChild(canvas);
+        console.error("Canvas element not found inside the container!");
+        return;
     }
-    
+
     const ctx = canvas.getContext('2d');
-    
+
+    // If there's an existing chart instance, destroy it
     if (chartInstance) {
         chartInstance.destroy();
     }
-    
+
+    // Create a new chart with the given data
     return new Chart(ctx, {
         type: 'pie',
         data: {
