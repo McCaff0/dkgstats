@@ -336,7 +336,7 @@ h1 {
           <span>Annual Spend (USD)</span>
           <span class="value-container">
             <span id="annualspend" class="number-value">Loading...</span>
-            <span id="annualspendchange28d" class="percentage-change"></span>
+            <span id="annualspendchange30d" class="percentage-change"></span>
           </span>
         </p>
         <p>
@@ -350,7 +350,7 @@ h1 {
           <span>Daily Publishes</span>
           <span class="value-container">
             <span id="dailypublishes" class="number-value">Loading...</span>
-            <span id="dailypublisheschange28d" class="percentage-change"></span>
+            <span id="dailypublisheschange30d" class="percentage-change"></span>
           </span>
         </p>
         <span class="half-line"></span>
@@ -546,8 +546,8 @@ function handleData(sheetData, chains, records) {
   document.getElementById('spend24h').innerHTML = formatNumberChange(sheetData.spend24h, '(24H)');
   document.getElementById('activenodes').innerText = formatNumber(sheetData.activenodes, 0);
   document.getElementById('pricechange1d').innerHTML = formatPercentage(sheetData.pricechange1d, '24H');
-  document.getElementById('dailypublisheschange28d').innerHTML = formatPercentage(sheetData.dailypublisheschange28d, '28D');
-  document.getElementById('annualspendchange28d').innerHTML = formatPercentage(sheetData.annualspendchange28d, '28D');
+  document.getElementById('dailypublisheschange30d').innerHTML = formatPercentage(sheetData.dailypublisheschange28d, '28D');
+  document.getElementById('annualspendchange30d').innerHTML = formatPercentage(sheetData.annualspendchange28d, '28D');
 
   // Handle chains data (Neuroweb, Base, Gnosis)
   const neuroweb = chains.neuroweb || {};
