@@ -1195,7 +1195,7 @@ function renderPublishesPieChart(data) {
 
     const total = data.reduce((sum, value) => sum + value, 0);
     const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
-        ${label} - ${(data[i] / total * 100).toFixed(2)}%
+        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
     );
 
     window.publishesPieChartInstance = new Chart(ctx, {
@@ -1246,7 +1246,7 @@ function renderRewardsPieChart(data) {
 
     const total = data.reduce((sum, value) => sum + value, 0);
     const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
-        ${label} - ${(data[i] / total * 100).toFixed(2)}%
+        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
     );
 
     window.rewardsPieChartInstance = new Chart(ctx, {
@@ -1297,7 +1297,7 @@ function renderStakedPieChart(data) {
 
     const total = data.reduce((sum, value) => sum + value, 0);
     const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
-        ${label} - ${(data[i] / total * 100).toFixed(2)}%
+        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
     );
 
     window.stakedPieChartInstance = new Chart(ctx, {
