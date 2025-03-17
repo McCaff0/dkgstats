@@ -460,13 +460,13 @@ h1 {
   <!-- Second epoch-box for 3 pie charts -->
   <div class="epoch-box">
     <h3>Epoch Publishes</h3>
-    <canvas id="publishespiechart"></canvas>
+    <canvas id="publishesPieChart"></canvas>
 
     <h3>Epoch Rewards</h3>
-    <canvas id="rewardspiechart"></canvas>
+    <canvas id="rewardsPieChart"></canvas>
 
     <h3>Staked on Active Nodes</h3>
-    <canvas id="stakedpiechart"></canvas>
+    <canvas id="stakedPieChart"></canvas>
   </div>
 
   <!-- Third empty epoch-box -->
@@ -1128,7 +1128,88 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
 }
 
+// Function to render Publishes Pie Chart
+function renderPublishesPieChart(data) {
+    const ctx = document.getElementById("publishesPieChart").getContext("2d");
+    
+    if (window.publishesPieChartInstance) {
+        window.publishesPieChartInstance.destroy();
+    }
 
+    window.publishesPieChartInstance = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: ["Neuroweb", "Base", "Gnosis"],
+            datasets: [{
+                data: data,
+                backgroundColor: ["#ff6384", "#36a2eb", "#ffce56"],
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: "bottom" }
+            }
+        }
+    });
+}
+
+// Function to render Rewards Pie Chart
+function renderRewardsPieChart(data) {
+    const ctx = document.getElementById("rewardsPieChart").getContext("2d");
+    
+    if (window.rewardsPieChartInstance) {
+        window.rewardsPieChartInstance.destroy();
+    }
+
+    window.rewardsPieChartInstance = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: ["Neuroweb", "Base", "Gnosis"],
+            datasets: [{
+                data: data,
+                backgroundColor: ["#4bc0c0", "#ff9f40", "#9966ff"],
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: "bottom" }
+            }
+        }
+    });
+}
+
+// Function to render Staked Pie Chart
+function renderStakedPieChart(data) {
+    const ctx = document.getElementById("stakedPieChart").getContext("2d");
+    
+    if (window.stakedPieChartInstance) {
+        window.stakedPieChartInstance.destroy();
+    }
+
+    window.stakedPieChartInstance = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: ["Neuroweb", "Base", "Gnosis"],
+            datasets: [{
+                data: data,
+                backgroundColor: ["#ff4444", "#44ff44", "#4444ff"],
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: "bottom" }
+            }
+        }
+    });
+}
+
+    
 function fetchChartData() {
     let hasSuccessfulFetch = false;
 
