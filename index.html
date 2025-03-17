@@ -611,40 +611,38 @@ function handleData(sheetData, records) {
     updateRecordData(records.usdSpendRecord, 'usdSpendRecordDate', 'usdSpendRecordValue', 2, true);
 }
 
-
-
 function fetchData() {
   const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
-  
+
   fetch(FIREBASE_URL)
     .then(response => response.json())
     .then(data => {
       // Log the entire fetched data
       console.log("Fetched Data:", data);
-      
-      // Extract sheetData and chains
+
+      // Extract sheetData and records
       const sheetData = data.sheetData;
-      const chains = data.chains;
       const records = data.records;
-      
+
       // Log individual data components
       console.log("Sheet Data:", sheetData);
-      console.log("Chains Data:", chains);
       console.log("Records Data:", records);
 
       // Check if data exists before handling it
       if (sheetData) {
         console.log("Handling Data with sheetData...");
-        handleData(sheetData, chains, records);  // ✅ Pass records to handler
+        handleData(sheetData, records);  // ✅ Pass only sheetData and records
       } else {
         console.error("Error: sheetData not found");
       }
     })
     .catch(error => console.error('Error fetching data:', error));
 }
+
 document.addEventListener('DOMContentLoaded', function() {
   fetchData();
 });
+    
 // Chart instances
 let PriceChartInstance = null;
 let SpendChartInstance = null;
@@ -1190,6 +1188,49 @@ function fetchChartData() {
             console.error("Error fetching publishes data:", error);
         });
 }
+
+function fetchPieChartData() {
+    const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
+
+    fetch(CHART_DATA_BASE_URL + '.json')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Chains Data:", data);
+
+            if (data) {
+                // Extract values for each category
+                const publishesValues = [
+                    data.neuroweb?.epochPublishes || 0,
+                    data.base?.epochPublishes || 0,
+                    data.gnosis?.epochPublishes || 0
+                ];
+
+                const rewardsValues = [
+                    data.neuroweb?.epochRewards || 0,
+                    data.base?.epochRewards || 0,
+                    data.gnosis?.epochRewards || 0
+                ];
+
+                const stakedValues = [
+                    data.neuroweb?.stakedAmount || 0,
+                    data.base?.stakedAmount || 0,
+                    data.gnosis?.stakedAmount || 0
+                ];
+
+                // Render the charts
+                renderPublishesPieChart(publishesValues);
+                renderRewardsPieChart(rewardsValues);
+                renderStakedPieChart(stakedValues);
+            } else {
+                console.warn("No valid chains data received.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching chains data:", error);
+        });
+}
+
+    fetchPieChartData();
     
 let dataInterval, chartInterval;
 
