@@ -692,7 +692,7 @@ function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
   
     pieChartFontSize = rootFontSize * 1.1;
-    pieChartLayoutPadding = rootFontSize * 1;
+    pieChartLayoutPadding = rootFontSize / 2;
     pieChartLegendPadding = rootFontSize * 0.6;
     pieChartBorderWidth = Math.max(1, rootFontSize * 0.0625);
 }
