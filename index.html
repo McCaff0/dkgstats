@@ -1245,11 +1245,11 @@ function renderPublishesPieChart(data) {
                                 return {
                                     text: label,
                                     hidden: false,
-                                    // Set the image as the symbol for the legend entry
-                                    fillStyle: sortedImageUrls[i],
-                                    strokeStyle: sortedImageUrls[i], // Use the image as a stroke too
-                                    lineWidth: 0, // No border, only image
-                                    image: sortedImageUrls[i], // Use image URL
+                                    // Set image URL directly
+                                    fillStyle: "transparent", // Make the fillStyle transparent (no color box)
+                                    strokeStyle: "transparent", // Make stroke transparent
+                                    lineWidth: 0, // No border around the image
+                                    image: sortedImageUrls[i], // Image URL
                                 };
                             });
                         },
@@ -1258,7 +1258,7 @@ function renderPublishesPieChart(data) {
                             family: "Play, sans-serif",
                             weight: "bold"
                         },
-                        // This will ensure the text color in the legend is the one you expect
+                        // Ensure the text color is applied correctly
                         color: "#acafb0", 
                         padding: pieChartLegendPadding
                     }
@@ -1267,6 +1267,7 @@ function renderPublishesPieChart(data) {
         }
     });
 }
+
 
 
 // Function to render Rewards Pie Chart
