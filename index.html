@@ -1163,35 +1163,37 @@ function renderPublishesPieChart(data) {
     );
 
     window.publishesPieChartInstance = new Chart(ctx, {
-        type: "pie",
+        type: "doughnut", // Change "pie" to "doughnut" for a hollow ring
         data: {
             labels: labelsWithPercentages,
             datasets: [{
                 data: data,
                 backgroundColor: ["#595959", "#1f62a1", "#194029"],
                 hoverOffset: 10,
-                borderWidth: 0  // Removes outline
+                borderWidth: 0,  // Removes outline
+                cutout: "50%" // Controls the size of the hole in the middle
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false, // Allows custom sizing
-            aspectRatio: 1.5, // Makes the entire chart larger without distorting the circle
+            maintainAspectRatio: false,
+            aspectRatio: 1.5,
             layout: {
                 padding: {
-                    top: 30 // Adjust spacing if needed
+                    top: 30
                 }
             },
             plugins: {
                 legend: {
                     position: "right",
+                    align: "start", // Ensures labels stack vertically
                     labels: {
                         font: {
                             size: labelFontSize,
                             family: "Play, sans-serif"
                         },
                         color: "#acafb0",
-                        padding: 10 // Adjust spacing to fit labels better
+                        padding: 10
                     }
                 }
             }
@@ -1213,14 +1215,15 @@ function renderRewardsPieChart(data) {
     );
 
     window.rewardsPieChartInstance = new Chart(ctx, {
-        type: "pie",
+        type: "doughnut",
         data: {
             labels: labelsWithPercentages,
             datasets: [{
                 data: data,
                 backgroundColor: ["#595959", "#1f62a1", "#194029"],
                 hoverOffset: 10,
-                borderWidth: 0
+                borderWidth: 0,
+                cutout: "50%"
             }]
         },
         options: {
@@ -1235,6 +1238,7 @@ function renderRewardsPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
+                    align: "start",
                     labels: {
                         font: {
                             size: labelFontSize,
@@ -1263,14 +1267,15 @@ function renderStakedPieChart(data) {
     );
 
     window.stakedPieChartInstance = new Chart(ctx, {
-        type: "pie",
+        type: "doughnut",
         data: {
             labels: labelsWithPercentages,
             datasets: [{
                 data: data,
                 backgroundColor: ["#595959", "#1f62a1", "#194029"],
                 hoverOffset: 10,
-                borderWidth: 0
+                borderWidth: 0,
+                cutout: "50%"
             }]
         },
         options: {
@@ -1285,6 +1290,7 @@ function renderStakedPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
+                    align: "start",
                     labels: {
                         font: {
                             size: labelFontSize,
