@@ -145,7 +145,7 @@ h1 {
 }
              .pie-space {
         display: block;
-        height: 6rem
+        height: 6.5rem
 }
        
       .value-container {
@@ -246,9 +246,9 @@ h1 {
     top: 0;
     left: 0;
     width: 100% !important;
-    height: 7rem !important;
+    height: 6rem !important;
     max-width: 100%;
-    max-height: 7rem;
+    max-height: 6rem;
     pointer-events: none; /* Ensures the graph does not interfere */
 }
     #publishesPieChart {
@@ -257,12 +257,12 @@ h1 {
 }
 
 #rewardsPieChart {
-    margin-top: 8rem;
+    margin-top: 8.25rem;
     margin-left: -2rem;
 }
 
 #stakedPieChart {
-    margin-top: 15rem;
+    margin-top: 15.5rem;
     margin-left: -2rem;
 }
 
@@ -1170,7 +1170,7 @@ function renderPublishesPieChart(data) {
                 data: data,
                 backgroundColor: ["#595959", "#1f62a1", "#194029"],
                 hoverOffset: 10,
-                borderWidth: 0,  // Removes outline
+                borderWidth: 0.5,  // Removes outline
                 cutout: "50%" // Controls the size of the hole in the middle
             }]
         },
@@ -1179,7 +1179,7 @@ function renderPublishesPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 0
+                padding: 5
             },
             plugins: {
                 legend: {
@@ -1191,7 +1191,7 @@ function renderPublishesPieChart(data) {
                             family: "Play, sans-serif"
                         },
                         color: "#acafb0",
-                        padding: 0
+                        padding: 2
                     }
                 }
             }
@@ -1220,7 +1220,7 @@ function renderRewardsPieChart(data) {
                 data: data,
                 backgroundColor: ["#595959", "#1f62a1", "#194029"],
                 hoverOffset: 10,
-                borderWidth: 0,
+                borderWidth: 0.5,
                 cutout: "50%"
             }]
         },
@@ -1229,7 +1229,7 @@ function renderRewardsPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 0
+                padding: 5
             },
             plugins: {
                 legend: {
@@ -1241,7 +1241,7 @@ function renderRewardsPieChart(data) {
                             family: "Play, sans-serif"
                         },
                         color: "#acafb0",
-                        padding: 0
+                        padding: 2
                     }
                 }
             }
@@ -1270,7 +1270,7 @@ function renderStakedPieChart(data) {
                 data: data,
                 backgroundColor: ["#595959", "#1f62a1", "#194029"],
                 hoverOffset: 10,
-                borderWidth: 0,
+                borderWidth: 0.5,
                 cutout: "50%"
             }]
         },
@@ -1279,7 +1279,7 @@ function renderStakedPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 0
+                padding: 5
                 
             },
             plugins: {
@@ -1292,7 +1292,7 @@ function renderStakedPieChart(data) {
                             family: "Play, sans-serif"
                         },
                         color: "#acafb0",
-                        padding: 0
+                        padding: 2
                     }
                 }
             }
