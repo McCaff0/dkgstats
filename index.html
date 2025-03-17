@@ -577,6 +577,11 @@ h1 {
         }
         return value.toString(); // Return the original value if less than 1M
     }
+        function formatLabel(label, value, percentage) {
+        const labelPart = `${label} - ${value}`;
+        const padding = " ".repeat(20 - labelPart.length); // Add padding for alignment
+        return `${labelPart}${padding}${percentage}%`;
+    }
     
 function handleData(sheetData, records) {
     console.log("✅ handleData received:");
@@ -1225,7 +1230,7 @@ function renderPublishesPieChart(data = []) {
 
     // Extract sorted labels, formatted values, percentages, and colors
     const sortedLabelsWithValuesAndPercentages = combinedData.map(item => 
-        `${item.label} - ${item.formattedValue} | ${item.percentage}%`
+        formatLabel(item.label, item.formattedValue, item.percentage) // Format the label
     );
     const sortedData = combinedData.map(item => item.value);
     const sortedColors = combinedData.map(item => item.color);
@@ -1235,7 +1240,7 @@ function renderPublishesPieChart(data = []) {
         window.publishesPieChartInstance = new Chart(ctx, {
             type: "doughnut",
             data: {
-                labels: sortedLabelsWithValuesAndPercentages, // Use combined labels
+                labels: sortedLabelsWithValuesAndPercentages, // Use formatted labels
                 datasets: [{
                     data: sortedData,
                     backgroundColor: sortedColors,
@@ -1274,22 +1279,13 @@ function renderPublishesPieChart(data = []) {
                             generateLabels: (chart) => {
                                 const data = chart.data;
                                 if (data.labels.length && data.datasets.length) {
-                                    return data.labels.map((label, i) => {
-                                        const [labelPart, valuePart, percentagePart] = label.split(" | ");
-                                        const formattedLabel = `
-                                            <div style="display: flex; justify-content: space-between; width: 100%;">
-                                                <span>${labelPart} - ${valuePart}</span>
-                                                <span style="text-align: right;">${percentagePart}</span>
-                                            </div>
-                                        `;
-                                        return {
-                                            text: formattedLabel,
-                                            fillStyle: data.datasets[0].backgroundColor[i],
-                                            hidden: isNaN(data.datasets[0].data[i]) || data.datasets[0].data[i] === 0,
-                                            index: i,
-                                            fontColor: "#acafb0"
-                                        };
-                                    });
+                                    return data.labels.map((label, i) => ({
+                                        text: label, // Use the formatted label
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        hidden: isNaN(data.datasets[0].data[i]) || data.datasets[0].data[i] === 0,
+                                        index: i,
+                                        fontColor: "#acafb0" // Ensure text color is applied
+                                    }));
                                 }
                                 return [];
                             }
