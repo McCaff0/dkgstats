@@ -802,6 +802,7 @@ window.addEventListener('orientationchange', () => {
 });
 
 window.addEventListener('load', () => {
+    isFirstLoad = true;
     adjustFontSize(); // Initial font size adjustment
     resizeCharts();   // Initial chart resize
 
@@ -1167,12 +1168,10 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
 }
 
-function renderPublishesPieChart(data) {
-    const ctx = document.getElementById("publishesPieChart").getContext("2d");
+let isFirstLoad = true; // Flag to track first load
 
-    if (window.publishesPieChartInstance) {
-        window.publishesPieChartInstance.destroy();
-    }
+function renderPublishesPieChart(data = []) {
+    const ctx = document.getElementById("publishesPieChart").getContext("2d");
 
     const total = data.reduce((sum, value) => sum + value, 0);
 
@@ -1192,45 +1191,58 @@ function renderPublishesPieChart(data) {
     const sortedData = combinedData.map(item => item.value);
     const sortedColors = combinedData.map(item => item.color);
 
-    window.publishesPieChartInstance = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: sortedLabelsWithPercentages,
-            datasets: [{
-                data: sortedData,
-                backgroundColor: sortedColors,
-                hoverOffset: 10,
-                borderWidth: pieChartBorderWidth,
-                cutout: "50%"
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            aspectRatio: 1.5,
-            layout: {
-                padding: pieChartLayoutPadding
+    // If it's the first load, create the chart with default animations
+    if (isFirstLoad) {
+        window.publishesPieChartInstance = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                labels: sortedLabelsWithPercentages,
+                datasets: [{
+                    data: sortedData,
+                    backgroundColor: sortedColors,
+                    hoverOffset: 10,
+                    borderWidth: pieChartBorderWidth,
+                    cutout: "50%"
+                }]
             },
-            plugins: {
-                legend: {
-                    position: "right",
-                    align: "start",
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif"
-                        },
-                        color: "#acafb0",
-                        padding: pieChartLegendPadding,
-                        usePointStyle: true,
-                        pointStyle: "circle",
-                        boxWidth: pieChartFontSize / 1.5, // Adjust the width of the legend icon
-                        boxHeight: pieChartFontSize / 1.5 // Adjust the height of the legend icon
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                aspectRatio: 1.5,
+                layout: {
+                    padding: pieChartLayoutPadding
+                },
+                plugins: {
+                    legend: {
+                        position: "right",
+                        align: "start",
+                        labels: {
+                            font: {
+                                size: pieChartFontSize,
+                                family: "Play, sans-serif"
+                            },
+                            color: "#acafb0",
+                            padding: pieChartLegendPadding,
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            boxWidth: pieChartFontSize / 1.5,
+                            boxHeight: pieChartFontSize / 1.5
+                        }
                     }
                 }
             }
+        });
+
+        isFirstLoad = false; // Mark first load as complete
+    } else {
+        // On updates, update the existing chart's data without recreating it
+        if (window.publishesPieChartInstance) {
+            window.publishesPieChartInstance.data.labels = sortedLabelsWithPercentages;
+            window.publishesPieChartInstance.data.datasets[0].data = sortedData;
+            window.publishesPieChartInstance.data.datasets[0].backgroundColor = sortedColors;
+            window.publishesPieChartInstance.update(); // Update without animation
         }
-    });
+    }
 }
     
 function renderRewardsPieChart(data = [], isInitialLoad = true) {
