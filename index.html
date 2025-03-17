@@ -1196,37 +1196,38 @@ function renderPublishesPieChart(data) {
 
     const total = data.reduce((sum, value) => sum + value, 0);
     const labels = ["Neuroweb", "Base", "Gnosis"];
+    const imageUrls = [
+        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
+        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
+        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
+    ];
 
-    // Calculate percentages and combine with labels
-    const dataWithPercentages = labels.map((label, i) => ({
+    // Combine labels, data, and imageUrls into an array of objects
+    let combinedData = labels.map((label, i) => ({
         label: label,
-        value: data[i],
+        data: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        imageUrl: [
-            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg", // Image URL for Neuroweb
-            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",   // Image URL for Base
-            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg" // Image URL for Gnosis
-        ][i] // Select the corresponding image URL for each label
+        imageUrl: imageUrls[i]
     }));
 
-    // Sort data by percentage (largest to smallest)
-    dataWithPercentages.sort((a, b) => b.percentage - a.percentage);
+    // Sort by percentage in descending order
+    combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Prepare sorted labels and data for the chart
-    const sortedLabelsWithPercentages = dataWithPercentages.map(item => `${item.label} - ${item.percentage}%`);
-    const sortedData = dataWithPercentages.map(item => item.value);
-    const sortedImageUrls = dataWithPercentages.map(item => item.imageUrl);
+    // Extract sorted labels, data, and imageUrls
+    const sortedLabels = combinedData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = combinedData.map(item => item.data);
+    const sortedImageUrls = combinedData.map(item => item.imageUrl);
 
     window.publishesPieChartInstance = new Chart(ctx, {
-        type: "doughnut", // Change "pie" to "doughnut" for a hollow ring
+        type: "doughnut",
         data: {
-            labels: sortedLabelsWithPercentages,
+            labels: sortedLabels,
             datasets: [{
                 data: sortedData,
-                backgroundColor: ["#262626", "#1f62a1", "#119949"], // Placeholder colors
+                backgroundColor: ["#262626", "#1f62a1", "#119949"],
                 hoverOffset: 10,
-                borderWidth: pieChartBorderWidth,  // Removes outline
-                cutout: "50%" // Controls the size of the hole in the middle
+                borderWidth: pieChartBorderWidth,
+                cutout: "50%"
             }]
         },
         options: {
@@ -1239,30 +1240,23 @@ function renderPublishesPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start", // Ensures labels stack vertically
+                    align: "start",
                     labels: {
-                        // Custom legend labels with images
-                        generateLabels: function(chart) {
-                            return chart.data.labels.map((label, i) => {
-                                return {
-                                    text: label,
-                                    hidden: false,
-                                    // Set image URL directly (instead of the default color boxes)
-                                    fillStyle: "transparent", // Make the fillStyle transparent (no color box)
-                                    strokeStyle: "transparent", // Make stroke transparent
-                                    lineWidth: 0, // No border around the image
-                                    image: sortedImageUrls[i], // Image URL
-                                };
-                            });
-                        },
                         font: {
                             size: pieChartFontSize,
                             family: "Play, sans-serif",
-                            weight: "bold"  // This makes the font bold
+                            weight: "bold"
                         },
-                        // Ensure the text color is applied correctly
-                        color: "#acafb0", 
-                        padding: pieChartLegendPadding
+                        color: "#acafb0",
+                        padding: pieChartLegendPadding,
+                        generateLabels: (chart) => {
+                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                            return labels.map((label, i) => {
+                                label.text = sortedLabels[i];
+                                label.image = sortedImageUrls[i];
+                                return label;
+                            });
+                        }
                     }
                 }
             }
@@ -1280,28 +1274,32 @@ function renderRewardsPieChart(data) {
 
     const total = data.reduce((sum, value) => sum + value, 0);
     const labels = ["Neuroweb", "Base", "Gnosis"];
+    const imageUrls = [
+        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
+        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
+        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
+    ];
 
-    const dataWithPercentages = labels.map((label, i) => ({
+    // Combine labels, data, and imageUrls into an array of objects
+    let combinedData = labels.map((label, i) => ({
         label: label,
-        value: data[i],
+        data: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        imageUrl: [
-            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
-            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
-            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
-        ][i]
+        imageUrl: imageUrls[i]
     }));
 
-    dataWithPercentages.sort((a, b) => b.percentage - a.percentage);
+    // Sort by percentage in descending order
+    combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    const sortedLabelsWithPercentages = dataWithPercentages.map(item => `${item.label} - ${item.percentage}%`);
-    const sortedData = dataWithPercentages.map(item => item.value);
-    const sortedImageUrls = dataWithPercentages.map(item => item.imageUrl);
+    // Extract sorted labels, data, and imageUrls
+    const sortedLabels = combinedData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = combinedData.map(item => item.data);
+    const sortedImageUrls = combinedData.map(item => item.imageUrl);
 
     window.rewardsPieChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: sortedLabelsWithPercentages,
+            labels: sortedLabels,
             datasets: [{
                 data: sortedData,
                 backgroundColor: ["#262626", "#1f62a1", "#119949"],
@@ -1320,27 +1318,23 @@ function renderRewardsPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start", 
+                    align: "start",
                     labels: {
-                        generateLabels: function(chart) {
-                            return chart.data.labels.map((label, i) => {
-                                return {
-                                    text: label,
-                                    hidden: false,
-                                    fillStyle: "transparent",
-                                    strokeStyle: "transparent",
-                                    lineWidth: 0,
-                                    image: sortedImageUrls[i], 
-                                };
-                            });
-                        },
                         font: {
                             size: pieChartFontSize,
                             family: "Play, sans-serif",
                             weight: "bold"
                         },
-                        color: "#acafb0", 
-                        padding: pieChartLegendPadding
+                        color: "#acafb0",
+                        padding: pieChartLegendPadding,
+                        generateLabels: (chart) => {
+                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                            return labels.map((label, i) => {
+                                label.text = sortedLabels[i];
+                                label.image = sortedImageUrls[i];
+                                return label;
+                            });
+                        }
                     }
                 }
             }
@@ -1358,28 +1352,32 @@ function renderStakedPieChart(data) {
 
     const total = data.reduce((sum, value) => sum + value, 0);
     const labels = ["Neuroweb", "Base", "Gnosis"];
+    const imageUrls = [
+        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
+        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
+        "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
+    ];
 
-    const dataWithPercentages = labels.map((label, i) => ({
+    // Combine labels, data, and imageUrls into an array of objects
+    let combinedData = labels.map((label, i) => ({
         label: label,
-        value: data[i],
+        data: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        imageUrl: [
-            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
-            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
-            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
-        ][i]
+        imageUrl: imageUrls[i]
     }));
 
-    dataWithPercentages.sort((a, b) => b.percentage - a.percentage);
+    // Sort by percentage in descending order
+    combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    const sortedLabelsWithPercentages = dataWithPercentages.map(item => `${item.label} - ${item.percentage}%`);
-    const sortedData = dataWithPercentages.map(item => item.value);
-    const sortedImageUrls = dataWithPercentages.map(item => item.imageUrl);
+    // Extract sorted labels, data, and imageUrls
+    const sortedLabels = combinedData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = combinedData.map(item => item.data);
+    const sortedImageUrls = combinedData.map(item => item.imageUrl);
 
     window.stakedPieChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: sortedLabelsWithPercentages,
+            labels: sortedLabels,
             datasets: [{
                 data: sortedData,
                 backgroundColor: ["#262626", "#1f62a1", "#119949"],
@@ -1398,34 +1396,29 @@ function renderStakedPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start", 
+                    align: "start",
                     labels: {
-                        generateLabels: function(chart) {
-                            return chart.data.labels.map((label, i) => {
-                                return {
-                                    text: label,
-                                    hidden: false,
-                                    fillStyle: "transparent",
-                                    strokeStyle: "transparent",
-                                    lineWidth: 0,
-                                    image: sortedImageUrls[i], 
-                                };
-                            });
-                        },
                         font: {
                             size: pieChartFontSize,
                             family: "Play, sans-serif",
                             weight: "bold"
                         },
-                        color: "#acafb0", 
-                        padding: pieChartLegendPadding
+                        color: "#acafb0",
+                        padding: pieChartLegendPadding,
+                        generateLabels: (chart) => {
+                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                            return labels.map((label, i) => {
+                                label.text = sortedLabels[i];
+                                label.image = sortedImageUrls[i];
+                                return label;
+                            });
+                        }
                     }
                 }
             }
         }
     });
 }
-
     
 function fetchChartData() {
     let hasSuccessfulFetch = false;
