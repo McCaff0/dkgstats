@@ -1131,7 +1131,7 @@ function renderPublishesChart(publishesLabels, publishesValues) {
 // Function to render Publishes Pie Chart
 function renderPublishesPieChart(data) {
     const ctx = document.getElementById("publishesPieChart").getContext("2d");
-    
+
     if (window.publishesPieChartInstance) {
         window.publishesPieChartInstance.destroy();
     }
@@ -1142,14 +1142,24 @@ function renderPublishesPieChart(data) {
             labels: ["Neuroweb", "Base", "Gnosis"],
             datasets: [{
                 data: data,
-                backgroundColor: ["#ff6384", "#36a2eb", "#ffce56"],
+                backgroundColor: ["#d3d3d3", "#1f3b73", "#1b5e20"],
                 hoverOffset: 10
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { position: "bottom" }
+                legend: {
+                    position: "right",
+                    labels: {
+                        font: {
+                            family: "Play",
+                            weight: "bold",
+                            size: 14
+                        },
+                        color: "#ffffff"  // White text for contrast
+                    }
+                }
             }
         }
     });
@@ -1158,7 +1168,7 @@ function renderPublishesPieChart(data) {
 // Function to render Rewards Pie Chart
 function renderRewardsPieChart(data) {
     const ctx = document.getElementById("rewardsPieChart").getContext("2d");
-    
+
     if (window.rewardsPieChartInstance) {
         window.rewardsPieChartInstance.destroy();
     }
@@ -1169,14 +1179,24 @@ function renderRewardsPieChart(data) {
             labels: ["Neuroweb", "Base", "Gnosis"],
             datasets: [{
                 data: data,
-                backgroundColor: ["#4bc0c0", "#ff9f40", "#9966ff"],
+                backgroundColor: ["#d3d3d3", "#1f3b73", "#1b5e20"],
                 hoverOffset: 10
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { position: "bottom" }
+                legend: {
+                    position: "right",
+                    labels: {
+                        font: {
+                            family: "Play",
+                            weight: "bold",
+                            size: 14
+                        },
+                        color: "#ffffff"
+                    }
+                }
             }
         }
     });
@@ -1185,7 +1205,7 @@ function renderRewardsPieChart(data) {
 // Function to render Staked Pie Chart
 function renderStakedPieChart(data) {
     const ctx = document.getElementById("stakedPieChart").getContext("2d");
-    
+
     if (window.stakedPieChartInstance) {
         window.stakedPieChartInstance.destroy();
     }
@@ -1196,18 +1216,29 @@ function renderStakedPieChart(data) {
             labels: ["Neuroweb", "Base", "Gnosis"],
             datasets: [{
                 data: data,
-                backgroundColor: ["#ff4444", "#44ff44", "#4444ff"],
+                backgroundColor: ["#d3d3d3", "#1f3b73", "#1b5e20"],
                 hoverOffset: 10
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { position: "bottom" }
+                legend: {
+                    position: "right",
+                    labels: {
+                        font: {
+                            family: "Play",
+                            weight: "bold",
+                            size: 14
+                        },
+                        color: "#ffffff"
+                    }
+                }
             }
         }
     });
 }
+
 
     
 function fetchChartData() {
