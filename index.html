@@ -1201,22 +1201,25 @@ function renderPublishesPieChart(data) {
         "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
         "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
     ];
+    const colors = ["#262626", "#1f62a1", "#119949"]; // Grey, Blue, Green
 
-    // Combine labels, data, and imageUrls into an array of objects
+    // Combine labels, data, imageUrls, and colors into an array of objects
     let combinedData = labels.map((label, i) => ({
         label: label,
         data: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        imageUrl: imageUrls[i]
+        imageUrl: imageUrls[i],
+        color: colors[i]
     }));
 
     // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Extract sorted labels, data, and imageUrls
+    // Extract sorted labels, data, imageUrls, and colors
     const sortedLabels = combinedData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = combinedData.map(item => item.data);
     const sortedImageUrls = combinedData.map(item => item.imageUrl);
+    const sortedColors = combinedData.map(item => item.color);
 
     window.publishesPieChartInstance = new Chart(ctx, {
         type: "doughnut",
@@ -1224,7 +1227,7 @@ function renderPublishesPieChart(data) {
             labels: sortedLabels,
             datasets: [{
                 data: sortedData,
-                backgroundColor: ["#262626", "#1f62a1", "#119949"],
+                backgroundColor: sortedColors,
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
                 cutout: "50%"
@@ -1252,10 +1255,22 @@ function renderPublishesPieChart(data) {
                         generateLabels: (chart) => {
                             const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
                             return labels.map((label, i) => {
+                                // Replace the default label with custom HTML
                                 label.text = sortedLabels[i];
                                 label.image = sortedImageUrls[i];
+                                label.fillStyle = sortedColors[i];
                                 return label;
                             });
+                        },
+                        usePointStyle: true, // Use point style to remove the box
+                        pointStyle: 'circle', // Use circle as the point style
+                        render: (label) => {
+                            // Custom render function to include the image
+                            const img = new Image();
+                            img.src = label.image;
+                            img.width = 20;
+                            img.height = 20;
+                            return `${img.outerHTML} ${label.text}`;
                         }
                     }
                 }
@@ -1279,22 +1294,25 @@ function renderRewardsPieChart(data) {
         "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
         "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
     ];
+    const colors = ["#262626", "#1f62a1", "#119949"]; // Grey, Blue, Green
 
-    // Combine labels, data, and imageUrls into an array of objects
+    // Combine labels, data, imageUrls, and colors into an array of objects
     let combinedData = labels.map((label, i) => ({
         label: label,
         data: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        imageUrl: imageUrls[i]
+        imageUrl: imageUrls[i],
+        color: colors[i]
     }));
 
     // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Extract sorted labels, data, and imageUrls
+    // Extract sorted labels, data, imageUrls, and colors
     const sortedLabels = combinedData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = combinedData.map(item => item.data);
     const sortedImageUrls = combinedData.map(item => item.imageUrl);
+    const sortedColors = combinedData.map(item => item.color);
 
     window.rewardsPieChartInstance = new Chart(ctx, {
         type: "doughnut",
@@ -1302,7 +1320,7 @@ function renderRewardsPieChart(data) {
             labels: sortedLabels,
             datasets: [{
                 data: sortedData,
-                backgroundColor: ["#262626", "#1f62a1", "#119949"],
+                backgroundColor: sortedColors,
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
                 cutout: "50%"
@@ -1330,10 +1348,22 @@ function renderRewardsPieChart(data) {
                         generateLabels: (chart) => {
                             const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
                             return labels.map((label, i) => {
+                                // Replace the default label with custom HTML
                                 label.text = sortedLabels[i];
                                 label.image = sortedImageUrls[i];
+                                label.fillStyle = sortedColors[i];
                                 return label;
                             });
+                        },
+                        usePointStyle: true, // Use point style to remove the box
+                        pointStyle: 'circle', // Use circle as the point style
+                        render: (label) => {
+                            // Custom render function to include the image
+                            const img = new Image();
+                            img.src = label.image;
+                            img.width = 20;
+                            img.height = 20;
+                            return `${img.outerHTML} ${label.text}`;
                         }
                     }
                 }
@@ -1357,22 +1387,25 @@ function renderStakedPieChart(data) {
         "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
         "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
     ];
+    const colors = ["#262626", "#1f62a1", "#119949"]; // Grey, Blue, Green
 
-    // Combine labels, data, and imageUrls into an array of objects
+    // Combine labels, data, imageUrls, and colors into an array of objects
     let combinedData = labels.map((label, i) => ({
         label: label,
         data: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        imageUrl: imageUrls[i]
+        imageUrl: imageUrls[i],
+        color: colors[i]
     }));
 
     // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Extract sorted labels, data, and imageUrls
+    // Extract sorted labels, data, imageUrls, and colors
     const sortedLabels = combinedData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = combinedData.map(item => item.data);
     const sortedImageUrls = combinedData.map(item => item.imageUrl);
+    const sortedColors = combinedData.map(item => item.color);
 
     window.stakedPieChartInstance = new Chart(ctx, {
         type: "doughnut",
@@ -1380,7 +1413,7 @@ function renderStakedPieChart(data) {
             labels: sortedLabels,
             datasets: [{
                 data: sortedData,
-                backgroundColor: ["#262626", "#1f62a1", "#119949"],
+                backgroundColor: sortedColors,
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
                 cutout: "50%"
@@ -1408,10 +1441,22 @@ function renderStakedPieChart(data) {
                         generateLabels: (chart) => {
                             const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
                             return labels.map((label, i) => {
+                                // Replace the default label with custom HTML
                                 label.text = sortedLabels[i];
                                 label.image = sortedImageUrls[i];
+                                label.fillStyle = sortedColors[i];
                                 return label;
                             });
+                        },
+                        usePointStyle: true, // Use point style to remove the box
+                        pointStyle: 'circle', // Use circle as the point style
+                        render: (label) => {
+                            // Custom render function to include the image
+                            const img = new Image();
+                            img.src = label.image;
+                            img.width = 20;
+                            img.height = 20;
+                            return `${img.outerHTML} ${label.text}`;
                         }
                     }
                 }
