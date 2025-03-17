@@ -1200,7 +1200,12 @@ function renderPublishesPieChart(data) {
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        color: ["#262626", "#1f62a1", "#119949"][i] // Match colors to labels
+        color: ["#262626", "#1f62a1", "#119949"][i], // Match colors to labels
+        icon: [
+            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
+            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
+            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
+        ][i] // Match icons to labels
     }));
 
     // Sort by percentage in descending order
@@ -1210,6 +1215,7 @@ function renderPublishesPieChart(data) {
     const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = combinedData.map(item => item.value);
     const sortedColors = combinedData.map(item => item.color);
+    const sortedIcons = combinedData.map(item => item.icon);
 
     window.publishesPieChartInstance = new Chart(ctx, {
         type: "doughnut",
@@ -1242,12 +1248,53 @@ function renderPublishesPieChart(data) {
                         color: "#acafb0",
                         padding: pieChartLegendPadding,
                         usePointStyle: true,
-                        pointStyle: "circle"
+                        pointStyle: "circle",
+                        generateLabels: (chart) => {
+                            const datasets = chart.data.datasets;
+                            return datasets[0].data.map((value, i) => {
+                                const label = chart.data.labels[i];
+                                const icon = sortedIcons[i];
+                                return {
+                                    text: label,
+                                    fillStyle: sortedColors[i],
+                                    hidden: !chart.getDataVisibility(i),
+                                    index: i,
+                                    // Customize the legend item to include an image
+                                    pointStyle: new Image(), // Create an image element
+                                    pointStyleURL: icon // Store the icon URL
+                                };
+                            });
+                        }
                     }
                 }
             }
         }
     });
+
+    // Custom legend rendering to use images
+    const legend = window.publishesPieChartInstance.legend;
+    const originalDraw = legend.draw;
+    legend.draw = function () {
+        originalDraw.apply(this, arguments);
+
+        // Add custom images to the legend
+        const legendItems = this.legendItems;
+        if (legendItems) {
+            const ctx = this.ctx;
+            const iconSize = pieChartFontSize; // Use pieChartFontSize for both width and height
+            legendItems.forEach((item, i) => {
+                if (item.pointStyleURL) {
+                    const x = item.x - iconSize - 10; // Adjust position
+                    const y = item.y - iconSize / 2;
+                    const img = new Image();
+                    img.src = item.pointStyleURL;
+                    img.onload = () => {
+                        ctx.drawImage(img, x, y, iconSize, iconSize);
+                    };
+                }
+            });
+        }
+    };
 }
 
 // Function to render Rewards Pie Chart
@@ -1265,7 +1312,12 @@ function renderRewardsPieChart(data) {
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        color: ["#262626", "#1f62a1", "#119949"][i] // Match colors to labels
+        color: ["#262626", "#1f62a1", "#119949"][i], // Match colors to labels
+        icon: [
+            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
+            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
+            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
+        ][i] // Match icons to labels
     }));
 
     // Sort by percentage in descending order
@@ -1275,6 +1327,7 @@ function renderRewardsPieChart(data) {
     const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = combinedData.map(item => item.value);
     const sortedColors = combinedData.map(item => item.color);
+    const sortedIcons = combinedData.map(item => item.icon);
 
     window.rewardsPieChartInstance = new Chart(ctx, {
         type: "doughnut",
@@ -1307,12 +1360,53 @@ function renderRewardsPieChart(data) {
                         color: "#acafb0",
                         padding: pieChartLegendPadding,
                         usePointStyle: true,
-                        pointStyle: "circle"
+                        pointStyle: "circle",
+                        generateLabels: (chart) => {
+                            const datasets = chart.data.datasets;
+                            return datasets[0].data.map((value, i) => {
+                                const label = chart.data.labels[i];
+                                const icon = sortedIcons[i];
+                                return {
+                                    text: label,
+                                    fillStyle: sortedColors[i],
+                                    hidden: !chart.getDataVisibility(i),
+                                    index: i,
+                                    // Customize the legend item to include an image
+                                    pointStyle: new Image(), // Create an image element
+                                    pointStyleURL: icon // Store the icon URL
+                                };
+                            });
+                        }
                     }
                 }
             }
         }
     });
+
+    // Custom legend rendering to use images
+    const legend = window.rewardsPieChartInstance.legend;
+    const originalDraw = legend.draw;
+    legend.draw = function () {
+        originalDraw.apply(this, arguments);
+
+        // Add custom images to the legend
+        const legendItems = this.legendItems;
+        if (legendItems) {
+            const ctx = this.ctx;
+            const iconSize = pieChartFontSize; // Use pieChartFontSize for both width and height
+            legendItems.forEach((item, i) => {
+                if (item.pointStyleURL) {
+                    const x = item.x - iconSize - 10; // Adjust position
+                    const y = item.y - iconSize / 2;
+                    const img = new Image();
+                    img.src = item.pointStyleURL;
+                    img.onload = () => {
+                        ctx.drawImage(img, x, y, iconSize, iconSize);
+                    };
+                }
+            });
+        }
+    };
 }
 
 // Function to render Staked Pie Chart
@@ -1330,7 +1424,12 @@ function renderStakedPieChart(data) {
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        color: ["#262626", "#1f62a1", "#119949"][i] // Match colors to labels
+        color: ["#262626", "#1f62a1", "#119949"][i], // Match colors to labels
+        icon: [
+            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/neuroicon.svg",
+            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/baseicon.svg",
+            "https://raw.githubusercontent.com/McCaff0/dkgstats/refs/heads/main/gnosisicon.svg"
+        ][i] // Match icons to labels
     }));
 
     // Sort by percentage in descending order
@@ -1340,6 +1439,7 @@ function renderStakedPieChart(data) {
     const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = combinedData.map(item => item.value);
     const sortedColors = combinedData.map(item => item.color);
+    const sortedIcons = combinedData.map(item => item.icon);
 
     window.stakedPieChartInstance = new Chart(ctx, {
         type: "doughnut",
@@ -1372,12 +1472,53 @@ function renderStakedPieChart(data) {
                         color: "#acafb0",
                         padding: pieChartLegendPadding,
                         usePointStyle: true,
-                        pointStyle: "circle"
+                        pointStyle: "circle",
+                        generateLabels: (chart) => {
+                            const datasets = chart.data.datasets;
+                            return datasets[0].data.map((value, i) => {
+                                const label = chart.data.labels[i];
+                                const icon = sortedIcons[i];
+                                return {
+                                    text: label,
+                                    fillStyle: sortedColors[i],
+                                    hidden: !chart.getDataVisibility(i),
+                                    index: i,
+                                    // Customize the legend item to include an image
+                                    pointStyle: new Image(), // Create an image element
+                                    pointStyleURL: icon // Store the icon URL
+                                };
+                            });
+                        }
                     }
                 }
             }
         }
     });
+
+    // Custom legend rendering to use images
+    const legend = window.stakedPieChartInstance.legend;
+    const originalDraw = legend.draw;
+    legend.draw = function () {
+        originalDraw.apply(this, arguments);
+
+        // Add custom images to the legend
+        const legendItems = this.legendItems;
+        if (legendItems) {
+            const ctx = this.ctx;
+            const iconSize = pieChartFontSize; // Use pieChartFontSize for both width and height
+            legendItems.forEach((item, i) => {
+                if (item.pointStyleURL) {
+                    const x = item.x - iconSize - 10; // Adjust position
+                    const y = item.y - iconSize / 2;
+                    const img = new Image();
+                    img.src = item.pointStyleURL;
+                    img.onload = () => {
+                        ctx.drawImage(img, x, y, iconSize, iconSize);
+                    };
+                }
+            });
+        }
+    };
 }
     
 function fetchChartData() {
