@@ -248,15 +248,18 @@ h1 {
     pointer-events: none; /* Ensures the graph does not interfere */
 }
     #publishesPieChart {
-    margin-top: 0;
+    margin-top: 2rem;
+    margin-left: -2rem;
 }
 
 #rewardsPieChart {
-    margin-top: 7rem;
+    margin-top: 9rem;
+    margin-left: -2rem;
 }
 
 #stakedPieChart {
-    margin-top: 14rem;
+    margin-top: 16rem;
+    margin-left: -2rem;
 }
 
 .epoch-box h3 {
@@ -1153,7 +1156,7 @@ function renderPublishesPieChart(data) {
             labels: ["Neuroweb", "Base", "Gnosis"],
             datasets: [{
                 data: data,
-                backgroundColor: ["#d3d3d3", "#1f3b73", "#1b5e20"],
+                backgroundColor: ["#595959", "#1f62a1", "#194029"],
                 hoverOffset: 10
             }]
         },
@@ -1190,7 +1193,7 @@ function renderRewardsPieChart(data) {
             labels: ["Neuroweb", "Base", "Gnosis"],
             datasets: [{
                 data: data,
-                backgroundColor: ["#d3d3d3", "#1f3b73", "#1b5e20"],
+                backgroundColor: ["#595959", "#1f62a1", "#194029"],
                 hoverOffset: 10
             }]
         },
@@ -1227,7 +1230,7 @@ function renderStakedPieChart(data) {
             labels: ["Neuroweb", "Base", "Gnosis"],
             datasets: [{
                 data: data,
-                backgroundColor: ["#d3d3d3", "#1f3b73", "#1b5e20"],
+                backgroundColor: ["#595959", "#1f62a1", "#194029"],
                 hoverOffset: 10
             }]
         },
