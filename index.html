@@ -1224,15 +1224,11 @@ function renderPublishesPieChart(data = []) {
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
     // Extract sorted labels, formatted values, percentages, and colors
-    const sortedLabels = combinedData.map(item => `${item.label} - ${item.formattedValue}`);
-    const sortedPercentages = combinedData.map(item => `${item.percentage}%`);
-    const sortedData = combinedData.map(item => item.value);
-    const sortedColors = combinedData.map(item => item.color);
-
-    // Combine labels and percentages into a single string for display
     const sortedLabelsWithValuesAndPercentages = combinedData.map(item => 
         `${item.label} - ${item.formattedValue} | ${item.percentage}%`
     );
+    const sortedData = combinedData.map(item => item.value);
+    const sortedColors = combinedData.map(item => item.color);
 
     // If it's the first load, create the chart with default animations
     if (isFirstLoadPublishes) {
@@ -1253,7 +1249,12 @@ function renderPublishesPieChart(data = []) {
                 maintainAspectRatio: false,
                 aspectRatio: 1.5,
                 layout: {
-                    padding: pieChartLayoutPadding
+                    padding: {
+                        left: 20, // Add padding to the left
+                        right: 40, // Add more padding to the right
+                        top: 20,
+                        bottom: 20
+                    }
                 },
                 plugins: {
                     legend: {
@@ -1268,17 +1269,27 @@ function renderPublishesPieChart(data = []) {
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
-                            boxWidth: pieChartFontSize / 1.5,
-                            boxHeight: pieChartFontSize / 1.5,
+                            boxWidth: pieChartFontSize * 2, // Increase box width
+                            boxHeight: pieChartFontSize * 1.5, // Increase box height
                             generateLabels: (chart) => {
                                 const data = chart.data;
                                 if (data.labels.length && data.datasets.length) {
-                                    return data.labels.map((label, i) => ({
-                                        text: label, // Use the combined label
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        hidden: isNaN(data.datasets[0].data[i]) || data.datasets[0].data[i] === 0,
-                                        index: i
-                                    }));
+                                    return data.labels.map((label, i) => {
+                                        const [labelPart, valuePart, percentagePart] = label.split(" | ");
+                                        const formattedLabel = `
+                                            <div style="display: flex; justify-content: space-between; width: 100%;">
+                                                <span>${labelPart} - ${valuePart}</span>
+                                                <span style="text-align: right;">${percentagePart}</span>
+                                            </div>
+                                        `;
+                                        return {
+                                            text: formattedLabel,
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            hidden: isNaN(data.datasets[0].data[i]) || data.datasets[0].data[i] === 0,
+                                            index: i,
+                                            fontColor: "#acafb0"
+                                        };
+                                    });
                                 }
                                 return [];
                             }
