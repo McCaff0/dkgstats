@@ -585,8 +585,8 @@ function handleData(sheetData, chains, records) {
 
 
 if (publishRecord) {
-  document.getElementById('publishRecordDate').innerHTML = formatDate(publishRecord.date);
-  document.getElementById('publishRecordValue').innerHTML = formatNumber(publishRecord.value, 0);
+  document.getElementById('publishRecordDate').innerText = formatDate(publishRecord.date);
+  document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord.value, 0);
 } 
 if (tracSpendRecord) {
   document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
