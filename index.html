@@ -1167,20 +1167,18 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
 }
 
-let isFirstDataLoadPublishesPie = true; // Flag to track the first real data load
-
 function renderPublishesPieChart(data = [], isInitialLoad = true) {
     const ctx = document.getElementById("publishesPieChart").getContext("2d");
 
-    if (window.publishesPieChartInstance) {
-        window.publishesPieChartInstance.destroy();
-    }
-
-    // Default grey colors for empty state
-    const defaultColors = ["#666666", "#999999", "#CCCCCC"];
-
     // If it's the initial load and data is empty, render an empty chart
     if (isInitialLoad && data.length === 0) {
+        if (window.publishesPieChartInstance) {
+            window.publishesPieChartInstance.destroy();
+        }
+
+        // Default grey colors for empty state
+        const defaultColors = ["#666666", "#999999", "#CCCCCC"];
+
         window.publishesPieChartInstance = new Chart(ctx, {
             type: "doughnut",
             data: {
@@ -1243,52 +1241,57 @@ function renderPublishesPieChart(data = [], isInitialLoad = true) {
     const sortedData = combinedData.map(item => item.value);
     const sortedColors = combinedData.map(item => item.color);
 
-    window.publishesPieChartInstance = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: sortedLabelsWithPercentages,
-            datasets: [{
-                data: sortedData,
-                backgroundColor: sortedColors,
-                hoverOffset: 10,
-                borderWidth: pieChartBorderWidth,
-                cutout: "50%"
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            aspectRatio: 1.5,
-            layout: {
-                padding: pieChartLayoutPadding
+    // If the chart already exists, update its data without animation
+    if (window.publishesPieChartInstance) {
+        window.publishesPieChartInstance.data.labels = sortedLabelsWithPercentages;
+        window.publishesPieChartInstance.data.datasets[0].data = sortedData;
+        window.publishesPieChartInstance.data.datasets[0].backgroundColor = sortedColors;
+        window.publishesPieChartInstance.update(); // Update without animation
+    } else {
+        // If the chart doesn't exist, create it with default animation
+        window.publishesPieChartInstance = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                labels: sortedLabelsWithPercentages,
+                datasets: [{
+                    data: sortedData,
+                    backgroundColor: sortedColors,
+                    hoverOffset: 10,
+                    borderWidth: pieChartBorderWidth,
+                    cutout: "50%"
+                }]
             },
-            animation: isFirstDataLoadPublishesPie, // Enable animations only for the first real data load
-            plugins: {
-                legend: {
-                    position: "right",
-                    align: "start",
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif"
-                        },
-                        color: "#acafb0",
-                        padding: pieChartLegendPadding,
-                        usePointStyle: true,
-                        pointStyle: "circle",
-                        boxWidth: pieChartFontSize / 1.5,
-                        boxHeight: pieChartFontSize / 1.5
-                    }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                aspectRatio: 1.5,
+                layout: {
+                    padding: pieChartLayoutPadding
                 },
-                tooltip: {
-                    enabled: true // Enable tooltips for actual data
+                plugins: {
+                    legend: {
+                        position: "right",
+                        align: "start",
+                        labels: {
+                            font: {
+                                size: pieChartFontSize,
+                                family: "Play, sans-serif"
+                            },
+                            color: "#acafb0",
+                            padding: pieChartLegendPadding,
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            boxWidth: pieChartFontSize / 1.5,
+                            boxHeight: pieChartFontSize / 1.5
+                        }
+                    },
+                    tooltip: {
+                        enabled: true // Enable tooltips for actual data
+                    }
                 }
             }
-        }
-    });
-
-    // Disable animations for further refreshes
-   isFirstDataLoadPublishesPie = false;
+        });
+    }
 }
     
 function renderRewardsPieChart(data = [], isInitialLoad = true) {
