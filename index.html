@@ -242,9 +242,9 @@ h1 {
     top: 0;
     left: 0;
     width: 100% !important;
-    height: 100% !important;
+    height: 7rem !important;
     max-width: 100%;
-    max-height: 100%;
+    max-height: 7rem;
     pointer-events: none; /* Ensures the graph does not interfere */
 }
 
@@ -456,8 +456,21 @@ h1 {
   </p>
 
 </div>
-      <div class="epoch-box"></div>
-      <div class="epoch-box"></div>
+      <div class="epoch-box">
+    <div id="epochPublishesPieChartContainer" class="pie-chart-container">
+        <canvas id="epochPublishesChart"></canvas>
+        <div class="pie-chart-labels"></div>
+    </div>
+    <div id="epochRewardsPieChartContainer" class="pie-chart-container">
+        <canvas id="epochRewardsChart"></canvas>
+        <div class="pie-chart-labels"></div>
+    </div>
+    <div id="stakedPieChartContainer" class="pie-chart-container">
+        <canvas id="stakedChart"></canvas>
+        <div class="pie-chart-labels"></div>
+    </div>
+</div>
+<div class="epoch-box"></div>
     </div>
 
     <!-- Fourth container with empty graph-boxes -->
@@ -781,7 +794,78 @@ window.addEventListener('load', () => {
     fetchData();
 });
 
+// Function to create a Pie Chart
+function createPieChart(chartId, labels, data) {
+    const ctx = document.getElementById(chartId).getContext('2d');
+    return new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: ['#ff6384', '#36a2eb', '#ffce56'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false } // Hide legend since labels are on the right
+            }
+        }
+    });
+}
 
+// Function to update Labels
+function updatePieChartLabels(containerId, labels, data) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = labels.map((label, index) => 
+        `<div><strong>${label}:</strong> ${data[index]}</div>`
+    ).join('');
+}
+
+// Function to initialize all charts
+function initializePieCharts(chains) {
+    const labels = ["Neuroweb", "Base", "Gnosis"];
+
+    // Create Pie Charts
+    const epochPublishesChart = createPieChart("epochPublishesChart", labels, [
+        chains.neuroweb.epochPublishes,
+        chains.base.epochPublishes,
+        chains.gnosis.epochPublishes
+    ]);
+    updatePieChartLabels("epochPublishesLabels", labels, [
+        chains.neuroweb.epochPublishes,
+        chains.base.epochPublishes,
+        chains.gnosis.epochPublishes
+    ]);
+
+    const epochRewardsChart = createPieChart("epochRewardsChart", labels, [
+        chains.neuroweb.epochRewards,
+        chains.base.epochRewards,
+        chains.gnosis.epochRewards
+    ]);
+    updatePieChartLabels("epochRewardsLabels", labels, [
+        chains.neuroweb.epochRewards,
+        chains.base.epochRewards,
+        chains.gnosis.epochRewards
+    ]);
+
+    const stakedChart = createPieChart("stakedChart", labels, [
+        chains.neuroweb.stakedAmount,
+        chains.base.stakedAmount,
+        chains.gnosis.stakedAmount
+    ]);
+    updatePieChartLabels("stakedLabels", labels, [
+        chains.neuroweb.stakedAmount,
+        chains.base.stakedAmount,
+        chains.gnosis.stakedAmount
+    ]);
+}
+
+// Call this function inside `handleData`
+initializePieCharts(chains);
 
 function renderPriceChart(priceLabels, priceValues, animate = false) {
     const canvas = document.getElementById('PriceChart');
