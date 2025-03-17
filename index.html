@@ -690,6 +690,24 @@ function updateFontSizesAndPadding() {
     };
 }
 
+// Global font size & padding variables for pie charts
+let pieChartFontSize, pieChartPadding;
+
+// Function to calculate font sizes & padding dynamically for pie charts
+function updatePieChartFontSizesAndPadding() {
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    // Pie chart font size (1rem)
+    pieChartFontSize = rootFontSize * 1; // 1rem = 16px (since root font size is 16px)
+
+    // Scale padding dynamically for pie charts
+    pieChartPadding = {
+        left: rootFontSize * 0.625,   // 10px when base is 16px
+        right: rootFontSize * 1.5625, // 25px when base is 16px
+        top: rootFontSize * 1.8,   // 28px when base is 16px
+        bottom: rootFontSize * 0      // No bottom padding
+    };
+}
+    
 let stableHeight = null; // Store the locked height for mobile devices
 
 // ✅ Detect if the device allows true window resizing
@@ -747,12 +765,13 @@ function adjustFontSize() {
     });
 }
 
-// ✅ Resize charts dynamically
+// ✅ Resize charts dynamically including pie charts
 function resizeCharts() {
-    updateFontSizesAndPadding(); // Update padding and font sizes
+    updateFontSizesAndPadding(); // Update font sizes & padding
 
     const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
-
+    
+    // Resize bar charts
     chartInstances.forEach(chart => {
         if (chart) {
             chart.options.scales.x.ticks.font.size = tickFontSize;
@@ -760,6 +779,17 @@ function resizeCharts() {
             chart.options.scales.y.title.font.size = labelFontSize;
             chart.options.layout.padding = chartPadding;
             chart.update(); // Directly update chart sizes
+        }
+    });
+
+    // Resize Pie charts with custom settings
+    const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
+    
+    pieChartInstances.forEach(chart => {
+        if (chart) {
+            chart.options.plugins.legend.labels.font.size = pieChartFontSize;
+            chart.options.layout.padding = pieChartPadding;
+            chart.update(); // Update the pie chart sizes
         }
     });
 }
@@ -1179,7 +1209,7 @@ function renderPublishesPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 18
+                padding: 22
             },
             plugins: {
                 legend: {
@@ -1187,7 +1217,7 @@ function renderPublishesPieChart(data) {
                     align: "start", // Ensures labels stack vertically
                     labels: {
                         font: {
-                            size: labelFontSize,
+                            size: pieChartFontSize,
                             family: "Play, sans-serif"
                         },
                         color: "#acafb0",
@@ -1229,7 +1259,7 @@ function renderRewardsPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 18
+                padding: 22
             },
             plugins: {
                 legend: {
@@ -1237,7 +1267,7 @@ function renderRewardsPieChart(data) {
                     align: "start",
                     labels: {
                         font: {
-                            size: labelFontSize,
+                            size: pieChartFontSize,
                             family: "Play, sans-serif"
                         },
                         color: "#acafb0",
@@ -1279,7 +1309,7 @@ function renderStakedPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 18
+                padding: 22
                 
             },
             plugins: {
@@ -1288,7 +1318,7 @@ function renderStakedPieChart(data) {
                     align: "start",
                     labels: {
                         font: {
-                            size: labelFontSize,
+                            size: pieChartFontSize,
                             family: "Play, sans-serif"
                         },
                         color: "#acafb0",
