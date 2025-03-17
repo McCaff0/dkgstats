@@ -1199,7 +1199,7 @@ function renderPublishesPieChart(data) {
     );
 
     window.publishesPieChartInstance = new Chart(ctx, {
-        type: "doughnut", // Change "pie" to "doughnut" for a hollow ring
+        type: "doughnut",
         data: {
             labels: labelsWithPercentages,
             datasets: [{
@@ -1220,15 +1220,17 @@ function renderPublishesPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-            align: "start", // Ensures labels stack vertically
-            labels: {
-                font: {
-                    size: pieChartFontSize,
-                    family: "Play, sans-serif",
-                    weight: "bold"  // This makes the font bold
-                },
-                color: "#acafb0", // <-- Added missing comma here
-                padding: pieChartLegendPadding
+                    align: "start", // Ensures labels stack vertically
+                    labels: {
+                        font: {
+                            size: pieChartFontSize,
+                            family: "Play, sans-serif",
+                            weight: "bold"  // This makes the font bold
+                        },
+                        color: "#acafb0",
+                        padding: pieChartLegendPadding,
+                        usePointStyle: true, // Use point style (circles) for legend markers
+                        pointStyle: "circle" // Set the shape of the legend markers to circles
                     }
                 }
             }
@@ -1271,15 +1273,17 @@ function renderRewardsPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-            align: "start", // Ensures labels stack vertically
-            labels: {
-                font: {
-                    size: pieChartFontSize,
-                    family: "Play, sans-serif",
-                    weight: "bold"  // This makes the font bold
-                },
-                color: "#acafb0", // <-- Added missing comma here
-                padding: pieChartLegendPadding
+                    align: "start", // Ensures labels stack vertically
+                    labels: {
+                        font: {
+                            size: pieChartFontSize,
+                            family: "Play, sans-serif",
+                            weight: "bold"  // This makes the font bold
+                        },
+                        color: "#acafb0",
+                        padding: pieChartLegendPadding,
+                        usePointStyle: true, // Use point style (circles) for legend markers
+                        pointStyle: "circle" // Set the shape of the legend markers to circles
                     }
                 }
             }
@@ -1318,20 +1322,21 @@ function renderStakedPieChart(data) {
             aspectRatio: 1.5,
             layout: {
                 padding: pieChartLayoutPadding
-                
             },
             plugins: {
                 legend: {
                     position: "right",
-            align: "start", // Ensures labels stack vertically
-            labels: {
-                font: {
-                    size: pieChartFontSize,
-                    family: "Play, sans-serif",
-                    weight: "bold"  // This makes the font bold
-                },
-                color: "#acafb0", // <-- Added missing comma here
-                padding: pieChartLegendPadding
+                    align: "start", // Ensures labels stack vertically
+                    labels: {
+                        font: {
+                            size: pieChartFontSize,
+                            family: "Play, sans-serif",
+                            weight: "bold"  // This makes the font bold
+                        },
+                        color: "#acafb0",
+                        padding: pieChartLegendPadding,
+                        usePointStyle: true, // Use point style (circles) for legend markers
+                        pointStyle: "circle" // Set the shape of the legend markers to circles
                     }
                 }
             }
