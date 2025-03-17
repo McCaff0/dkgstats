@@ -268,12 +268,12 @@ h1 {
 
 .epoch-box h3 {
     font-family: 'Play', sans-serif;
-    font-size: 1.25rem; /* Slightly larger font */
+    font-size: 1.125rem; /* Slightly larger font */
     font-weight: bold;
     text-align: center;
     margin-top: 0.5rem;
     margin-bottom: -0.3125rem;
-    color: #acafb0; /* Same as stats-box heading */
+    color: #8a8a8a; /* Same as stats-box heading */
 }
 
 /* nth-of-type selectors for the epoch-boxes to adjust heights */
@@ -1205,7 +1205,7 @@ function renderPublishesPieChart(data) {
             labels: labelsWithPercentages,
             datasets: [{
                 data: data,
-                backgroundColor: ["#808080", "#1f62a1", "#119949"],
+                backgroundColor: ["#595959", "#1f62a1", "#119949"],
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,  // Removes outline
                 cutout: "50%" // Controls the size of the hole in the middle
@@ -1256,7 +1256,7 @@ function renderRewardsPieChart(data) {
             labels: labelsWithPercentages,
             datasets: [{
                 data: data,
-                backgroundColor: ["#808080", "#1f62a1", "#119949"],
+                backgroundColor: ["#595959", "#1f62a1", "#119949"],
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
                 cutout: "50%"
@@ -1307,7 +1307,7 @@ function renderStakedPieChart(data) {
             labels: labelsWithPercentages,
             datasets: [{
                 data: data,
-                backgroundColor: ["#808080", "#1f62a1", "#119949"],
+                backgroundColor: ["#595959", "#1f62a1", "#119949"],
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
                 cutout: "50%"
