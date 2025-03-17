@@ -1200,7 +1200,11 @@ function renderPublishesPieChart(data) {
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        imageUrls: [`path_to_image_${label}_icon1.png`, `path_to_image_${label}_icon2.png`, `path_to_image_${label}_icon3.png`] // Multiple image URLs for each segment
+        imageUrls: [
+            `path_to_image_${label}_icon1.png`, 
+            `path_to_image_${label}_icon2.png`, 
+            `path_to_image_${label}_icon3.png`
+        ] // Multiple image URLs for each segment
     }));
 
     // Sort data by percentage descending
@@ -1209,7 +1213,7 @@ function renderPublishesPieChart(data) {
     // Extract sorted labels, data, and image URLs
     const sortedLabelsWithPercentages = chartData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = chartData.map(item => item.value);
-    const sortedImageUrls = chartData.map(item => item.imageUrls); // Each element is an array of URLs
+    const sortedImageUrls = chartData.map(item => item.imageUrls[0]); // Pick the first image for now
 
     window.publishesPieChartInstance = new Chart(ctx, {
         type: "doughnut", // Change "pie" to "doughnut" for a hollow ring
@@ -1241,8 +1245,7 @@ function renderPublishesPieChart(data) {
                                     text: label,
                                     fillStyle: chart.data.datasets[0].backgroundColor[i],
                                     hidden: false,
-                                    // We now handle multiple images for each segment
-                                    image: sortedImageUrls[i][0], // You can select which image to use here, for example, the first image in the array
+                                    image: sortedImageUrls[i], // Now using the image URL instead of a color box
                                 };
                             });
                         },
@@ -1274,7 +1277,11 @@ function renderRewardsPieChart(data) {
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        imageUrls: [`path_to_image_${label}_icon1.png`, `path_to_image_${label}_icon2.png`, `path_to_image_${label}_icon3.png`] // Multiple image URLs for each segment
+        imageUrls: [
+            `path_to_image_${label}_icon1.png`, 
+            `path_to_image_${label}_icon2.png`, 
+            `path_to_image_${label}_icon3.png`
+        ] // Multiple image URLs for each segment
     }));
 
     // Sort data by percentage descending
@@ -1283,7 +1290,7 @@ function renderRewardsPieChart(data) {
     // Extract sorted labels, data, and image URLs
     const sortedLabelsWithPercentages = chartData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = chartData.map(item => item.value);
-    const sortedImageUrls = chartData.map(item => item.imageUrls); // Each element is an array of URLs
+    const sortedImageUrls = chartData.map(item => item.imageUrls[0]); // Pick the first image for now
 
     window.rewardsPieChartInstance = new Chart(ctx, {
         type: "doughnut",
@@ -1315,8 +1322,7 @@ function renderRewardsPieChart(data) {
                                     text: label,
                                     fillStyle: chart.data.datasets[0].backgroundColor[i],
                                     hidden: false,
-                                    // We now handle multiple images for each segment
-                                    image: sortedImageUrls[i][0], // You can select which image to use here, for example, the first image in the array
+                                    image: sortedImageUrls[i], // Now using the image URL instead of a color box
                                 };
                             });
                         },
@@ -1348,7 +1354,11 @@ function renderStakedPieChart(data) {
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        imageUrls: [`path_to_image_${label}_icon1.png`, `path_to_image_${label}_icon2.png`, `path_to_image_${label}_icon3.png`] // Multiple image URLs for each segment
+        imageUrls: [
+            `path_to_image_${label}_icon1.png`, 
+            `path_to_image_${label}_icon2.png`, 
+            `path_to_image_${label}_icon3.png`
+        ] // Multiple image URLs for each segment
     }));
 
     // Sort data by percentage descending
@@ -1357,7 +1367,7 @@ function renderStakedPieChart(data) {
     // Extract sorted labels, data, and image URLs
     const sortedLabelsWithPercentages = chartData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = chartData.map(item => item.value);
-    const sortedImageUrls = chartData.map(item => item.imageUrls); // Each element is an array of URLs
+    const sortedImageUrls = chartData.map(item => item.imageUrls[0]); // Pick the first image for now
 
     window.stakedPieChartInstance = new Chart(ctx, {
         type: "doughnut",
@@ -1389,8 +1399,7 @@ function renderStakedPieChart(data) {
                                     text: label,
                                     fillStyle: chart.data.datasets[0].backgroundColor[i],
                                     hidden: false,
-                                    // We now handle multiple images for each segment
-                                    image: sortedImageUrls[i][0], // You can select which image to use here, for example, the first image in the array
+                                    image: sortedImageUrls[i], // Now using the image URL instead of a color box
                                 };
                             });
                         },
@@ -1407,6 +1416,7 @@ function renderStakedPieChart(data) {
         }
     });
 }
+
 
     
 function fetchChartData() {
