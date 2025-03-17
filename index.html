@@ -697,11 +697,17 @@ let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBord
 function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-    // ✅ Scale all values based on root font size
-    pieChartFontSize = rootFontSize * 2;         // 1.5rem (24px if base is 16px)
-    pieChartLayoutPadding = rootFontSize * 1.5; // ~22px if base is 16px
-    pieChartLegendPadding = rootFontSize * 0.5;   // ~8px if base is 16px
-    pieChartBorderWidth = Math.max(1, rootFontSize * 0.0625); // Scales but keeps a min of 1px
+    // ✅ Scale everything relative to `rootFontSize`
+    pieChartFontSize = rootFontSize * 1.1;
+    
+    // ✅ Scale layout padding
+    pieChartLayoutPadding = rootFontSize * 1.375;
+    
+    // ✅ Scale legend label padding
+    pieChartLegendPadding = rootFontSize * 0.5;
+    
+    // ✅ Scale border width, ensuring a minimum value
+    pieChartBorderWidth = Math.max(1, rootFontSize * 0.0625);
 }
 
     
