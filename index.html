@@ -648,10 +648,6 @@ function fetchData() {
     })
     .catch(error => console.error('Error fetching data:', error));
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-  fetchData();
-});
     
 let PriceChartInstance = null;
 let SpendChartInstance = null;
@@ -793,20 +789,33 @@ function handleResize() {
     });
 }
 
-// ✅ Event Listeners
-window.addEventListener('resize', handleResize);
-
-window.addEventListener('orientationchange', () => {
-    stableHeight = null; // Reset for new orientation
-    setTimeout(handleResize, 200); // Allow correct height detection
+// Debounced resize handler to avoid excessive calls
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        handleResize();
+    }, 200); // Debounce time of 200ms
 });
 
-window.addEventListener('load', () => {
+// Handle orientation change specifically for mobile
+window.addEventListener('orientationchange', () => {
+    stableHeight = null; // Reset for new orientation
+    clearTimeout(resizeTimeout); // Clear any pending resize timeout
+    setTimeout(() => {
+        handleResize(); // Call handleResize after a short delay
+    }, 200); // Delay to allow correct height detection
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Reset first load flags
     isFirstLoadPublishes = true;
     isFirstLoadRewards = true;
     isFirstLoadStaked = true;
-    adjustFontSize(); // Initial font size adjustment
-    resizeCharts();   // Initial chart resize
+
+    // Initial font size adjustment and chart resize
+    adjustFontSize();
+    resizeCharts();
 
     // Render charts with empty data initially
     renderPriceChart([], [], false);
@@ -817,9 +826,14 @@ window.addEventListener('load', () => {
     renderStakedPieChart([], true);
 
     // Fetch actual data
-    fetchChartData();
-    fetchData();
-    fetchPieChartData();
+    fetchData()
+        .then(() => {
+            fetchChartData();
+            fetchPieChartData();
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
 });
 
 // Add references for the pie charts
