@@ -1242,7 +1242,9 @@ function renderPublishesPieChart(data) {
                         color: "#acafb0",
                         padding: pieChartLegendPadding,
                         usePointStyle: true,
-                        pointStyle: "circle"
+                        pointStyle: "circle",
+                        boxWidth: pieChartFontSize / 2, // Adjust the width of the legend icon
+                        boxHeight: pieChartFontSize / 2// Adjust the height of the legend icon
                     }
                 }
             }
@@ -1307,7 +1309,9 @@ function renderRewardsPieChart(data) {
                         color: "#acafb0",
                         padding: pieChartLegendPadding,
                         usePointStyle: true,
-                        pointStyle: "circle"
+                        pointStyle: "circle",
+                        boxWidth: pieChartFontSize / 2, // Adjust the width of the legend icon
+                        boxHeight: pieChartFontSize / 2// Adjust the height of the legend icon
                     }
                 }
             }
@@ -1373,8 +1377,8 @@ function renderStakedPieChart(data) {
                         padding: pieChartLegendPadding,
                         usePointStyle: true,
                         pointStyle: "circle",
-                        boxWidth: pieChartFontSize, // Adjust the width of the legend icon
-                        boxHeight: pieChartFontSize // Adjust the height of the legend icon
+                        boxWidth: pieChartFontSize / 2, // Adjust the width of the legend icon
+                        boxHeight: pieChartFontSize / 2// Adjust the height of the legend icon
                     }
                 }
             }
