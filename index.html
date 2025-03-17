@@ -331,7 +331,7 @@ h1 {
             <span class="percentage-change"></span>
           </span>
         </p>
-        <h3>28 Day Averages</h3>
+        <h3>30 Day Averages</h3>
         <p>
           <span>Annual Spend (USD)</span>
           <span class="value-container">
@@ -576,31 +576,27 @@ function handleData(sheetData, chains, records) {
     document.getElementById('gnosisepochpublishes').innerText = formatNumber(gnosis.epochPublishes, 0);
     document.getElementById('gnosisapy').innerText = formatNumber(gnosis.apy * 100, 2) + '%';
     document.getElementById('gnosisoperatorfee').innerText = formatNumber(gnosis.operatorFee * 100, 2) + '%';
-  
+  }
 
   // Handle Records Data (Publish, trac, USD Spend)
   const publishRecord = records.publishRecord || {};
   const tracSpendRecord = records.tracSpendRecord || {};
   const usdSpendRecord = records.usdSpendRecord || {};
 
-  console.log("Records Data:", records); 
-  console.log("Publish Record:", records.publishRecord);
-  console.log("Trac Spend Record:", records.tracSpendRecord);
-  console.log("USD Spend Record:", records.usdSpendRecord);
-  console.log("Publish Record Structure:", publishRecord);
 
-  // Update the record values in the DOM
+if (publishRecord) {
   document.getElementById('publishRecordDate').innerHTML = formatDate(publishRecord.date);
   document.getElementById('publishRecordValue').innerHTML = formatNumber(publishRecord.value, 0);
-if (tracspendrecord) {
+} 
+if (tracSpendRecord) {
   document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord?.date) || 'N/A';
   document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord?.value, 0) || 'N/A';
 }
+if (usdSpendRecord) {  
   document.getElementById('usdSpendRecordDate').innerText = formatDate(usdSpendRecord?.date) || 'N/A';
   document.getElementById('usdSpendRecordValue').innerText = formatNumber(usdSpendRecord?.value, 2, true) || 'N/A';
-  console.log("Publish Record Date Value:", publishRecord?.date);
 }
-
+}
 
 function fetchData() {
   const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
