@@ -557,20 +557,27 @@ h1 {
       
     }
 
+    function formatDate(isoDate) {
+      console.log("formatDate input:", isoDate);
+      if (!isoDate) return 'N/A';
+      const date = new Date(isoDate);
+      if (isNaN(date.getTime())) return 'N/A';
+      let result = date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit'
+      });
+      console.log("formatDate output:", result);
+      return result;
+    }
 
-function formatDate(isoDate) {
-  console.log("formatDate input:", isoDate);
-  if (!isoDate) return 'N/A';
-  const date = new Date(isoDate);
-  if (isNaN(date.getTime())) return 'N/A';
-  let result = date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit'
-  });
-  console.log("formatDate output:", result);
-  return result;
-}
+        function formatValueInMillions(value) {
+        if (value >= 1000000) {
+            return `${(value / 1000000).toFixed(1)}M`; // Format as 1.0M
+        }
+        return value.toString(); // Return the original value if less than 1M
+    }
+    
 function handleData(sheetData, records) {
     console.log("✅ handleData received:");
     console.log("➡ sheetData:", sheetData);
@@ -1208,24 +1215,31 @@ function renderPublishesPieChart(data = []) {
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
-        percentage: (data[i] / total * 100).toFixed(2),
+        formattedValue: formatValueInMillions(data[i]), // Format the value
+        percentage: (data[i] / total * 100).toFixed(2), // Calculate percentage
         color: ["#262626", "#1f62a1", "#076940"][i] // Match colors to labels
     }));
 
     // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Extract sorted labels, data, and colors
-    const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
+    // Extract sorted labels, formatted values, percentages, and colors
+    const sortedLabels = combinedData.map(item => `${item.label} - ${item.formattedValue}`);
+    const sortedPercentages = combinedData.map(item => `${item.percentage}%`);
     const sortedData = combinedData.map(item => item.value);
     const sortedColors = combinedData.map(item => item.color);
+
+    // Combine labels and percentages into a single string for display
+    const sortedLabelsWithValuesAndPercentages = combinedData.map(item => 
+        `${item.label} - ${item.formattedValue} | ${item.percentage}%`
+    );
 
     // If it's the first load, create the chart with default animations
     if (isFirstLoadPublishes) {
         window.publishesPieChartInstance = new Chart(ctx, {
             type: "doughnut",
             data: {
-                labels: sortedLabelsWithPercentages,
+                labels: sortedLabelsWithValuesAndPercentages, // Use combined labels
                 datasets: [{
                     data: sortedData,
                     backgroundColor: sortedColors,
@@ -1255,7 +1269,19 @@ function renderPublishesPieChart(data = []) {
                             usePointStyle: true,
                             pointStyle: "circle",
                             boxWidth: pieChartFontSize / 1.5,
-                            boxHeight: pieChartFontSize / 1.5
+                            boxHeight: pieChartFontSize / 1.5,
+                            generateLabels: (chart) => {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => ({
+                                        text: label, // Use the combined label
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        hidden: isNaN(data.datasets[0].data[i]) || data.datasets[0].data[i] === 0,
+                                        index: i
+                                    }));
+                                }
+                                return [];
+                            }
                         }
                     }
                 }
@@ -1266,7 +1292,7 @@ function renderPublishesPieChart(data = []) {
     } else {
         // On updates, update the existing chart's data without recreating it
         if (window.publishesPieChartInstance) {
-            window.publishesPieChartInstance.data.labels = sortedLabelsWithPercentages;
+            window.publishesPieChartInstance.data.labels = sortedLabelsWithValuesAndPercentages;
             window.publishesPieChartInstance.data.datasets[0].data = sortedData;
             window.publishesPieChartInstance.data.datasets[0].backgroundColor = sortedColors;
             window.publishesPieChartInstance.update(); // Update without animation
