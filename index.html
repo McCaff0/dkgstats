@@ -270,7 +270,7 @@ h1 {
         font-size: 1.25rem;
         font-weight: bold;
         text-transform: uppercase;
-        margin-bottom: 0;
+        margin-bottom: -0.25rem;
         color: #acafb0;
         margin-top: 0.5rem
 }
@@ -692,7 +692,7 @@ function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
   
     pieChartFontSize = rootFontSize * 1.1;
-    pieChartLayoutPadding = rootFontSize * 1.3;
+    pieChartLayoutPadding = rootFontSize * 1;
     pieChartLegendPadding = rootFontSize * 0.6;
     pieChartBorderWidth = Math.max(1, rootFontSize * 0.0625);
 }
