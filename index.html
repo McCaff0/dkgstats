@@ -246,23 +246,23 @@ h1 {
     top: 0;
     left: 0;
     width: 100% !important;
-    height: 7rem !important;
+    height: 9rem !important;
     max-width: 100%;
-    max-height: 7rem;
+    max-height: 9rem;
     pointer-events: none; /* Ensures the graph does not interfere */
 }
     #publishesPieChart {
-    margin-top: 1rem;
+    margin-top: 0;
     margin-left: -3rem;
 }
 
 #rewardsPieChart {
-    margin-top: 8.075rem;
+    margin-top: 7.075rem;
     margin-left: -3rem;
 }
 
 #stakedPieChart {
-    margin-top: 15.15rem;
+    margin-top: 14.15rem;
     margin-left: -3rem;
 }
 
@@ -1168,7 +1168,7 @@ function renderPublishesPieChart(data) {
             labels: labelsWithPercentages,
             datasets: [{
                 data: data,
-                backgroundColor: ["#595959", "#1f62a1", "#194029"],
+                backgroundColor: ["#808080", "#1f62a1", "#2a7047"],
                 hoverOffset: 10,
                 borderWidth: 1,  // Removes outline
                 cutout: "50%" // Controls the size of the hole in the middle
@@ -1179,7 +1179,7 @@ function renderPublishesPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 14
+                padding: 18
             },
             plugins: {
                 legend: {
@@ -1218,7 +1218,7 @@ function renderRewardsPieChart(data) {
             labels: labelsWithPercentages,
             datasets: [{
                 data: data,
-                backgroundColor: ["#595959", "#1f62a1", "#194029"],
+                backgroundColor: ["#808080", "#1f62a1", "#2a7047"],
                 hoverOffset: 10,
                 borderWidth: 1,
                 cutout: "50%"
@@ -1229,7 +1229,7 @@ function renderRewardsPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 14
+                padding: 18
             },
             plugins: {
                 legend: {
@@ -1268,7 +1268,7 @@ function renderStakedPieChart(data) {
             labels: labelsWithPercentages,
             datasets: [{
                 data: data,
-                backgroundColor: ["#595959", "#1f62a1", "#194029"],
+                backgroundColor: ["#808080", "#1f62a1", "#2a7047"],
                 hoverOffset: 10,
                 borderWidth: 1,
                 cutout: "50%"
@@ -1279,7 +1279,7 @@ function renderStakedPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 14
+                padding: 18
                 
             },
             plugins: {
