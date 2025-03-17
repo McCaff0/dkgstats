@@ -771,10 +771,11 @@ function adjustFontSize() {
 // ✅ Resize charts dynamically including pie charts
 function resizeCharts() {
     updateFontSizesAndPadding(); // Update font sizes & padding
+    updatePieChartFontSizesAndPadding(); // Update pie chart sizes & padding
 
     const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
     
-    // Resize bar charts
+    // ✅ Resize bar charts
     chartInstances.forEach(chart => {
         if (chart) {
             chart.options.scales.x.ticks.font.size = tickFontSize;
@@ -785,17 +786,20 @@ function resizeCharts() {
         }
     });
 
-    // Resize Pie charts with custom settings
+    // ✅ Resize Pie charts with dynamically scaled settings
     const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
-    
+
     pieChartInstances.forEach(chart => {
         if (chart) {
             chart.options.plugins.legend.labels.font.size = pieChartFontSize;
-            chart.options.layout.padding = pieChartPadding;
+            chart.options.plugins.legend.labels.padding = pieChartLegendPadding;
+            chart.options.layout.padding = pieChartLayoutPadding;
+            chart.options.elements.arc.borderWidth = pieChartBorderWidth;
             chart.update(); // Update the pie chart sizes
         }
     });
 }
+
 
 // ✅ Smooth Resize Handling (No throttling)
 let resizeTimeout;
