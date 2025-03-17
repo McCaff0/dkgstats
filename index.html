@@ -1200,7 +1200,7 @@ function renderPublishesPieChart(data = []) {
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        color: ["#262626", "#1f62a1", "#119949"][i] // Match colors to labels
+        color: ["#262626", "#1f62a1", "#0b853d"][i] // Match colors to labels
     }));
 
     // Sort by percentage in descending order
@@ -1222,7 +1222,7 @@ function renderPublishesPieChart(data = []) {
                     backgroundColor: sortedColors,
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
-                    cutout: "55%"
+                    cutout: "50%"
                 }]
             },
             options: {
@@ -1277,7 +1277,7 @@ function renderRewardsPieChart(data = []) {
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        color: ["#262626", "#1f62a1", "#119949"][i] // Use actual colors for data
+        color: ["#262626", "#1f62a1", "#0b853d"][i] // Use actual colors for data
     }));
 
     // Sort by percentage in descending order
@@ -1299,7 +1299,7 @@ function renderRewardsPieChart(data = []) {
                     backgroundColor: sortedColors,
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
-                    cutout: "55%"
+                    cutout: "50%"
                 }]
             },
             options: {
@@ -1356,7 +1356,7 @@ function renderStakedPieChart(data = []) {
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(2),
-        color: ["#262626", "#1f62a1", "#119949"][i] // Match colors to labels
+        color: ["#262626", "#1f62a1", "#0b853d"][i] // Match colors to labels
     }));
 
     // Sort by percentage in descending order
@@ -1378,7 +1378,7 @@ function renderStakedPieChart(data = []) {
                     backgroundColor: sortedColors,
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
-                    cutout: "55%"
+                    cutout: "50%"
                 }]
             },
             options: {
