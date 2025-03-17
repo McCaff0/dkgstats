@@ -694,19 +694,20 @@ function updateFontSizesAndPadding() {
 let pieChartFontSize, pieChartPadding;
 
 // Function to calculate font sizes & padding dynamically for pie charts
+// Global font size & padding variables for pie charts
+let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
+
+// ✅ Function to calculate font sizes & padding dynamically for pie charts
 function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    // Pie chart font size (1rem)
-    pieChartFontSize = rootFontSize * 1.5;
 
-    // Scale padding dynamically for pie charts
-    pieChartPadding = {
-        left: rootFontSize * 0.625,   // 10px when base is 16px
-        right: rootFontSize * 1.5625, // 25px when base is 16px
-        top: rootFontSize * 1.8,   // 28px when base is 16px
-        bottom: rootFontSize * 0      // No bottom padding
-    };
+    // ✅ Scale all values based on root font size
+    pieChartFontSize = rootFontSize * 1.5;         // 1.5rem (24px if base is 16px)
+    pieChartLayoutPadding = rootFontSize * 1.375; // ~22px if base is 16px
+    pieChartLegendPadding = rootFontSize * 0.5;   // ~8px if base is 16px
+    pieChartBorderWidth = Math.max(1, rootFontSize * 0.0625); // Scales but keeps a min of 1px
 }
+
     
 let stableHeight = null; // Store the locked height for mobile devices
 
@@ -1200,7 +1201,7 @@ function renderPublishesPieChart(data) {
                 data: data,
                 backgroundColor: ["#808080", "#1f62a1", "#119949"],
                 hoverOffset: 10,
-                borderWidth: 1,  // Removes outline
+                borderWidth: pieChartBorderWidth,  // Removes outline
                 cutout: "50%" // Controls the size of the hole in the middle
             }]
         },
@@ -1209,7 +1210,7 @@ function renderPublishesPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 22
+                padding: pieChartLayoutPadding
             },
             plugins: {
                 legend: {
@@ -1222,7 +1223,7 @@ function renderPublishesPieChart(data) {
                     weight: "bold"  // This makes the font bold
                 },
                 color: "#acafb0", // <-- Added missing comma here
-                padding: 8
+                padding: pieChartLegendPadding
                     }
                 }
             }
@@ -1251,7 +1252,7 @@ function renderRewardsPieChart(data) {
                 data: data,
                 backgroundColor: ["#808080", "#1f62a1", "#119949"],
                 hoverOffset: 10,
-                borderWidth: 1,
+                borderWidth: pieChartBorderWidth,
                 cutout: "50%"
             }]
         },
@@ -1260,7 +1261,7 @@ function renderRewardsPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 22
+                padding: pieChartLayoutPadding
             },
             plugins: {
                 legend: {
@@ -1273,7 +1274,7 @@ function renderRewardsPieChart(data) {
                     weight: "bold"  // This makes the font bold
                 },
                 color: "#acafb0", // <-- Added missing comma here
-                padding: 8
+                padding: pieChartLegendPadding
                     }
                 }
             }
@@ -1302,7 +1303,7 @@ function renderStakedPieChart(data) {
                 data: data,
                 backgroundColor: ["#808080", "#1f62a1", "#119949"],
                 hoverOffset: 10,
-                borderWidth: 1,
+                borderWidth: pieChartBorderWidth,
                 cutout: "50%"
             }]
         },
@@ -1311,7 +1312,7 @@ function renderStakedPieChart(data) {
             maintainAspectRatio: false,
             aspectRatio: 1.5,
             layout: {
-                padding: 22
+                padding: pieChartLayoutPadding
                 
             },
             plugins: {
@@ -1325,7 +1326,7 @@ function renderStakedPieChart(data) {
                     weight: "bold"  // This makes the font bold
                 },
                 color: "#acafb0", // <-- Added missing comma here
-                padding: 8
+                padding: pieChartLegendPadding
                     }
                 }
             }
