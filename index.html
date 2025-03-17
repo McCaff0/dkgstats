@@ -1194,20 +1194,33 @@ function renderPublishesPieChart(data) {
     }
 
     const total = data.reduce((sum, value) => sum + value, 0);
-    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
-        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
-    );
+
+    // Combine labels, data, and colors into an array of objects for sorting
+    const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
+        label: label,
+        value: data[i],
+        percentage: (data[i] / total * 100).toFixed(2),
+        color: ["#262626", "#1f62a1", "#119949"][i] // Match colors to labels
+    }));
+
+    // Sort by percentage in descending order
+    combinedData.sort((a, b) => b.percentage - a.percentage);
+
+    // Extract sorted labels, data, and colors
+    const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = combinedData.map(item => item.value);
+    const sortedColors = combinedData.map(item => item.color);
 
     window.publishesPieChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: labelsWithPercentages,
+            labels: sortedLabelsWithPercentages,
             datasets: [{
-                data: data,
-                backgroundColor: ["#262626", "#1f62a1", "#119949"],
+                data: sortedData,
+                backgroundColor: sortedColors,
                 hoverOffset: 10,
-                borderWidth: pieChartBorderWidth,  // Removes outline
-                cutout: "50%" // Controls the size of the hole in the middle
+                borderWidth: pieChartBorderWidth,
+                cutout: "50%"
             }]
         },
         options: {
@@ -1220,7 +1233,7 @@ function renderPublishesPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start", // Ensures labels stack vertically
+                    align: "start",
                     labels: {
                         font: {
                             size: pieChartFontSize,
@@ -1228,8 +1241,8 @@ function renderPublishesPieChart(data) {
                         },
                         color: "#acafb0",
                         padding: pieChartLegendPadding,
-                        usePointStyle: true, // Use point style (circles) for legend markers
-                        pointStyle: "circle" // Set the shape of the legend markers to circles
+                        usePointStyle: true,
+                        pointStyle: "circle"
                     }
                 }
             }
@@ -1246,17 +1259,30 @@ function renderRewardsPieChart(data) {
     }
 
     const total = data.reduce((sum, value) => sum + value, 0);
-    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
-        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
-    );
+
+    // Combine labels, data, and colors into an array of objects for sorting
+    const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
+        label: label,
+        value: data[i],
+        percentage: (data[i] / total * 100).toFixed(2),
+        color: ["#262626", "#1f62a1", "#119949"][i] // Match colors to labels
+    }));
+
+    // Sort by percentage in descending order
+    combinedData.sort((a, b) => b.percentage - a.percentage);
+
+    // Extract sorted labels, data, and colors
+    const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = combinedData.map(item => item.value);
+    const sortedColors = combinedData.map(item => item.color);
 
     window.rewardsPieChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: labelsWithPercentages,
+            labels: sortedLabelsWithPercentages,
             datasets: [{
-                data: data,
-                backgroundColor: ["#262626", "#1f62a1", "#119949"],
+                data: sortedData,
+                backgroundColor: sortedColors,
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
                 cutout: "50%"
@@ -1272,7 +1298,7 @@ function renderRewardsPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start", // Ensures labels stack vertically
+                    align: "start",
                     labels: {
                         font: {
                             size: pieChartFontSize,
@@ -1280,8 +1306,8 @@ function renderRewardsPieChart(data) {
                         },
                         color: "#acafb0",
                         padding: pieChartLegendPadding,
-                        usePointStyle: true, // Use point style (circles) for legend markers
-                        pointStyle: "circle" // Set the shape of the legend markers to circles
+                        usePointStyle: true,
+                        pointStyle: "circle"
                     }
                 }
             }
@@ -1298,17 +1324,30 @@ function renderStakedPieChart(data) {
     }
 
     const total = data.reduce((sum, value) => sum + value, 0);
-    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
-        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
-    );
+
+    // Combine labels, data, and colors into an array of objects for sorting
+    const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
+        label: label,
+        value: data[i],
+        percentage: (data[i] / total * 100).toFixed(2),
+        color: ["#262626", "#1f62a1", "#119949"][i] // Match colors to labels
+    }));
+
+    // Sort by percentage in descending order
+    combinedData.sort((a, b) => b.percentage - a.percentage);
+
+    // Extract sorted labels, data, and colors
+    const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = combinedData.map(item => item.value);
+    const sortedColors = combinedData.map(item => item.color);
 
     window.stakedPieChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: labelsWithPercentages,
+            labels: sortedLabelsWithPercentages,
             datasets: [{
-                data: data,
-                backgroundColor: ["#262626", "#1f62a1", "#119949"],
+                data: sortedData,
+                backgroundColor: sortedColors,
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
                 cutout: "50%"
@@ -1324,7 +1363,7 @@ function renderStakedPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start", // Ensures labels stack vertically
+                    align: "start",
                     labels: {
                         font: {
                             size: pieChartFontSize,
@@ -1332,8 +1371,8 @@ function renderStakedPieChart(data) {
                         },
                         color: "#acafb0",
                         padding: pieChartLegendPadding,
-                        usePointStyle: true, // Use point style (circles) for legend markers
-                        pointStyle: "circle" // Set the shape of the legend markers to circles
+                        usePointStyle: true,
+                        pointStyle: "circle"
                     }
                 }
             }
