@@ -1245,10 +1245,9 @@ function renderPublishesPieChart(data) {
                             size: pieChartFontSize,
                             family: "Play, sans-serif"
                         },
-                        color: "#acafb0",
+                        color: "#acafb0", // Ensure label color is set correctly
                         padding: pieChartLegendPadding,
-                        usePointStyle: true,
-                        pointStyle: "circle",
+                        usePointStyle: false, // Disable default point style
                         generateLabels: (chart) => {
                             const datasets = chart.data.datasets;
                             return datasets[0].data.map((value, i) => {
@@ -1260,8 +1259,7 @@ function renderPublishesPieChart(data) {
                                     hidden: !chart.getDataVisibility(i),
                                     index: i,
                                     // Customize the legend item to include an image
-                                    pointStyle: new Image(), // Create an image element
-                                    pointStyleURL: icon // Store the icon URL
+                                    pointStyle: icon // Use the icon URL as pointStyle
                                 };
                             });
                         }
@@ -1271,32 +1269,24 @@ function renderPublishesPieChart(data) {
         }
     });
 
-    // Custom legend rendering to use images
+    // Add custom images to the legend
     const legend = window.publishesPieChartInstance.legend;
-    const originalDraw = legend.draw;
-    legend.draw = function () {
-        originalDraw.apply(this, arguments);
-
-        // Add custom images to the legend
-        const legendItems = this.legendItems;
-        if (legendItems) {
-            const ctx = this.ctx;
-            const iconSize = pieChartFontSize; // Use pieChartFontSize for both width and height
-            legendItems.forEach((item, i) => {
-                if (item.pointStyleURL) {
+    const legendItems = legend.legendItems;
+    if (legendItems) {
+        const iconSize = pieChartFontSize; // Use pieChartFontSize for both width and height
+        legendItems.forEach((item, i) => {
+            if (item.pointStyle) {
+                const img = new Image();
+                img.src = item.pointStyle;
+                img.onload = () => {
                     const x = item.x - iconSize - 10; // Adjust position
                     const y = item.y - iconSize / 2;
-                    const img = new Image();
-                    img.src = item.pointStyleURL;
-                    img.onload = () => {
-                        ctx.drawImage(img, x, y, iconSize, iconSize);
-                    };
-                }
-            });
-        }
-    };
+                    ctx.drawImage(img, x, y, iconSize, iconSize);
+                };
+            }
+        });
+    }
 }
-
 // Function to render Rewards Pie Chart
 function renderRewardsPieChart(data) {
     const ctx = document.getElementById("rewardsPieChart").getContext("2d");
