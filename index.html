@@ -253,17 +253,17 @@ h1 {
 }
     #publishesPieChart {
     margin-top: 0.5rem;
-    margin-left: -5rem;
+    margin-left: -4rem;
 }
 
 #rewardsPieChart {
     margin-top: 7.575rem;
-    margin-left: -5rem;
+    margin-left: -4rem;
 }
 
 #stakedPieChart {
     margin-top: 14.65rem;
-    margin-left: -5rem;
+    margin-left: -4rem;
 }
 
 .epoch-box h3 {
@@ -698,10 +698,10 @@ function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
     // ✅ Scale everything relative to `rootFontSize`
-    pieChartFontSize = rootFontSize * 1.1;
+    pieChartFontSize = rootFontSize * 1;
     
     // ✅ Scale layout padding
-    pieChartLayoutPadding = rootFontSize * 1.2;
+    pieChartLayoutPadding = rootFontSize * 1.3;
     
     // ✅ Scale legend label padding
     pieChartLegendPadding = rootFontSize * 0.4;
