@@ -585,35 +585,62 @@ function handleData(sheetData, chains, records) {
     updateText('totaltracspent', formatNumber(sheetData.totaltracspent, 0));
     updateText('activenodes', formatNumber(sheetData.activenodes, 0));
 
-    // Updating percentage & change values (use updateHTML)
+    // Updating percentage & change values (using updateHTML)
     updateHTML('pricechange1d', formatPercentage(sheetData.pricechange1d, '24H'));
     updateHTML('dailypublisheschange30d', formatPercentage(sheetData.dailypublisheschange30d, '30D'));
     updateHTML('annualspendchange30d', formatPercentage(sheetData.annualspendchange30d, '30D'));
     updateHTML('kas24h', formatNumberChange(sheetData.kas24h, '(24H)'));
     updateHTML('spend24h', formatNumberChange(sheetData.spend24h, '(24H)'));
 
-    // Update Chains Data (Neuroweb, Base, Gnosis)
+    // Update Chains Data (Neuroweb, Base, Gnosis) - only update text values for APY and operator fee here.
     const updateChainData = (chain, prefix) => {
         if (!chain) return;
-        
-        // Keep text updates for apy and operatorFee
         updateText(`${prefix}apy`, formatNumber(chain.apy * 100, 2) + '%');
         updateText(`${prefix}operatorfee`, formatNumber(chain.operatorFee * 100, 2) + '%');
-
-        // Update Pie charts with stakedAmount, epochRewards, and epochPublishes
-        const stakedAmount = chain.stakedAmount || 0;
-        const epochRewards = chain.epochRewards || 0;
-        const epochPublishes = chain.epochPublishes || 0;
-
-        // Render the pie charts for each chain
-        renderPieChart(document.getElementById(`${prefix}stakedchart`), StakedPieChartInstance, ['Neuroweb', 'Base', 'Gnosis'], [stakedAmount, epochRewards, epochPublishes]);
-        renderPieChart(document.getElementById(`${prefix}epochrewardschart`), RewardsPieChartInstance, ['Neuroweb', 'Base', 'Gnosis'], [epochRewards, stakedAmount, epochPublishes]);
-        renderPieChart(document.getElementById(`${prefix}epochpublisheschart`), PublishesPieChartInstance, ['Neuroweb', 'Base', 'Gnosis'], [epochPublishes, stakedAmount, epochRewards]);
     };
 
     updateChainData(chains.neuroweb, 'neuroweb');
     updateChainData(chains.base, 'base');
     updateChainData(chains.gnosis, 'gnosis');
+
+    // Aggregate the data from all chains for the pie charts:
+    const publishValues = [
+         (chains.neuroweb && chains.neuroweb.epochPublishes) || 0,
+         (chains.base && chains.base.epochPublishes) || 0,
+         (chains.gnosis && chains.gnosis.epochPublishes) || 0
+    ];
+    const rewardValues = [
+         (chains.neuroweb && chains.neuroweb.epochRewards) || 0,
+         (chains.base && chains.base.epochRewards) || 0,
+         (chains.gnosis && chains.gnosis.epochRewards) || 0
+    ];
+    const stakedValues = [
+         (chains.neuroweb && chains.neuroweb.stakedAmount) || 0,
+         (chains.base && chains.base.stakedAmount) || 0,
+         (chains.gnosis && chains.gnosis.stakedAmount) || 0
+    ];
+
+    // Render the three pie charts using the aggregated data.
+    // Make sure you have container elements (or canvases) with these IDs in your HTML:
+    // "publishespiechart", "rewardspiechart", and "stakedpiechart"
+    PublishesPieChartInstance = renderPieChart(
+        document.getElementById('publishespiechart'),
+        PublishesPieChartInstance,
+        ['Neuroweb', 'Base', 'Gnosis'],
+        publishValues
+    );
+    RewardsPieChartInstance = renderPieChart(
+        document.getElementById('rewardspiechart'),
+        RewardsPieChartInstance,
+        ['Neuroweb', 'Base', 'Gnosis'],
+        rewardValues
+    );
+    StakedPieChartInstance = renderPieChart(
+        document.getElementById('stakedpiechart'),
+        StakedPieChartInstance,
+        ['Neuroweb', 'Base', 'Gnosis'],
+        stakedValues
+    );
 
     // Update Records Data (Publish, TRAC Spend, USD Spend)
     const updateRecordData = (record, dateId, valueId, decimals = 0, currency = false) => {
@@ -634,6 +661,7 @@ function handleData(sheetData, chains, records) {
     updateRecordData(records.tracSpendRecord, 'tracSpendRecordDate', 'tracSpendRecordValue');
     updateRecordData(records.usdSpendRecord, 'usdSpendRecordDate', 'usdSpendRecordValue', 2, true);
 }
+
 
 
 function fetchData() {
