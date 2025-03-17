@@ -265,7 +265,14 @@ h1 {
     margin-top: 16.65rem;
     margin-left: -4rem;
 }
-
+      .epoch-box h2 {
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 0;
+        color: #acafb0;
+}
 .epoch-box h3 {
     font-family: 'Play', sans-serif;
     font-size: 1.125rem; /* Slightly larger font */
@@ -278,11 +285,11 @@ h1 {
 
 /* nth-of-type selectors for the epoch-boxes to adjust heights */
 .epoch-box:nth-of-type(2) {
-    height: 25.25rem; /* Adjust the height of the first epoch-box */
+    height: 27.25rem; /* Adjust the height of the first epoch-box */
 }
 
 .epoch-box:nth-of-type(3) {
-    height: 11rem; /* Adjust the height of the second epoch-box */
+    height: 9rem; /* Adjust the height of the second epoch-box */
 }
     .date-value {
    position: absolute;
@@ -477,6 +484,7 @@ h1 {
 
   <!-- Second epoch-box for 3 pie charts -->
   <div class="epoch-box">
+    <h3>CURRENT EPOCH</h3>
     <h3>Total Publishes</h3>
     <canvas id="publishesPieChart"></canvas>
     <span class="pie-space"></span>
