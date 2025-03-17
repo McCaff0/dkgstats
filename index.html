@@ -1239,20 +1239,20 @@ function renderPublishesPieChart(data) {
                     position: "right",
                     align: "start", // Ensures labels stack vertically
                     labels: {
+                        // Use the generateLabels function to customize how the legend is displayed
                         generateLabels: function(chart) {
                             return chart.data.labels.map((label, i) => {
                                 return {
                                     text: label,
-                                    fillStyle: chart.data.datasets[0].backgroundColor[i],
                                     hidden: false,
-                                    image: sortedImageUrls[i], // Now using the image URL instead of a color box
+                                    image: sortedImageUrls[i], // Assign the image URL to the 'image' field
                                 };
                             });
                         },
                         font: {
                             size: pieChartFontSize,
                             family: "Play, sans-serif",
-                            weight: "bold"  // This makes the font bold
+                            weight: "bold"
                         },
                         color: "#acafb0", // Ensure the text color is set explicitly here
                         padding: pieChartLegendPadding
@@ -1262,7 +1262,6 @@ function renderPublishesPieChart(data) {
         }
     });
 }
-
 // Function to render Rewards Pie Chart
 function renderRewardsPieChart(data) {
     const ctx = document.getElementById("rewardsPieChart").getContext("2d");
