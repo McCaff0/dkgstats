@@ -526,81 +526,77 @@ function formatDate(isoDate) {
   return result;
 }
 function handleData(sheetData, chains, records) {
-      console.log("✅ handleData received:");
+    console.log("✅ handleData received:");
     console.log("➡ sheetData:", sheetData);
     console.log("➡ chains:", chains);
     console.log("➡ records:", records);
-  if (!sheetData || !chains || !records) return;
 
-  // Handle general sheetData
-  document.getElementById('tracprice').innerText = formatNumber(sheetData.tracprice, 4);
-  document.getElementById('marketcap').innerText = formatNumber(sheetData.marketcap, 0, true);
-  document.getElementById('peratio').innerText = formatNumber(sheetData.peratio, 1);
-  document.getElementById('tracstaked').innerText = formatNumber(sheetData.tracstaked, 0, true);
-  document.getElementById('stakingapy').innerText = formatNumber(sheetData.stakingapy * 100, 2) + '%';
-  document.getElementById('annualspend').innerText = formatNumber(sheetData.annualspend, 0, true);
-  document.getElementById('dailyspend').innerText = formatNumber(sheetData.dailyspend, 0, true);
-  document.getElementById('dailypublishes').innerText = formatNumber(sheetData.dailypublishes, 0);
-  document.getElementById('publishpricetrac').innerText = formatNumber(sheetData.publishpricetrac, 6);
-  document.getElementById('publishpriceusd').innerText = formatNumber(sheetData.publishpriceusd, 6);
-  document.getElementById('stakingfee').innerText = formatNumber(sheetData.stakingfee * 100, 2) + '%';
-  document.getElementById('totalkas').innerText = formatNumber(sheetData.totalkas, 0);
-  document.getElementById('kas24h').innerHTML = formatNumberChange(sheetData.kas24h, '(24H)');
-  document.getElementById('totaltracspent').innerText = formatNumber(sheetData.totaltracspent, 0);
-  document.getElementById('spend24h').innerHTML = formatNumberChange(sheetData.spend24h, '(24H)');
-  document.getElementById('activenodes').innerText = formatNumber(sheetData.activenodes, 0);
-  document.getElementById('pricechange1d').innerHTML = formatPercentage(sheetData.pricechange1d, '24H');
-  document.getElementById('dailypublisheschange30d').innerHTML = formatPercentage(sheetData.dailypublisheschange30d, '30D');
-  document.getElementById('annualspendchange30d').innerHTML = formatPercentage(sheetData.annualspendchange30d, '30D');
+    if (!sheetData || !chains || !records) {
+        console.error("❌ Missing required data:", { sheetData, chains, records });
+        return;
+    }
 
-  // Handle chains data (Neuroweb, Base, Gnosis)
-  const neuroweb = chains.neuroweb || {};
-  const base = chains.base || {};
-  const gnosis = chains.gnosis || {};
+    // Update General Sheet Data
+    const updateText = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.innerText = value;
+        else console.warn(`⚠️ Element #${id} not found in DOM.`);
+    };
 
-  if (neuroweb) {
-    document.getElementById('neurowebstaked').innerText = formatNumber(neuroweb.stakedAmount, 0, true);
-    document.getElementById('neurowebepochrewards').innerText = formatNumber(neuroweb.epochRewards, 0, true);
-    document.getElementById('neurowebepochpublishes').innerText = formatNumber(neuroweb.epochPublishes, 0);
-    document.getElementById('neurowebapy').innerText = formatNumber(neuroweb.apy * 100, 2) + '%';
-    document.getElementById('neuroweboperatorfee').innerText = formatNumber(neuroweb.operatorFee * 100, 2) + '%';
-  }
+    updateText('tracprice', formatNumber(sheetData.tracprice, 4));
+    updateText('marketcap', formatNumber(sheetData.marketcap, 0, true));
+    updateText('peratio', formatNumber(sheetData.peratio, 1));
+    updateText('tracstaked', formatNumber(sheetData.tracstaked, 0, true));
+    updateText('stakingapy', formatNumber(sheetData.stakingapy * 100, 2) + '%');
+    updateText('annualspend', formatNumber(sheetData.annualspend, 0, true));
+    updateText('dailyspend', formatNumber(sheetData.dailyspend, 0, true));
+    updateText('dailypublishes', formatNumber(sheetData.dailypublishes, 0));
+    updateText('publishpricetrac', formatNumber(sheetData.publishpricetrac, 6));
+    updateText('publishpriceusd', formatNumber(sheetData.publishpriceusd, 6));
+    updateText('stakingfee', formatNumber(sheetData.stakingfee * 100, 2) + '%');
+    updateText('totalkas', formatNumber(sheetData.totalkas, 0));
+    updateText('kas24h', formatNumberChange(sheetData.kas24h, '(24H)'));
+    updateText('totaltracspent', formatNumber(sheetData.totaltracspent, 0));
+    updateText('spend24h', formatNumberChange(sheetData.spend24h, '(24H)'));
+    updateText('activenodes', formatNumber(sheetData.activenodes, 0));
+    updateText('pricechange1d', formatPercentage(sheetData.pricechange1d, '24H'));
+    updateText('dailypublisheschange30d', formatPercentage(sheetData.dailypublisheschange30d, '30D'));
+    updateText('annualspendchange30d', formatPercentage(sheetData.annualspendchange30d, '30D'));
 
-  if (base) {
-    document.getElementById('basestaked').innerText = formatNumber(base.stakedAmount, 0, true);
-    document.getElementById('baseepochrewards').innerText = formatNumber(base.epochRewards, 0, true);
-    document.getElementById('baseepochpublishes').innerText = formatNumber(base.epochPublishes, 0);
-    document.getElementById('baseapy').innerText = formatNumber(base.apy * 100, 2) + '%';
-    document.getElementById('baseoperatorfee').innerText = formatNumber(base.operatorFee * 100, 2) + '%';
-  }
+    // Update Chains Data (Neuroweb, Base, Gnosis)
+    const updateChainData = (chain, prefix) => {
+        if (!chain) return;
+        updateText(`${prefix}staked`, formatNumber(chain.stakedAmount, 0, true));
+        updateText(`${prefix}epochrewards`, formatNumber(chain.epochRewards, 0, true));
+        updateText(`${prefix}epochpublishes`, formatNumber(chain.epochPublishes, 0));
+        updateText(`${prefix}apy`, formatNumber(chain.apy * 100, 2) + '%');
+        updateText(`${prefix}operatorfee`, formatNumber(chain.operatorFee * 100, 2) + '%');
+    };
 
-  if (gnosis) {
-    document.getElementById('gnosisstaked').innerText = formatNumber(gnosis.stakedAmount, 0, true);
-    document.getElementById('gnosisepochrewards').innerText = formatNumber(gnosis.epochRewards, 0, true);
-    document.getElementById('gnosisepochpublishes').innerText = formatNumber(gnosis.epochPublishes, 0);
-    document.getElementById('gnosisapy').innerText = formatNumber(gnosis.apy * 100, 2) + '%';
-    document.getElementById('gnosisoperatorfee').innerText = formatNumber(gnosis.operatorFee * 100, 2) + '%';
-  }
+    updateChainData(chains.neuroweb, 'neuroweb');
+    updateChainData(chains.base, 'base');
+    updateChainData(chains.gnosis, 'gnosis');
 
-  // Handle Records Data (Publish, trac, USD Spend)
-  const publishRecord = records.publishRecord || {};
-  const tracSpendRecord = records.tracSpendRecord || {};
-  const usdSpendRecord = records.usdSpendRecord || {};
+    // Update Records Data (Publish, TRAC Spend, USD Spend)
+    const updateRecordData = (record, dateId, valueId, decimals = 0, currency = false) => {
+        if (!record) {
+            console.warn(`⚠️ Missing record data for ${dateId} and ${valueId}`);
+            return;
+        }
+        updateText(dateId, formatDate(record.date));
+        updateText(valueId, formatNumber(record.value, decimals, currency));
+    };
 
+    console.log("📌 Checking Records Data:");
+    console.log("➡ Publish Record:", records.publishRecord);
+    console.log("➡ TRAC Spend Record:", records.tracSpendRecord);
+    console.log("➡ USD Spend Record:", records.usdSpendRecord);
 
-if (publishRecord) {
-  document.getElementById('publishRecordDate').innerText = formatDate(publishRecord.date);
-  document.getElementById('publishRecordValue').innerText = formatNumber(publishRecord.value, 0);
-} 
-if (tracSpendRecord) {
-  document.getElementById('tracSpendRecordDate').innerText = formatDate(tracSpendRecord.date);
-  document.getElementById('tracSpendRecordValue').innerText = formatNumber(tracSpendRecord.value, 0);
+    updateRecordData(records.publishRecord, 'publishRecordDate', 'publishRecordValue');
+    updateRecordData(records.tracSpendRecord, 'tracSpendRecordDate', 'tracSpendRecordValue');
+    updateRecordData(records.usdSpendRecord, 'usdSpendRecordDate', 'usdSpendRecordValue', 2, true);
 }
-if (usdSpendRecord) {  
-  document.getElementById('usdSpendRecordDate').innerText = formatDate(usdSpendRecord.date);
-  document.getElementById('usdSpendRecordValue').innerText = formatNumber(usdSpendRecord.value, 2, true);
-}
-}
+
 
 function fetchData() {
   const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
