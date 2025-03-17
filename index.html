@@ -546,8 +546,8 @@ function handleData(sheetData, chains, records) {
   document.getElementById('spend24h').innerHTML = formatNumberChange(sheetData.spend24h, '(24H)');
   document.getElementById('activenodes').innerText = formatNumber(sheetData.activenodes, 0);
   document.getElementById('pricechange1d').innerHTML = formatPercentage(sheetData.pricechange1d, '24H');
-  document.getElementById('dailypublisheschange30d').innerHTML = formatPercentage(sheetData.dailypublisheschange28d, '28D');
-  document.getElementById('annualspendchange30d').innerHTML = formatPercentage(sheetData.annualspendchange28d, '28D');
+  document.getElementById('dailypublisheschange30d').innerHTML = formatPercentage(sheetData.dailypublisheschange30d, '30D');
+  document.getElementById('annualspendchange30d').innerHTML = formatPercentage(sheetData.annualspendchange30d, '30D');
 
   // Handle chains data (Neuroweb, Base, Gnosis)
   const neuroweb = chains.neuroweb || {};
