@@ -773,30 +773,16 @@ function resizeCharts() {
     });
 }
 
-
-// ✅ Smooth Resize Handling (No throttling)
+// Debounced resize handler to avoid excessive calls
 let resizeTimeout;
-let lastWidth = window.innerWidth;
-let lastHeight = window.innerHeight;
 
 function handleResize() {
     clearTimeout(resizeTimeout);
-
-    // Smooth updates with requestAnimationFrame (recalculate font size and charts)
-    requestAnimationFrame(() => {
-        adjustFontSize();
-        resizeCharts(); // Resize charts immediately after font size is adjusted
-    });
-}
-
-// Debounced resize handler to avoid excessive calls
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-        handleResize();
+        adjustFontSize();
+        resizeCharts(); // Resize charts after font size is adjusted
     }, 200); // Debounce time of 200ms
-});
+}
 
 // Handle orientation change specifically for mobile
 window.addEventListener('orientationchange', () => {
@@ -806,6 +792,9 @@ window.addEventListener('orientationchange', () => {
         handleResize(); // Call handleResize after a short delay
     }, 200); // Delay to allow correct height detection
 });
+
+// Add resize event listener
+window.addEventListener('resize', handleResize);
 
 document.addEventListener('DOMContentLoaded', function () {
     // Reset first load flags
@@ -835,7 +824,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error fetching data:', error);
         });
 });
-
+    
 // Add references for the pie charts
 let publishespiechartInstance = null;
 let rewardspiechartInstance = null;
