@@ -1167,6 +1167,8 @@ function renderPublishesChart(publishesLabels, publishesValues) {
     }
 }
 
+let isFirstDataLoad = true; // Flag to track the first real data load
+
 function renderPublishesPieChart(data = [], isInitialLoad = true) {
     const ctx = document.getElementById("publishesPieChart").getContext("2d");
 
@@ -1198,6 +1200,7 @@ function renderPublishesPieChart(data = [], isInitialLoad = true) {
                 layout: {
                     padding: pieChartLayoutPadding
                 },
+                animation: false, // Disable animations for empty chart
                 plugins: {
                     legend: {
                         position: "right",
@@ -1259,6 +1262,7 @@ function renderPublishesPieChart(data = [], isInitialLoad = true) {
             layout: {
                 padding: pieChartLayoutPadding
             },
+            animation: isFirstDataLoad, // Enable animations only for the first real data load
             plugins: {
                 legend: {
                     position: "right",
@@ -1282,7 +1286,11 @@ function renderPublishesPieChart(data = [], isInitialLoad = true) {
             }
         }
     });
+
+    // Disable animations for further refreshes
+    isFirstDataLoad = false;
 }
+    
 function renderRewardsPieChart(data = [], isInitialLoad = true) {
     const ctx = document.getElementById("rewardsPieChart").getContext("2d");
 
