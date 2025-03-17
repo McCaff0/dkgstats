@@ -426,37 +426,39 @@ h1 {
 
   <!-- Second Sub-container -->
   <div class="sub-container">
-    <!-- Third container with empty graph-boxes -->
-    <div class="container new">
-      <div class="stats-box new">
-  <h3>RECORDS</h3>
-  
-  <p>
-    <span>Daily Publishes</span>
-    <span class="value-container">
-      <span id="publishRecordValue" class="number-value">Loading...</span>
-      <span id="publishRecordDate" class="date-value"></span>
-    </span>
-  </p>
-  
-  <p>
-    <span>Daily Spend (TRAC)</span>
-    <span class="value-container">
-      <span id="tracSpendRecordValue" class="number-value">Loading...</span>
-      <span id="tracSpendRecordDate" class="date-value"></span>
-    </span>
-  </p>
+<!-- Second container with graph-boxes -->
+<div class="container new">
+  <!-- First stats-box for Records -->
+  <div class="stats-box new">
+    <h3>RECORDS</h3>
 
-  <p>
-    <span>Daily Spend (USD)</span>
-    <span class="value-container">
-      <span id="usdSpendRecordValue" class="number-value">Loading...</span>
-      <span id="usdSpendRecordDate" class="date-value"></span>
-    </span>
-  </p>
+    <p>
+      <span>Daily Publishes</span>
+      <span class="value-container">
+        <span id="publishRecordValue" class="number-value">Loading...</span>
+        <span id="publishRecordDate" class="date-value"></span>
+      </span>
+    </p>
 
-</div>
-    <div class="epoch-box">
+    <p>
+      <span>Daily Spend (TRAC)</span>
+      <span class="value-container">
+        <span id="tracSpendRecordValue" class="number-value">Loading...</span>
+        <span id="tracSpendRecordDate" class="date-value"></span>
+      </span>
+    </p>
+
+    <p>
+      <span>Daily Spend (USD)</span>
+      <span class="value-container">
+        <span id="usdSpendRecordValue" class="number-value">Loading...</span>
+        <span id="usdSpendRecordDate" class="date-value"></span>
+      </span>
+    </p>
+  </div>
+
+  <!-- Second epoch-box for 3 pie charts -->
+  <div class="epoch-box">
     <h3>Epoch Publishes</h3>
     <canvas id="PublishesPieChart"></canvas>
 
@@ -465,9 +467,12 @@ h1 {
 
     <h3>Staked on Active Nodes</h3>
     <canvas id="StakedPieChart"></canvas>
-</div>
-<div class="epoch-box"></div>
-    </div>
+  </div>
+
+  <!-- Third empty epoch-box -->
+  <div class="epoch-box"></div>
+</div> <!-- Close the main container div -->
+
 
     <!-- Fourth container with empty graph-boxes -->
     <div class="container new">
