@@ -1214,15 +1214,15 @@ function renderPublishesPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start", // Ensures labels stack vertically
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif",
-                            weight: "bold"  // This makes the font bold
-                        }
-                        color: "#acafb0",
-                        padding: 8
+            align: "start", // Ensures labels stack vertically
+            labels: {
+                font: {
+                    size: pieChartFontSize,
+                    family: "Play, sans-serif",
+                    weight: "bold"  // This makes the font bold
+                },
+                color: "#acafb0", // <-- Added missing comma here
+                padding: 8
                     }
                 }
             }
@@ -1265,15 +1265,15 @@ function renderRewardsPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start",
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif",
-                            weight: "bold"  // This makes the font bold
-                        }
-                        color: "#acafb0",
-                        padding: 8
+            align: "start", // Ensures labels stack vertically
+            labels: {
+                font: {
+                    size: pieChartFontSize,
+                    family: "Play, sans-serif",
+                    weight: "bold"  // This makes the font bold
+                },
+                color: "#acafb0", // <-- Added missing comma here
+                padding: 8
                     }
                 }
             }
@@ -1317,15 +1317,15 @@ function renderStakedPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-                    align: "start",
-                    labels: {
-                        font: {
-                            size: pieChartFontSize,
-                            family: "Play, sans-serif",
-                            weight: "bold"  // This makes the font bold
-                        }
-                        color: "#acafb0",
-                        padding: 8
+            align: "start", // Ensures labels stack vertically
+            labels: {
+                font: {
+                    size: pieChartFontSize,
+                    family: "Play, sans-serif",
+                    weight: "bold"  // This makes the font bold
+                },
+                color: "#acafb0", // <-- Added missing comma here
+                padding: 8
                     }
                 }
             }
