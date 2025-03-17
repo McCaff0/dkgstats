@@ -1195,17 +1195,29 @@ function renderPublishesPieChart(data) {
     }
 
     const total = data.reduce((sum, value) => sum + value, 0);
-    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
-        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
-    );
+    const labels = ["Neuroweb", "Base", "Gnosis"];
+    const chartData = labels.map((label, i) => ({
+        label: label,
+        value: data[i],
+        percentage: (data[i] / total * 100).toFixed(2),
+        imageUrls: [`path_to_image_${label}_icon1.png`, `path_to_image_${label}_icon2.png`, `path_to_image_${label}_icon3.png`] // Multiple image URLs for each segment
+    }));
+
+    // Sort data by percentage descending
+    chartData.sort((a, b) => b.percentage - a.percentage);
+
+    // Extract sorted labels, data, and image URLs
+    const sortedLabelsWithPercentages = chartData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = chartData.map(item => item.value);
+    const sortedImageUrls = chartData.map(item => item.imageUrls); // Each element is an array of URLs
 
     window.publishesPieChartInstance = new Chart(ctx, {
         type: "doughnut", // Change "pie" to "doughnut" for a hollow ring
         data: {
-            labels: labelsWithPercentages,
+            labels: sortedLabelsWithPercentages,
             datasets: [{
-                data: data,
-                backgroundColor: ["#262626", "#1f62a1", "#119949"],
+                data: sortedData,
+                backgroundColor: ["#262626", "#1f62a1", "#119949"], // Placeholder colors
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,  // Removes outline
                 cutout: "50%" // Controls the size of the hole in the middle
@@ -1221,15 +1233,26 @@ function renderPublishesPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-            align: "start", // Ensures labels stack vertically
-            labels: {
-                font: {
-                    size: pieChartFontSize,
-                    family: "Play, sans-serif",
-                    weight: "bold"  // This makes the font bold
-                },
-                color: "#acafb0", // <-- Added missing comma here
-                padding: pieChartLegendPadding
+                    align: "start", // Ensures labels stack vertically
+                    labels: {
+                        generateLabels: function(chart) {
+                            return chart.data.labels.map((label, i) => {
+                                return {
+                                    text: label,
+                                    fillStyle: chart.data.datasets[0].backgroundColor[i],
+                                    hidden: false,
+                                    // We now handle multiple images for each segment
+                                    image: sortedImageUrls[i][0], // You can select which image to use here, for example, the first image in the array
+                                };
+                            });
+                        },
+                        font: {
+                            size: pieChartFontSize,
+                            family: "Play, sans-serif",
+                            weight: "bold"  // This makes the font bold
+                        },
+                        color: "#acafb0", 
+                        padding: pieChartLegendPadding
                     }
                 }
             }
@@ -1246,16 +1269,28 @@ function renderRewardsPieChart(data) {
     }
 
     const total = data.reduce((sum, value) => sum + value, 0);
-    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
-        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
-    );
+    const labels = ["Neuroweb", "Base", "Gnosis"];
+    const chartData = labels.map((label, i) => ({
+        label: label,
+        value: data[i],
+        percentage: (data[i] / total * 100).toFixed(2),
+        imageUrls: [`path_to_image_${label}_icon1.png`, `path_to_image_${label}_icon2.png`, `path_to_image_${label}_icon3.png`] // Multiple image URLs for each segment
+    }));
+
+    // Sort data by percentage descending
+    chartData.sort((a, b) => b.percentage - a.percentage);
+
+    // Extract sorted labels, data, and image URLs
+    const sortedLabelsWithPercentages = chartData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = chartData.map(item => item.value);
+    const sortedImageUrls = chartData.map(item => item.imageUrls); // Each element is an array of URLs
 
     window.rewardsPieChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: labelsWithPercentages,
+            labels: sortedLabelsWithPercentages,
             datasets: [{
-                data: data,
+                data: sortedData,
                 backgroundColor: ["#262626", "#1f62a1", "#119949"],
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
@@ -1272,15 +1307,26 @@ function renderRewardsPieChart(data) {
             plugins: {
                 legend: {
                     position: "right",
-            align: "start", // Ensures labels stack vertically
-            labels: {
-                font: {
-                    size: pieChartFontSize,
-                    family: "Play, sans-serif",
-                    weight: "bold"  // This makes the font bold
-                },
-                color: "#acafb0", // <-- Added missing comma here
-                padding: pieChartLegendPadding
+                    align: "start", // Ensures labels stack vertically
+                    labels: {
+                        generateLabels: function(chart) {
+                            return chart.data.labels.map((label, i) => {
+                                return {
+                                    text: label,
+                                    fillStyle: chart.data.datasets[0].backgroundColor[i],
+                                    hidden: false,
+                                    // We now handle multiple images for each segment
+                                    image: sortedImageUrls[i][0], // You can select which image to use here, for example, the first image in the array
+                                };
+                            });
+                        },
+                        font: {
+                            size: pieChartFontSize,
+                            family: "Play, sans-serif",
+                            weight: "bold"
+                        },
+                        color: "#acafb0",
+                        padding: pieChartLegendPadding
                     }
                 }
             }
@@ -1297,16 +1343,28 @@ function renderStakedPieChart(data) {
     }
 
     const total = data.reduce((sum, value) => sum + value, 0);
-    const labelsWithPercentages = ["Neuroweb", "Base", "Gnosis"].map((label, i) => 
-        `${label} - ${(data[i] / total * 100).toFixed(2)}%`
-    );
+    const labels = ["Neuroweb", "Base", "Gnosis"];
+    const chartData = labels.map((label, i) => ({
+        label: label,
+        value: data[i],
+        percentage: (data[i] / total * 100).toFixed(2),
+        imageUrls: [`path_to_image_${label}_icon1.png`, `path_to_image_${label}_icon2.png`, `path_to_image_${label}_icon3.png`] // Multiple image URLs for each segment
+    }));
+
+    // Sort data by percentage descending
+    chartData.sort((a, b) => b.percentage - a.percentage);
+
+    // Extract sorted labels, data, and image URLs
+    const sortedLabelsWithPercentages = chartData.map(item => `${item.label} - ${item.percentage}%`);
+    const sortedData = chartData.map(item => item.value);
+    const sortedImageUrls = chartData.map(item => item.imageUrls); // Each element is an array of URLs
 
     window.stakedPieChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: labelsWithPercentages,
+            labels: sortedLabelsWithPercentages,
             datasets: [{
-                data: data,
+                data: sortedData,
                 backgroundColor: ["#262626", "#1f62a1", "#119949"],
                 hoverOffset: 10,
                 borderWidth: pieChartBorderWidth,
@@ -1319,20 +1377,30 @@ function renderStakedPieChart(data) {
             aspectRatio: 1.5,
             layout: {
                 padding: pieChartLayoutPadding
-                
             },
             plugins: {
                 legend: {
                     position: "right",
-            align: "start", // Ensures labels stack vertically
-            labels: {
-                font: {
-                    size: pieChartFontSize,
-                    family: "Play, sans-serif",
-                    weight: "bold"  // This makes the font bold
-                },
-                color: "#acafb0", // <-- Added missing comma here
-                padding: pieChartLegendPadding
+                    align: "start", // Ensures labels stack vertically
+                    labels: {
+                        generateLabels: function(chart) {
+                            return chart.data.labels.map((label, i) => {
+                                return {
+                                    text: label,
+                                    fillStyle: chart.data.datasets[0].backgroundColor[i],
+                                    hidden: false,
+                                    // We now handle multiple images for each segment
+                                    image: sortedImageUrls[i][0], // You can select which image to use here, for example, the first image in the array
+                                };
+                            });
+                        },
+                        font: {
+                            size: pieChartFontSize,
+                            family: "Play, sans-serif",
+                            weight: "bold"
+                        },
+                        color: "#acafb0",
+                        padding: pieChartLegendPadding
                     }
                 }
             }
