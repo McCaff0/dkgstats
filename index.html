@@ -802,6 +802,14 @@ window.addEventListener('orientationchange', () => {
 window.addEventListener('resize', handleResize);
 
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM fully loaded and parsed');
+
+    // Check if fetchData is defined
+    if (typeof fetchData !== 'function') {
+        console.error('fetchData is not a function');
+        return;
+    }
+
     // Reset first load flags
     isFirstLoadPublishes = true;
     isFirstLoadRewards = true;
@@ -820,14 +828,15 @@ document.addEventListener('DOMContentLoaded', function () {
     renderStakedPieChart([], true);
 
     // Fetch actual data
+    console.log('Calling fetchData...');
     fetchData()
         .then(() => {
-            // Fetch additional data after fetchData completes
+            console.log('fetchData completed successfully');
             fetchChartData();
             fetchPieChartData();
         })
         .catch((error) => {
-            console.error('Error fetching data:', error);
+            console.error('Error in fetchData:', error);
         });
 });
     
