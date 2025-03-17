@@ -456,19 +456,16 @@ h1 {
   </p>
 
 </div>
-      <div class="epoch-box">
-    <div id="epochPublishesPieChartContainer" class="pie-chart-container">
-        <canvas id="epochPublishesChart"></canvas>
-        <div class="pie-chart-labels"></div>
-    </div>
-    <div id="epochRewardsPieChartContainer" class="pie-chart-container">
-        <canvas id="epochRewardsChart"></canvas>
-        <div class="pie-chart-labels"></div>
-    </div>
-    <div id="stakedPieChartContainer" class="pie-chart-container">
-        <canvas id="stakedChart"></canvas>
-        <div class="pie-chart-labels"></div>
-    </div>
+    <div class="epoch-box">
+    <h3>Epoch Publishes</h3>
+    <canvas id="PublishesPieChart"></canvas>
+
+    <h3>Epoch Rewards</h3>
+    <canvas id="RewardsPieChart"></canvas>
+
+    <h3>Staked on Active Nodes</h3>
+    <canvas id="StakedPieChart"></canvas>
+</div>
 </div>
 <div class="epoch-box"></div>
     </div>
@@ -554,50 +551,60 @@ function handleData(sheetData, chains, records) {
         return;
     }
 
-// Function to update text content
-const updateText = (id, value) => {
-    const element = document.getElementById(id);
-    if (element) element.innerText = value;
-    else console.warn(`⚠️ Element #${id} not found in DOM.`);
-};
+    // Function to update text content
+    const updateText = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.innerText = value;
+        else console.warn(`⚠️ Element #${id} not found in DOM.`);
+    };
 
-// Function to update HTML content (for percentage values)
-const updateHTML = (id, value) => {
-    const element = document.getElementById(id);
-    if (element) element.innerHTML = value;  // Uses innerHTML instead of innerText
-    else console.warn(`⚠️ Element #${id} not found in DOM.`);
-};
+    // Function to update HTML content (for percentage values)
+    const updateHTML = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.innerHTML = value;  // Uses innerHTML instead of innerText
+        else console.warn(`⚠️ Element #${id} not found in DOM.`);
+    };
 
-// Updating normal numeric values
-updateText('tracprice', formatNumber(sheetData.tracprice, 4));
-updateText('marketcap', formatNumber(sheetData.marketcap, 0, true));
-updateText('peratio', formatNumber(sheetData.peratio, 1));
-updateText('tracstaked', formatNumber(sheetData.tracstaked, 0, true));
-updateText('stakingapy', formatNumber(sheetData.stakingapy * 100, 2) + '%');
-updateText('annualspend', formatNumber(sheetData.annualspend, 0, true));
-updateText('dailyspend', formatNumber(sheetData.dailyspend, 0, true));
-updateText('dailypublishes', formatNumber(sheetData.dailypublishes, 0));
-updateText('publishpricetrac', formatNumber(sheetData.publishpricetrac, 6));
-updateText('publishpriceusd', formatNumber(sheetData.publishpriceusd, 6));
-updateText('stakingfee', formatNumber(sheetData.stakingfee * 100, 2) + '%');
-updateText('totalkas', formatNumber(sheetData.totalkas, 0));
-updateText('totaltracspent', formatNumber(sheetData.totaltracspent, 0));
-updateText('activenodes', formatNumber(sheetData.activenodes, 0));
+    // Updating normal numeric values
+    updateText('tracprice', formatNumber(sheetData.tracprice, 4));
+    updateText('marketcap', formatNumber(sheetData.marketcap, 0, true));
+    updateText('peratio', formatNumber(sheetData.peratio, 1));
+    updateText('tracstaked', formatNumber(sheetData.tracstaked, 0, true));
+    updateText('stakingapy', formatNumber(sheetData.stakingapy * 100, 2) + '%');
+    updateText('annualspend', formatNumber(sheetData.annualspend, 0, true));
+    updateText('dailyspend', formatNumber(sheetData.dailyspend, 0, true));
+    updateText('dailypublishes', formatNumber(sheetData.dailypublishes, 0));
+    updateText('publishpricetrac', formatNumber(sheetData.publishpricetrac, 6));
+    updateText('publishpriceusd', formatNumber(sheetData.publishpriceusd, 6));
+    updateText('stakingfee', formatNumber(sheetData.stakingfee * 100, 2) + '%');
+    updateText('totalkas', formatNumber(sheetData.totalkas, 0));
+    updateText('totaltracspent', formatNumber(sheetData.totaltracspent, 0));
+    updateText('activenodes', formatNumber(sheetData.activenodes, 0));
 
-// Updating percentage & change values (use updateHTML)
-updateHTML('pricechange1d', formatPercentage(sheetData.pricechange1d, '24H'));
-updateHTML('dailypublisheschange30d', formatPercentage(sheetData.dailypublisheschange30d, '30D'));
-updateHTML('annualspendchange30d', formatPercentage(sheetData.annualspendchange30d, '30D'));
-updateHTML('kas24h', formatNumberChange(sheetData.kas24h, '(24H)'));
-updateHTML('spend24h', formatNumberChange(sheetData.spend24h, '(24H)'));
+    // Updating percentage & change values (use updateHTML)
+    updateHTML('pricechange1d', formatPercentage(sheetData.pricechange1d, '24H'));
+    updateHTML('dailypublisheschange30d', formatPercentage(sheetData.dailypublisheschange30d, '30D'));
+    updateHTML('annualspendchange30d', formatPercentage(sheetData.annualspendchange30d, '30D'));
+    updateHTML('kas24h', formatNumberChange(sheetData.kas24h, '(24H)'));
+    updateHTML('spend24h', formatNumberChange(sheetData.spend24h, '(24H)'));
+
     // Update Chains Data (Neuroweb, Base, Gnosis)
     const updateChainData = (chain, prefix) => {
         if (!chain) return;
-        updateText(`${prefix}staked`, formatNumber(chain.stakedAmount, 0, true));
-        updateText(`${prefix}epochrewards`, formatNumber(chain.epochRewards, 0, true));
-        updateText(`${prefix}epochpublishes`, formatNumber(chain.epochPublishes, 0));
+        
+        // Keep text updates for apy and operatorFee
         updateText(`${prefix}apy`, formatNumber(chain.apy * 100, 2) + '%');
         updateText(`${prefix}operatorfee`, formatNumber(chain.operatorFee * 100, 2) + '%');
+
+        // Update Pie charts with stakedAmount, epochRewards, and epochPublishes
+        const stakedAmount = chain.stakedAmount || 0;
+        const epochRewards = chain.epochRewards || 0;
+        const epochPublishes = chain.epochPublishes || 0;
+
+        // Render the pie charts for each chain
+        renderPieChart(document.getElementById(`${prefix}stakedchart`), StakedPieChartInstance, ['Neuroweb', 'Base', 'Gnosis'], [stakedAmount, epochRewards, epochPublishes]);
+        renderPieChart(document.getElementById(`${prefix}epochrewardschart`), RewardsPieChartInstance, ['Neuroweb', 'Base', 'Gnosis'], [epochRewards, stakedAmount, epochPublishes]);
+        renderPieChart(document.getElementById(`${prefix}epochpublisheschart`), PublishesPieChartInstance, ['Neuroweb', 'Base', 'Gnosis'], [epochPublishes, stakedAmount, epochRewards]);
     };
 
     updateChainData(chains.neuroweb, 'neuroweb');
@@ -794,16 +801,42 @@ window.addEventListener('load', () => {
     fetchData();
 });
 
-// Function to create a Pie Chart
-function createPieChart(chartId, labels, data) {
-    const ctx = document.getElementById(chartId).getContext('2d');
+// Add references for the pie charts
+let PublishesPieChartInstance = null;
+let RewardsPieChartInstance = null;
+let StakedPieChartInstance = null;
+
+// Function to render the pie charts
+function renderPieChart(container, chartInstance, labels, values) {
+    if (!container) {
+        console.error("Epoch box container not found!");
+        return;
+    }
+    
+    let canvas = container.querySelector('canvas');
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        container.appendChild(canvas);
+    }
+    
+    const ctx = canvas.getContext('2d');
+    
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    
     return new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: labels,
+            labels: labels || [],
             datasets: [{
-                data: data,
-                backgroundColor: ['#ff6384', '#36a2eb', '#ffce56'],
+                data: values || [],
+                backgroundColor: [
+                    'rgba(146, 176, 174, 0.8)',
+                    'rgba(200, 150, 150, 0.8)',
+                    'rgba(180, 180, 80, 0.8)',
+                    'rgba(120, 200, 150, 0.8)'
+                ],
                 borderWidth: 1
             }]
         },
@@ -811,62 +844,14 @@ function createPieChart(chartId, labels, data) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false } // Hide legend since labels are on the right
+                legend: {
+                    display: false
+                }
             }
         }
     });
 }
-
-// Function to update Labels
-function updatePieChartLabels(containerId, labels, data) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = labels.map((label, index) => 
-        `<div><strong>${label}:</strong> ${data[index]}</div>`
-    ).join('');
-}
-
-// Function to initialize all charts
-function initializePieCharts(chains) {
-    const labels = ["Neuroweb", "Base", "Gnosis"];
-
-    // Create Pie Charts
-    const epochPublishesChart = createPieChart("epochPublishesChart", labels, [
-        chains.neuroweb.epochPublishes,
-        chains.base.epochPublishes,
-        chains.gnosis.epochPublishes
-    ]);
-    updatePieChartLabels("epochPublishesLabels", labels, [
-        chains.neuroweb.epochPublishes,
-        chains.base.epochPublishes,
-        chains.gnosis.epochPublishes
-    ]);
-
-    const epochRewardsChart = createPieChart("epochRewardsChart", labels, [
-        chains.neuroweb.epochRewards,
-        chains.base.epochRewards,
-        chains.gnosis.epochRewards
-    ]);
-    updatePieChartLabels("epochRewardsLabels", labels, [
-        chains.neuroweb.epochRewards,
-        chains.base.epochRewards,
-        chains.gnosis.epochRewards
-    ]);
-
-    const stakedChart = createPieChart("stakedChart", labels, [
-        chains.neuroweb.stakedAmount,
-        chains.base.stakedAmount,
-        chains.gnosis.stakedAmount
-    ]);
-    updatePieChartLabels("stakedLabels", labels, [
-        chains.neuroweb.stakedAmount,
-        chains.base.stakedAmount,
-        chains.gnosis.stakedAmount
-    ]);
-}
-
-// Call this function inside `handleData`
-initializePieCharts(chains);
-
+    
 function renderPriceChart(priceLabels, priceValues, animate = false) {
     const canvas = document.getElementById('PriceChart');
     if (!canvas) {
