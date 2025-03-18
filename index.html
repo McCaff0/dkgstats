@@ -820,13 +820,6 @@ function resizeCharts() {
             chart.update(); // Update the pie chart sizes
         }
     });
-
-    // ✅ Resize Custom Legend
-    const customLegendContainer = document.getElementById("customLegendContainer");
-    if (customLegendContainer) {
-        customLegendContainer.style.fontSize = `${pieChartFontSize}px`; // Update font size
-        customLegendContainer.style.gap = `${pieChartLegendPadding}px`; // Update gap between legend items
-    }
 }
 
 // Debounced resize handler to avoid excessive calls
