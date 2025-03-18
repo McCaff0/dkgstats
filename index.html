@@ -587,11 +587,14 @@ h1 {
     }
 
         function formatValueInMillions(value) {
-        if (value >= 1000000) {
-            return `${(value / 1000000).toFixed(1)}M`; // Format as 1.0M
-        }
-        return value.toString(); // Return the original value if less than 1M
+    if (typeof value !== "number" || isNaN(value)) {
+        return "0"; // Return a default value if the input is invalid
     }
+    if (value >= 1000000) {
+        return `${(value / 1000000).toFixed(1)}M`;
+    }
+    return value.toString();
+}
     
 function handleData(sheetData, records) {
     console.log("✅ handleData received:");
