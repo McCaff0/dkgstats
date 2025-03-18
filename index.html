@@ -604,10 +604,17 @@ h1 {
     if (typeof value !== "number" || isNaN(value)) {
         return "0"; // Return a default value if the input is invalid
     }
+
     if (value >= 1000000) {
+        // Format as 1.0M, 2.5M, etc.
         return `${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+        // Format as 1.2K, 45.6K, etc.
+        return `${(value / 1000).toFixed(1)}K`;
+    } else {
+        // Format as whole numbers for values less than 1000
+        return Math.round(value).toString();
     }
-    return value.toString();
 }
     
 function handleData(sheetData, records) {
