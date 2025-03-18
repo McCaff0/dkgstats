@@ -713,7 +713,7 @@ function updatePieChartFontSizesAndPadding() {
     pieChartLegendPadding = rootFontSize * 0.7;
 
     // Border width of the pie chart segments
-    pieChartBorderWidth = Math.max(1, rootFontSize * 0.0625);
+    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125);
 }
 
     
@@ -1374,7 +1374,8 @@ function renderRewardsPieChart(data = []) {
                                     text: chart.data.labels[i],
                                     fillStyle: datasets[0].backgroundColor[i],
                                     strokeStyle: "#acafb0", // Border color of the little circles
-                                    lineWidth: pieChartBorderWidth, // Outline width of the little circles
+                                    lineWidth: pieChartBorderWidth,
+                                    fontColor: "#acafb0",// Outline width of the little circles
                                     hidden: !chart.getDataVisibility(i),
                                     index: i
                                 }));
@@ -1467,7 +1468,8 @@ function renderStakedPieChart(data = []) {
                                     text: chart.data.labels[i],
                                     fillStyle: datasets[0].backgroundColor[i],
                                     strokeStyle: "#acafb0", // Border color of the little circles
-                                    lineWidth: pieChartBorderWidth, // Outline width of the little circles
+                                    lineWidth: pieChartBorderWidth,
+                                    fontColor: "#acafb0",// Outline width of the little circles
                                     hidden: !chart.getDataVisibility(i),
                                     index: i
                                 }));
