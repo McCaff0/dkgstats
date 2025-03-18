@@ -254,41 +254,41 @@ h1 {
 #customLegendContainer {
     position: absolute;
     top: 4rem; /* Adjust as needed */
-    left: 9rem; /* Adjust as needed */
+    left: 9.5rem; /* Adjust as needed */
     display: flex;
     flex-direction: column;
-    gap: 0; /* 8px equivalent in rem */
+    gap: 0.2rem; /* 8px equivalent in rem */
     font-family: "Play", sans-serif; /* Ensure the font is applied */
-    font-size: 1.1rem; /* 17.6px equivalent */
+    font-size: 1.125rem; /* 17.6px equivalent */
     color: #acafb0;
     z-index: 10; /* Ensure it appears above the chart */
-    width: 17rem;
+    width: 16.5rem;
 }
     #customRewardsLegendContainer {
     position: absolute;
     top: 12rem; /* Adjust as needed */
-    left: 9rem; /* Adjust as needed */
+    left: 9.5rem; /* Adjust as needed */
     display: flex;
     flex-direction: column;
-    gap: 0; /* 8px equivalent in rem */
+    gap: 0.2rem; /* 8px equivalent in rem */
     font-family: "Play", sans-serif; /* Ensure the font is applied */
-    font-size: 1.1rem; /* 17.6px equivalent */
+    font-size: 1.125rem; /* 17.6px equivalent */
     color: #acafb0;
     z-index: 10; /* Ensure it appears above the chart */
-    width: 17rem;
+    width: 16.5rem;
 }
     #customStakedLegendContainer {
     position: absolute;
     top: 20rem; /* Adjust as needed */
-    left: 9rem; /* Adjust as needed */
+    left: 9.5rem; /* Adjust as needed */
     display: flex;
     flex-direction: column;
-    gap: 0; /* 8px equivalent in rem */
+    gap: 0.2rem; /* 8px equivalent in rem */
     font-family: "Play", sans-serif; /* Ensure the font is applied */
-    font-size: 1.1rem; /* 17.6px equivalent */
+    font-size: 1.125rem; /* 17.6px equivalent */
     color: #acafb0;
     z-index: 10; /* Ensure it appears above the chart */
-    width: 17rem;
+    width: 16.5rem;
 }
     #publishesPieChart {
     margin-top: 1.75rem;
@@ -1277,7 +1277,7 @@ function renderPublishesPieChart(data = []) {
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
-        percentage: (data[i] / total * 100).toFixed(2),
+        percentage: (data[i] / total * 100).toFixed(1),
         color: ["#262626", "#1f62a1", "#076940"][i]
     }));
 
@@ -1348,7 +1348,7 @@ function renderRewardsPieChart(data = []) {
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
-        percentage: (data[i] / total * 100).toFixed(2),
+        percentage: (data[i] / total * 100).toFixed(1),
         color: ["#262626", "#1f62a1", "#076940"][i] // Use actual colors for data
     }));
 
@@ -1428,7 +1428,7 @@ function renderStakedPieChart(data = []) {
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
-        percentage: (data[i] / total * 100).toFixed(2),
+        percentage: (data[i] / total * 100).toFixed(1),
         color: ["#262626", "#1f62a1", "#076940"][i] // Match colors to labels
     }));
 
