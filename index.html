@@ -253,17 +253,17 @@ h1 {
 }
     #publishesPieChart {
     margin-top: 2.25rem;
-    margin-left: -4rem;
+    margin-left: -3rem;
 }
 
 #rewardsPieChart {
     margin-top: 10.25rem;
-    margin-left: -4rem;
+    margin-left: -3rem;
 }
 
 #stakedPieChart {
     margin-top: 18.15rem;
-    margin-left: -4rem;
+    margin-left: -3rem;
 }
       .epoch-box h2 {
         text-align: center;
@@ -1248,6 +1248,7 @@ function renderPublishesPieChart(data = []) {
                 datasets: [{
                     data: sortedData,
                     backgroundColor: sortedColors,
+                    borderColor: "#acafb0", // Outline color of the chart
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
                     cutout: "50%"
@@ -1267,14 +1268,26 @@ function renderPublishesPieChart(data = []) {
                         labels: {
                             font: {
                                 size: pieChartFontSize,
-                                family: "Play, sans-serif"
+                                family: "Play, sans-serif",
+                                weight: 'bold' // Make legend font bold
                             },
-                            color: "#acafb0",
+                            color: "#acafb0", // Legend text color
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
                             boxWidth: pieChartFontSize / 1.75,
-                            boxHeight: pieChartFontSize / 1.75
+                            boxHeight: pieChartFontSize / 1.75,
+                            generateLabels: (chart) => {
+                                const datasets = chart.data.datasets;
+                                return datasets[0].data.map((data, i) => ({
+                                    text: chart.data.labels[i],
+                                    fillStyle: datasets[0].backgroundColor[i],
+                                    strokeStyle: "#acafb0", // Border color of the little circles
+                                    lineWidth: 2, // Border width of the little circles
+                                    hidden: !chart.getDataVisibility(i),
+                                    index: i
+                                }));
+                            }
                         }
                     }
                 }
@@ -1292,7 +1305,7 @@ function renderPublishesPieChart(data = []) {
         }
     }
 }
-    
+
 let isFirstLoadRewards = true; // Flag to track first load for rewards chart
 
 function renderRewardsPieChart(data = []) {
@@ -1325,6 +1338,7 @@ function renderRewardsPieChart(data = []) {
                 datasets: [{
                     data: sortedData,
                     backgroundColor: sortedColors,
+                    borderColor: "#acafb0", // Outline color of the chart
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
                     cutout: "50%"
@@ -1344,14 +1358,26 @@ function renderRewardsPieChart(data = []) {
                         labels: {
                             font: {
                                 size: pieChartFontSize,
-                                family: "Play, sans-serif"
+                                family: "Play, sans-serif",
+                                weight: 'bold' // Make legend font bold
                             },
-                            color: "#acafb0",
+                            color: "#acafb0", // Legend text color
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
                             boxWidth: pieChartFontSize / 1.75,
-                            boxHeight: pieChartFontSize / 1.75
+                            boxHeight: pieChartFontSize / 1.75,
+                            generateLabels: (chart) => {
+                                const datasets = chart.data.datasets;
+                                return datasets[0].data.map((data, i) => ({
+                                    text: chart.data.labels[i],
+                                    fillStyle: datasets[0].backgroundColor[i],
+                                    strokeStyle: "#acafb0", // Border color of the little circles
+                                    lineWidth: 2, // Border width of the little circles
+                                    hidden: !chart.getDataVisibility(i),
+                                    index: i
+                                }));
+                            }
                         }
                     },
                     tooltip: {
@@ -1372,6 +1398,7 @@ function renderRewardsPieChart(data = []) {
         }
     }
 }
+
 let isFirstLoadStaked = true; // Flag to track first load for staked chart
 
 function renderStakedPieChart(data = []) {
@@ -1404,6 +1431,7 @@ function renderStakedPieChart(data = []) {
                 datasets: [{
                     data: sortedData,
                     backgroundColor: sortedColors,
+                    borderColor: "#acafb0", // Outline color of the chart
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
                     cutout: "50%"
@@ -1423,14 +1451,26 @@ function renderStakedPieChart(data = []) {
                         labels: {
                             font: {
                                 size: pieChartFontSize,
-                                family: "Play, sans-serif"
+                                family: "Play, sans-serif",
+                                weight: 'bold' // Make legend font bold
                             },
-                            color: "#acafb0",
+                            color: "#acafb0", // Legend text color
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
                             boxWidth: pieChartFontSize / 1.75,
-                            boxHeight: pieChartFontSize / 1.75
+                            boxHeight: pieChartFontSize / 1.75,
+                            generateLabels: (chart) => {
+                                const datasets = chart.data.datasets;
+                                return datasets[0].data.map((data, i) => ({
+                                    text: chart.data.labels[i],
+                                    fillStyle: datasets[0].backgroundColor[i],
+                                    strokeStyle: "#acafb0", // Border color of the little circles
+                                    lineWidth: 2, // Border width of the little circles
+                                    hidden: !chart.getDataVisibility(i),
+                                    index: i
+                                }));
+                            }
                         }
                     }
                 }
