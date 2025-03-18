@@ -697,10 +697,22 @@ let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBord
 
 function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-  
+
+    // Font size for legend labels
     pieChartFontSize = rootFontSize * 1.1;
-    pieChartLayoutPadding = rootFontSize * 1;
+
+    // Individual padding values for layout
+    pieChartLayoutPadding = {
+        left: rootFontSize * 0.1,   // Adjust left padding
+        top: rootFontSize * 1,  // Adjust top padding
+        right: rootFontSize * 1,  // Adjust right padding
+        bottom: rootFontSize * 1 // Adjust bottom padding
+    };
+
+    // Padding between legend items
     pieChartLegendPadding = rootFontSize * 0.6;
+
+    // Border width of the pie chart segments
     pieChartBorderWidth = Math.max(1, rootFontSize * 0.0625);
 }
 
