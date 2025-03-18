@@ -246,15 +246,15 @@ h1 {
     top: 0;
     left: 0;
     width: 100% !important;
-    height: 8.5rem !important;
+    height: 5.5rem !important;
     max-width: 100%;
-    max-height: 8.5rem;
+    max-height: 5.5rem;
     pointer-events: none; /* Ensures the graph does not interfere */
 }
 #customLegendContainer {
     position: absolute;
     top: 4rem; /* Adjust as needed */
-    left: 20rem; /* Adjust as needed */
+    left: 9rem; /* Adjust as needed */
     display: flex;
     flex-direction: column;
     gap: 0.5rem; /* 8px equivalent in rem */
@@ -262,10 +262,11 @@ h1 {
     font-size: 1.1rem; /* 17.6px equivalent */
     color: #acafb0;
     z-index: 10; /* Ensure it appears above the chart */
+    width: 17rem;
 }
     #publishesPieChart {
-    margin-top: 2.25rem;
-    margin-left: -3rem;
+    margin-top: 4rem;
+    margin-left: -9rem;
 }
 
 #rewardsPieChart {
@@ -1247,24 +1248,13 @@ function renderPublishesPieChart(data = []) {
     // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Format value in millions
-    function formatValueInMillions(value) {
-        if (typeof value !== "number" || isNaN(value)) {
-            return "0"; // Return a default value if the input is invalid
-        }
-        if (value >= 1000000) {
-            return `${(value / 1000000).toFixed(1)}M`;
-        }
-        return value.toString();
-    }
-
     // Render custom legend
     const legendContainer = document.getElementById("customLegendContainer");
     legendContainer.innerHTML = combinedData.map(item => `
         <div style="display: flex; align-items: center; margin-bottom: 0.5rem; font-family: 'Play', sans-serif;">
             <div style="width: 1rem; height: 1rem; background: ${item.color}; margin-right: 0.5rem;"></div>
             <span style="font-weight: bold;">${item.label} - ${formatValueInMillions(item.value)}</span>
-            <span style="margin-left: auto;">${item.percentage}%</span>
+            <span style="margin-left: auto; font-weight: bold;">${item.percentage}%</span>
         </div>
     `).join("");
 
