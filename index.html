@@ -1397,6 +1397,18 @@ function renderRewardsPieChart(data = []) {
     }
 }
 
+        isFirstLoadRewards = false; // Mark first load as complete
+    } else {
+        // On updates, update the existing chart's data without recreating it
+        if (window.rewardsPieChartInstance) {
+            window.rewardsPieChartInstance.data.labels = combinedData.map(item => item.label);
+            window.rewardsPieChartInstance.data.datasets[0].data = combinedData.map(item => item.value);
+            window.rewardsPieChartInstance.data.datasets[0].backgroundColor = combinedData.map(item => item.color);
+            window.rewardsPieChartInstance.update(); // Update without animation
+        }
+    }
+}
+
 let isFirstLoadStaked = true; // Flag to track first load for staked chart
 
 function renderStakedPieChart(data = []) {
