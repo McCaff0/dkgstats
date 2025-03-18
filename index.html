@@ -789,7 +789,6 @@ function adjustFontSize() {
     });
 }
 
-// ✅ Resize charts dynamically including pie charts
 function resizeCharts() {
     updateFontSizesAndPadding(); // Update font sizes & padding
     updatePieChartFontSizesAndPadding(); // Update pie chart sizes & padding
@@ -812,13 +811,19 @@ function resizeCharts() {
 
     pieChartInstances.forEach(chart => {
         if (chart) {
-            chart.options.plugins.legend.labels.font.size = pieChartFontSize;
-            chart.options.plugins.legend.labels.padding = pieChartLegendPadding;
+            // Update pie chart properties (excluding legend)
             chart.options.layout.padding = pieChartLayoutPadding;
             chart.options.elements.arc.borderWidth = pieChartBorderWidth;
             chart.update(); // Update the pie chart sizes
         }
     });
+
+    // ✅ Resize Custom Legend
+    const customLegendContainer = document.getElementById("customLegendContainer");
+    if (customLegendContainer) {
+        customLegendContainer.style.fontSize = `${pieChartFontSize}px`; // Update font size
+        customLegendContainer.style.gap = `${pieChartLegendPadding}px`; // Update gap between legend items
+    }
 }
 
 // Debounced resize handler to avoid excessive calls
