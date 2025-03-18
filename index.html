@@ -777,7 +777,11 @@ function updatePieChartFontSizesAndPadding() {
     // Border width of the pie chart segments
     pieChartBorderWidth = Math.max(1, rootFontSize * 0.125);
 }
-
+function reapplyScaling() {
+    console.log('Reapplying scaling...');
+    adjustFontSize();
+    resizeCharts();
+}
     
 let stableHeight = null; // Store the locked height for mobile devices
 
@@ -926,6 +930,15 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch((error) => {
             console.error('Error in fetchData:', error);
         });
+});
+    window.addEventListener('load', function () {
+    console.log('Page fully loaded');
+
+    // Initial scaling on load
+    reapplyScaling();
+
+    // Reapply scaling after a slight delay
+    setTimeout(reapplyScaling, 200);
 });
     
 // Add references for the pie charts
