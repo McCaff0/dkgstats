@@ -252,17 +252,17 @@ h1 {
     pointer-events: none; /* Ensures the graph does not interfere */
 }
     #publishesPieChart {
-    margin-top: 0.75rem;
+    margin-top: 2.25rem;
     margin-left: -4rem;
 }
 
 #rewardsPieChart {
-    margin-top: 8.825rem;
+    margin-top: 10.25rem;
     margin-left: -4rem;
 }
 
 #stakedPieChart {
-    margin-top: 16.9rem;
+    margin-top: 18.15rem;
     margin-left: -4rem;
 }
       .epoch-box h2 {
@@ -710,7 +710,7 @@ function updatePieChartFontSizesAndPadding() {
     };
 
     // Padding between legend items
-    pieChartLegendPadding = rootFontSize * 0.6;
+    pieChartLegendPadding = rootFontSize * 0.7;
 
     // Border width of the pie chart segments
     pieChartBorderWidth = Math.max(1, rootFontSize * 0.0625);
@@ -1273,8 +1273,8 @@ function renderPublishesPieChart(data = []) {
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
-                            boxWidth: pieChartFontSize / 1.5,
-                            boxHeight: pieChartFontSize / 1.5
+                            boxWidth: pieChartFontSize / 1.75,
+                            boxHeight: pieChartFontSize / 1.75
                         }
                     }
                 }
@@ -1350,8 +1350,8 @@ function renderRewardsPieChart(data = []) {
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
-                            boxWidth: pieChartFontSize / 1.5,
-                            boxHeight: pieChartFontSize / 1.5
+                            boxWidth: pieChartFontSize / 1.75,
+                            boxHeight: pieChartFontSize / 1.75
                         }
                     },
                     tooltip: {
@@ -1429,8 +1429,8 @@ function renderStakedPieChart(data = []) {
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
-                            boxWidth: pieChartFontSize / 1.5,
-                            boxHeight: pieChartFontSize / 1.5
+                            boxWidth: pieChartFontSize / 1.75,
+                            boxHeight: pieChartFontSize / 1.75
                         }
                     }
                 }
