@@ -577,11 +577,6 @@ h1 {
         }
         return value.toString(); // Return the original value if less than 1M
     }
-        function formatLabel(label, value, percentage) {
-        const labelPart = `${label} - ${value}`;
-        const padding = " ".repeat(20 - labelPart.length); // Add padding for alignment
-        return `${labelPart}${padding}${percentage}%`;
-    }
     
 function handleData(sheetData, records) {
     console.log("✅ handleData received:");
@@ -1220,18 +1215,15 @@ function renderPublishesPieChart(data = []) {
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
-        formattedValue: formatValueInMillions(data[i]), // Format the value
-        percentage: (data[i] / total * 100).toFixed(2), // Calculate percentage
+        percentage: (data[i] / total * 100).toFixed(2),
         color: ["#262626", "#1f62a1", "#076940"][i] // Match colors to labels
     }));
 
     // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Extract sorted labels, formatted values, percentages, and colors
-    const sortedLabelsWithValuesAndPercentages = combinedData.map(item => 
-        formatLabel(item.label, item.formattedValue, item.percentage) // Format the label
-    );
+    // Extract sorted labels, data, and colors
+    const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
     const sortedData = combinedData.map(item => item.value);
     const sortedColors = combinedData.map(item => item.color);
 
@@ -1240,7 +1232,7 @@ function renderPublishesPieChart(data = []) {
         window.publishesPieChartInstance = new Chart(ctx, {
             type: "doughnut",
             data: {
-                labels: sortedLabelsWithValuesAndPercentages, // Use formatted labels
+                labels: sortedLabelsWithPercentages,
                 datasets: [{
                     data: sortedData,
                     backgroundColor: sortedColors,
@@ -1254,12 +1246,7 @@ function renderPublishesPieChart(data = []) {
                 maintainAspectRatio: false,
                 aspectRatio: 1.5,
                 layout: {
-                    padding: {
-                        left: 20, // Add padding to the left
-                        right: 40, // Add more padding to the right
-                        top: 20,
-                        bottom: 20
-                    }
+                    padding: pieChartLayoutPadding
                 },
                 plugins: {
                     legend: {
@@ -1274,21 +1261,8 @@ function renderPublishesPieChart(data = []) {
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
-                            boxWidth: pieChartFontSize * 2, // Increase box width
-                            boxHeight: pieChartFontSize * 1.5, // Increase box height
-                            generateLabels: (chart) => {
-                                const data = chart.data;
-                                if (data.labels.length && data.datasets.length) {
-                                    return data.labels.map((label, i) => ({
-                                        text: label, // Use the formatted label
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        hidden: isNaN(data.datasets[0].data[i]) || data.datasets[0].data[i] === 0,
-                                        index: i,
-                                        fontColor: "#acafb0" // Ensure text color is applied
-                                    }));
-                                }
-                                return [];
-                            }
+                            boxWidth: pieChartFontSize / 1.5,
+                            boxHeight: pieChartFontSize / 1.5
                         }
                     }
                 }
@@ -1299,7 +1273,7 @@ function renderPublishesPieChart(data = []) {
     } else {
         // On updates, update the existing chart's data without recreating it
         if (window.publishesPieChartInstance) {
-            window.publishesPieChartInstance.data.labels = sortedLabelsWithValuesAndPercentages;
+            window.publishesPieChartInstance.data.labels = sortedLabelsWithPercentages;
             window.publishesPieChartInstance.data.datasets[0].data = sortedData;
             window.publishesPieChartInstance.data.datasets[0].backgroundColor = sortedColors;
             window.publishesPieChartInstance.update(); // Update without animation
