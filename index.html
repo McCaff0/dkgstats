@@ -1255,8 +1255,8 @@ if (legendContainer) {
     legendContainer.innerHTML = combinedData.map(item => `
         <div style="display: flex; align-items: center; margin-bottom: 0.5rem; font-family: 'Play', sans-serif;">
             <div style="
-                width: ${pieChartFontSize / 1.25}px; 
-                height: ${pieChartFontSize / 1.25}px; 
+                width: ${pieChartFontSize}px; 
+                height: ${pieChartFontSize}px; 
                 background: ${item.color}; 
                 border: ${pieChartBorderWidth}px solid #acafb0; 
                 border-radius: 50%; 
@@ -1307,7 +1307,6 @@ let isFirstLoadRewards = true; // Flag to track first load for rewards chart
 
 function renderRewardsPieChart(data = []) {
     const ctx = document.getElementById("rewardsPieChart").getContext("2d");
-
     const total = data.reduce((sum, value) => sum + value, 0);
 
     // Combine labels, data, and colors into an array of objects for sorting
@@ -1321,20 +1320,34 @@ function renderRewardsPieChart(data = []) {
     // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Extract sorted labels, data, and colors
-    const sortedLabelsWithPercentages = combinedData.map(item => `${item.label} - ${item.percentage}%`);
-    const sortedData = combinedData.map(item => item.value);
-    const sortedColors = combinedData.map(item => item.color);
+    // Render custom legend
+    const legendContainer = document.getElementById("customRewardsLegendContainer");
+    if (legendContainer) {
+        legendContainer.innerHTML = combinedData.map(item => `
+            <div style="display: flex; align-items: center; margin-bottom: 0.5rem; font-family: 'Play', sans-serif;">
+                <div style="
+                    width: ${pieChartFontSize}px; 
+                    height: ${pieChartFontSize}px; 
+                    background: ${item.color}; 
+                    border: ${pieChartBorderWidth}px solid #acafb0; 
+                    border-radius: 50%; 
+                    margin-right: 0.5rem;
+                "></div>
+                <span style="font-weight: bold;">${item.label} - ${formatValueInMillions(item.value)}</span>
+                <span style="margin-left: auto; font-weight: bold;">${item.percentage}%</span>
+            </div>
+        `).join("");
+    }
 
-    // If it's the first load, create the chart with default animations
+    // Update or create the chart
     if (isFirstLoadRewards) {
         window.rewardsPieChartInstance = new Chart(ctx, {
             type: "doughnut",
             data: {
-                labels: sortedLabelsWithPercentages,
+                labels: combinedData.map(item => item.label),
                 datasets: [{
-                    data: sortedData,
-                    backgroundColor: sortedColors,
+                    data: combinedData.map(item => item.value),
+                    backgroundColor: combinedData.map(item => item.color),
                     borderColor: "#acafb0", // Outline color of the chart
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
@@ -1349,33 +1362,7 @@ function renderRewardsPieChart(data = []) {
                 },
                 plugins: {
                     legend: {
-                        position: "right",
-                        align: "center",
-                        labels: {
-                            font: {
-                                size: pieChartFontSize,
-                                family: "Play, sans-serif",
-                                weight: 'bold' // Make legend font bold
-                            },
-                            color: "#acafb0", // Legend text color set to #acafb0
-                            padding: pieChartLegendPadding,
-                            usePointStyle: true,
-                            pointStyle: "circle",
-                            boxWidth: pieChartFontSize / 1.75,
-                            boxHeight: pieChartFontSize / 1.75,
-                            generateLabels: (chart) => {
-                                const datasets = chart.data.datasets;
-                                return datasets[0].data.map((data, i) => ({
-                                    text: chart.data.labels[i],
-                                    fillStyle: datasets[0].backgroundColor[i],
-                                    strokeStyle: "#acafb0", // Border color of the little circles
-                                    lineWidth: pieChartBorderWidth,
-                                    fontColor: "#acafb0",// Outline width of the little circles
-                                    hidden: !chart.getDataVisibility(i),
-                                    index: i
-                                }));
-                            }
-                        }
+                        display: false // Disable default legend
                     },
                     tooltip: {
                         enabled: true // Enable tooltips for actual data
@@ -1388,9 +1375,9 @@ function renderRewardsPieChart(data = []) {
     } else {
         // On updates, update the existing chart's data without recreating it
         if (window.rewardsPieChartInstance) {
-            window.rewardsPieChartInstance.data.labels = sortedLabelsWithPercentages;
-            window.rewardsPieChartInstance.data.datasets[0].data = sortedData;
-            window.rewardsPieChartInstance.data.datasets[0].backgroundColor = sortedColors;
+            window.rewardsPieChartInstance.data.labels = combinedData.map(item => item.label);
+            window.rewardsPieChartInstance.data.datasets[0].data = combinedData.map(item => item.value);
+            window.rewardsPieChartInstance.data.datasets[0].backgroundColor = combinedData.map(item => item.color);
             window.rewardsPieChartInstance.update(); // Update without animation
         }
     }
