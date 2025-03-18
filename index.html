@@ -1271,7 +1271,7 @@ function renderPublishesPieChart(data = []) {
                                 family: "Play, sans-serif",
                                 weight: 'bold' // Make legend font bold
                             },
-                            color: "#acafb0", // Legend text color
+                            color: "#acafb0", // Legend text color set to #acafb0
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
@@ -1283,7 +1283,7 @@ function renderPublishesPieChart(data = []) {
                                     text: chart.data.labels[i],
                                     fillStyle: datasets[0].backgroundColor[i],
                                     strokeStyle: "#acafb0", // Border color of the little circles
-                                    lineWidth: 2, // Border width of the little circles
+                                    lineWidth: pieChartBorderWidth, // Outline width of the little circles
                                     hidden: !chart.getDataVisibility(i),
                                     index: i
                                 }));
@@ -1361,7 +1361,7 @@ function renderRewardsPieChart(data = []) {
                                 family: "Play, sans-serif",
                                 weight: 'bold' // Make legend font bold
                             },
-                            color: "#acafb0", // Legend text color
+                            color: "#acafb0", // Legend text color set to #acafb0
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
@@ -1373,7 +1373,7 @@ function renderRewardsPieChart(data = []) {
                                     text: chart.data.labels[i],
                                     fillStyle: datasets[0].backgroundColor[i],
                                     strokeStyle: "#acafb0", // Border color of the little circles
-                                    lineWidth: 2, // Border width of the little circles
+                                    lineWidth: pieChartBorderWidth, // Outline width of the little circles
                                     hidden: !chart.getDataVisibility(i),
                                     index: i
                                 }));
@@ -1454,7 +1454,7 @@ function renderStakedPieChart(data = []) {
                                 family: "Play, sans-serif",
                                 weight: 'bold' // Make legend font bold
                             },
-                            color: "#acafb0", // Legend text color
+                            color: "#acafb0", // Legend text color set to #acafb0
                             padding: pieChartLegendPadding,
                             usePointStyle: true,
                             pointStyle: "circle",
@@ -1466,7 +1466,7 @@ function renderStakedPieChart(data = []) {
                                     text: chart.data.labels[i],
                                     fillStyle: datasets[0].backgroundColor[i],
                                     strokeStyle: "#acafb0", // Border color of the little circles
-                                    lineWidth: 2, // Border width of the little circles
+                                    lineWidth: pieChartBorderWidth, // Outline width of the little circles
                                     hidden: !chart.getDataVisibility(i),
                                     index: i
                                 }));
