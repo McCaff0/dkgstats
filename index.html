@@ -245,9 +245,9 @@ h1 {
     position: absolute; /* Removes it from document flow */
     top: 0;
     left: 0;
-    width: 95% !important;
+    width: 100% !important;
     height: 8.5rem !important;
-    max-width: 95%;
+    max-width: 100%;
     max-height: 8.5rem;
     pointer-events: none; /* Ensures the graph does not interfere */
 }
@@ -699,13 +699,13 @@ function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
     // Font size for legend labels
-    pieChartFontSize = rootFontSize * 1.1;
+    pieChartFontSize = rootFontSize * 1.05;
 
     // Individual padding values for layout
     pieChartLayoutPadding = {
         left: rootFontSize * 1,   // Adjust left padding
         top: rootFontSize * 1.1,  // Adjust top padding
-        right: rootFontSize * 1,  // Adjust right padding
+        right: rootFontSize * 0,  // Adjust right padding
         bottom: rootFontSize * 1 // Adjust bottom padding
     };
 
