@@ -1282,7 +1282,8 @@ function renderPublishesPieChart(data = []) {
                                 return datasets[0].data.map((data, i) => ({
                                     text: chart.data.labels[i],
                                     fillStyle: datasets[0].backgroundColor[i],
-                                    strokeStyle: "#acafb0", // Border color of the little circles
+                                    strokeStyle: "#acafb0",
+                                    fontColor: "#acafb0",// Border color of the little circles
                                     lineWidth: pieChartBorderWidth, // Outline width of the little circles
                                     hidden: !chart.getDataVisibility(i),
                                     index: i
