@@ -996,9 +996,6 @@ function fetchChartData() {
                     // Check if this is the first data load
                     const isFirstLoad = !window[`${endpoint.chartId}Instance`];
 
-                    // Reset the canvas to completely remove the placeholder
-                    resetCanvas(endpoint.chartId);
-
                     // Create or update the chart instance
                     window[`${endpoint.chartId}Instance`] = renderChart({
                         canvasId: endpoint.chartId,
@@ -1099,18 +1096,22 @@ window.addEventListener('resize', handleResize);
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded and parsed');
 
+    // Check if fetchData is defined
     if (typeof fetchData !== 'function') {
         console.error('fetchData is not a function');
         return;
     }
 
-    isFirstLoadPublishes = true;
-    isFirstLoadRewards = true;
-    isFirstLoadStaked = true;
+    // Initialize first load flags for pie charts
+    let isFirstLoadPublishes = true;
+    let isFirstLoadRewards = true;
+    let isFirstLoadStaked = true;
 
+    // Adjust font sizes and resize charts on initial load
     adjustFontSize();
     resizeCharts();
 
+    // Initialize line charts with empty data
     PriceChartInstance = renderChart({
         canvasId: 'PriceChart',
         labels: [],
@@ -1119,7 +1120,7 @@ document.addEventListener('DOMContentLoaded', function () {
         yAxisTitle: 'Price (USD)',
         animate: false,
         chartInstance: PriceChartInstance,
-        isFirstLoad: isFirstDataLoad
+        isFirstLoad: true // Destroy any existing chart and create a new one
     });
 
     SpendChartInstance = renderChart({
@@ -1131,7 +1132,7 @@ document.addEventListener('DOMContentLoaded', function () {
         yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
         animate: false,
         chartInstance: SpendChartInstance,
-        isFirstLoad: isFirstSpendLoad
+        isFirstLoad: true // Destroy any existing chart and create a new one
     });
 
     PublishesChartInstance = renderChart({
@@ -1143,9 +1144,10 @@ document.addEventListener('DOMContentLoaded', function () {
         yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
         animate: false,
         chartInstance: PublishesChartInstance,
-        isFirstLoad: isFirstPublishesLoad
+        isFirstLoad: true // Destroy any existing chart and create a new one
     });
 
+    // Initialize pie charts with empty data
     renderPieChart({
         canvasId: 'publishesPieChart',
         legendContainerId: 'customLegendContainer',
@@ -1170,10 +1172,12 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstLoadStaked
     });
 
+    // Fetch and render chart data
     console.log('Calling fetchChartData and fetchPieChartData...');
     fetchChartData();
     fetchPieChartData();
 
+    // Fetch additional data
     console.log('Calling fetchData...');
     fetchData()
         .then(() => {
