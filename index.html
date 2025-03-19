@@ -911,7 +911,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Reset first load flags
+    // Reset first load flags for pie charts
     isFirstLoadPublishes = true;
     isFirstLoadRewards = true;
     isFirstLoadStaked = true;
@@ -920,10 +920,44 @@ document.addEventListener('DOMContentLoaded', function () {
     adjustFontSize();
     resizeCharts();
 
-    // Render charts with empty data initially
-    renderPriceChart([], [], false);
-    renderSpendChart([], [], false);
-    renderPublishesChart([], [], false);
+    // Render line charts with empty data initially
+    PriceChartInstance = renderChart({
+        canvasId: 'PriceChart',
+        labels: [], // Empty array for initial render
+        values: [], // Empty array for initial render
+        datasetLabel: 'Price',
+        yAxisTitle: 'Price (USD)',
+        yAxisFormatter: (value) => value,
+        animate: false,
+        chartInstance: PriceChartInstance,
+        isFirstLoad: isFirstDataLoad
+    });
+
+    SpendChartInstance = renderChart({
+        canvasId: 'SpendChart',
+        labels: [], // Empty array for initial render
+        values: [], // Empty array for initial render
+        datasetLabel: 'Spend',
+        yAxisTitle: 'Spend (USD)',
+        yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
+        animate: false,
+        chartInstance: SpendChartInstance,
+        isFirstLoad: isFirstSpendLoad
+    });
+
+    PublishesChartInstance = renderChart({
+        canvasId: 'PublishesChart',
+        labels: [], // Empty array for initial render
+        values: [], // Empty array for initial render
+        datasetLabel: 'Publishes',
+        yAxisTitle: 'Publishes',
+        yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
+        animate: false,
+        chartInstance: PublishesChartInstance,
+        isFirstLoad: isFirstPublishesLoad
+    });
+
+    // Render pie charts with empty data initially
     renderPublishesPieChart([], true);
     renderRewardsPieChart([], true);
     renderStakedPieChart([], true);
@@ -950,6 +984,21 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(reapplyScaling, 1000);
 });
 
+// Global variables for line charts
+let PriceChartInstance, SpendChartInstance, PublishesChartInstance;
+let priceLabels = [], priceValues = [];
+let spendLabels = [], spendValues = [];
+let publishesLabels = [], publishesValues = [];
+
+// Global variables for pie charts
+let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = true;
+
+// Other global variables
+let tickFontSize, labelFontSize, chartPadding;
+
+// First load flags for line charts
+let isFirstDataLoad = true, isFirstSpendLoad = true, isFirstPublishesLoad = true;
+    
 function renderChart({
     canvasId, // ID of the canvas element
     labels, // Array of labels for the x-axis
@@ -1399,9 +1448,19 @@ function fetchChartData() {
             console.log("Price Data:", data);
 
             if (Array.isArray(data) && data.length > 0) {
-                const priceLabels = data.map(item => item.date);
-                const priceValues = data.map(item => item.value);
-                renderPriceChart(priceLabels, priceValues, isFirstDataLoad);
+                priceLabels = data.map(item => item.date);
+                priceValues = data.map(item => item.value);
+                PriceChartInstance = renderChart({
+                    canvasId: 'PriceChart',
+                    labels: priceLabels,
+                    values: priceValues,
+                    datasetLabel: 'Price',
+                    yAxisTitle: 'Price (USD)',
+                    yAxisFormatter: (value) => value,
+                    animate: true,
+                    chartInstance: PriceChartInstance,
+                    isFirstLoad: false
+                });
                 hasSuccessfulFetch = true;
             } else {
                 console.warn("No valid price data received.");
@@ -1417,9 +1476,19 @@ function fetchChartData() {
             console.log("Spend Data:", data);
 
             if (Array.isArray(data) && data.length > 0) {
-                const spendLabels = data.map(item => item.date);
-                const spendValues = data.map(item => item.value);
-                renderSpendChart(spendLabels, spendValues, isFirstSpendLoad);
+                spendLabels = data.map(item => item.date);
+                spendValues = data.map(item => item.value);
+                SpendChartInstance = renderChart({
+                    canvasId: 'SpendChart',
+                    labels: spendLabels,
+                    values: spendValues,
+                    datasetLabel: 'Spend',
+                    yAxisTitle: 'Spend (USD)',
+                    yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
+                    animate: true,
+                    chartInstance: SpendChartInstance,
+                    isFirstLoad: false
+                });
                 hasSuccessfulFetch = true;
             } else {
                 console.warn("No valid spend data received.");
@@ -1435,9 +1504,19 @@ function fetchChartData() {
             console.log("Publishes Data:", data);
 
             if (Array.isArray(data) && data.length > 0) {
-                const publishesLabels = data.map(item => item.date);
-                const publishesValues = data.map(item => item.value);
-                renderPublishesChart(publishesLabels, publishesValues, isFirstPublishesLoad);
+                publishesLabels = data.map(item => item.date);
+                publishesValues = data.map(item => item.value);
+                PublishesChartInstance = renderChart({
+                    canvasId: 'PublishesChart',
+                    labels: publishesLabels,
+                    values: publishesValues,
+                    datasetLabel: 'Publishes',
+                    yAxisTitle: 'Publishes',
+                    yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
+                    animate: true,
+                    chartInstance: PublishesChartInstance,
+                    isFirstLoad: false
+                });
                 hasSuccessfulFetch = true;
             } else {
                 console.warn("No valid publishes data received.");
