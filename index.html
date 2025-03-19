@@ -1195,10 +1195,6 @@ function renderpiechart(container, chartInstance, labels, values) {
     });
 }
     
-
-
-let isFirstLoadPublishes = true; // Flag to track first load
-
 function renderPublishesPieChart(data = []) {
     const ctx = document.getElementById("publishesPieChart").getContext("2d");
     const total = data.reduce((sum, value) => sum + value, 0);
@@ -1268,7 +1264,6 @@ if (legendContainer) {
         }
     }
 }
-let isFirstLoadRewards = true; // Flag to track first load for rewards chart
 
 function renderRewardsPieChart(data = []) {
     const ctx = document.getElementById("rewardsPieChart").getContext("2d");
@@ -1347,8 +1342,6 @@ function renderRewardsPieChart(data = []) {
         }
     }
 }
-
-let isFirstLoadStaked = true; // Flag to track first load for staked chart
 
 function renderStakedPieChart(data = []) {
     const ctx = document.getElementById("stakedPieChart").getContext("2d");
