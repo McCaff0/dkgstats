@@ -688,6 +688,7 @@ function fetchData() {
         });
 }
     
+// Update font sizes and padding for charts
 function updateFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
     tickFontSize = rootFontSize * 0.75;
@@ -701,64 +702,49 @@ function updateFontSizesAndPadding() {
     };
 }
 
-let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
-
+// Update pie chart font sizes and padding
 function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-    // Font size for legend labels
-    pieChartFontSize = rootFontSize * 1.05;
-
-    // Individual padding values for layout
+    pieChartFontSize = rootFontSize * 1.05; // Font size for legend labels
     pieChartLayoutPadding = {
         left: rootFontSize * 0,   // Adjust left padding
         top: rootFontSize * 1.1,  // Adjust top padding
         right: rootFontSize * 0,  // Adjust right padding
-        bottom: rootFontSize * 1 // Adjust bottom padding
+        bottom: rootFontSize * 1  // Adjust bottom padding
     };
-
-    // Padding between legend items
-    pieChartLegendPadding = rootFontSize * 0.7;
-
-    // Border width of the pie chart segments
-    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125);
+    pieChartLegendPadding = rootFontSize * 0.7; // Padding between legend items
+    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125); // Border width of the pie chart segments
 }
+
+// Reapply scaling
 function reapplyScaling() {
     console.log('Reapplying scaling...');
     adjustFontSize();
     resizeCharts();
 }
-    
-let stableHeight = null;
 
+// Check if the window is being resized (not just virtual keyboard on mobile)
 function hasTrueWindowResizing() {
-    if (!('ontouchstart' in window)) return true;
-    return window.matchMedia("(min-width: 1024px)").matches;
+    return !('ontouchstart' in window) || window.matchMedia("(min-width: 1024px)").matches;
 }
 
+// Adjust font size based on window height and container width
 function adjustFontSize() {
-    let referenceHeight;
-
-    if (hasTrueWindowResizing()) {
-        referenceHeight = Math.min(window.innerHeight, window.screen.height);
-        stableHeight = null;
-    } else {
-        if (stableHeight === null) {
-            stableHeight = Math.min(window.innerHeight, window.screen.height);
-        }
-        referenceHeight = stableHeight;
-    }
+    const referenceHeight = hasTrueWindowResizing() 
+        ? Math.min(window.innerHeight, window.screen.height) 
+        : (stableHeight ?? (stableHeight = Math.min(window.innerHeight, window.screen.height)));
 
     const baseFontSize = 16;
     const scalingFactor = referenceHeight / 973;
     let newFontSize = baseFontSize * scalingFactor * 1.07;
 
-    const minScaleFactor = 0.6; 
+    const minScaleFactor = 0.6;
     const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
     newFontSize = Math.max(newFontSize, minFontSize);
 
     const container = document.querySelector('.container');
-    if (!container) return; 
+    if (!container) return;
 
     requestAnimationFrame(() => {
         const containerWidth = container.offsetWidth;
@@ -776,12 +762,14 @@ function adjustFontSize() {
     });
 }
 
+// Resize all charts
 function resizeCharts() {
     updateFontSizesAndPadding();
     updatePieChartFontSizesAndPadding();
 
     const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
-    
+    const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
+
     chartInstances.forEach(chart => {
         if (chart) {
             chart.options.scales.x.ticks.font.size = tickFontSize;
@@ -792,8 +780,6 @@ function resizeCharts() {
         }
     });
 
-    const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
-
     pieChartInstances.forEach(chart => {
         if (chart) {
             chart.options.layout.padding = pieChartLayoutPadding;
@@ -803,8 +789,8 @@ function resizeCharts() {
     });
 }
 
+// Handle window resize with debouncing
 let resizeTimeout;
-
 function handleResize() {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
@@ -813,12 +799,11 @@ function handleResize() {
     }, 200);
 }
 
+// Handle orientation change
 window.addEventListener('orientationchange', () => {
     stableHeight = null;
     clearTimeout(resizeTimeout);
-    setTimeout(() => {
-        handleResize();
-    }, 200);
+    setTimeout(handleResize, 200);
 });
 
 window.addEventListener('resize', handleResize);
