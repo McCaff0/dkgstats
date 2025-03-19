@@ -555,7 +555,6 @@ h1 {
   </div>
 </div>
 
-  
   <script>
 
 function formatNumber(value, decimals = 0, isCurrency = false) {
@@ -606,25 +605,21 @@ function formatValueInMillions(value) {
 }
     
 function handleData(sheetData, records) {
-    console.log("✅ handleData received:");
-    console.log("➡ sheetData:", sheetData);
-    console.log("➡ records:", records);
-
     if (!sheetData || !records) {
-        console.error("❌ Missing required data:", { sheetData, records });
+        console.error("Missing required data:", { sheetData, records });
         return;
     }
 
     const updateText = (id, value) => {
         const element = document.getElementById(id);
         if (element) element.innerText = value;
-        else console.warn(`⚠️ Element #${id} not found in DOM.`);
+        else console.warn(`Element #${id} not found in DOM.`);
     };
 
     const updateHTML = (id, value) => {
         const element = document.getElementById(id);
         if (element) element.innerHTML = value;
-        else console.warn(`⚠️ Element #${id} not found in DOM.`);
+        else console.warn(`Element #${id} not found in DOM.`);
     };
 
     updateText('tracprice', formatNumber(sheetData.tracprice, 4));
@@ -651,18 +646,12 @@ function handleData(sheetData, records) {
 
     const updateRecordData = (record, dateId, valueId, decimals = 0, currency = false) => {
         if (!record) {
-            console.warn(`⚠️ Missing record data for ${dateId} and ${valueId}`);
+            console.warn(`Missing record data for ${dateId} and ${valueId}`);
             return;
         }
         updateText(dateId, formatDate(record.date));
         updateText(valueId, formatNumber(record.value, decimals, currency));
     };
-
-    console.log("📌 Checking Records Data:");
-    console.log("➡ Publish Record:", records.publishRecord);
-    console.log("➡ TRAC Spend Record:", records.tracSpendRecord);
-    console.log("➡ USD Spend Record:", records.usdSpendRecord);
-
     updateRecordData(records.publishRecord, 'publishRecordDate', 'publishRecordValue');
     updateRecordData(records.tracSpendRecord, 'tracSpendRecordDate', 'tracSpendRecordValue');
     updateRecordData(records.usdSpendRecord, 'usdSpendRecordDate', 'usdSpendRecordValue');
@@ -687,8 +676,7 @@ function fetchData() {
             throw error;
         });
 }
-    
-// Update font sizes and padding for charts
+
 function updateFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
     tickFontSize = rootFontSize * 0.75;
@@ -702,34 +690,25 @@ function updateFontSizesAndPadding() {
     };
 }
 
-// Update pie chart font sizes and padding
 function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-    pieChartFontSize = rootFontSize * 1.05; // Font size for legend labels
-    pieChartLayoutPadding = {
-        left: rootFontSize * 0,   // Adjust left padding
-        top: rootFontSize * 1.1,  // Adjust top padding
-        right: rootFontSize * 0,  // Adjust right padding
-        bottom: rootFontSize * 1  // Adjust bottom padding
-    };
-    pieChartLegendPadding = rootFontSize * 0.7; // Padding between legend items
-    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125); // Border width of the pie chart segments
+    pieChartFontSize = rootFontSize * 1.05;
+    pieChartLayoutPadding = rootFontSize * 1
+    pieChartLegendPadding = rootFontSize * 0.7;
+    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125);
 }
 
-// Reapply scaling
 function reapplyScaling() {
     console.log('Reapplying scaling...');
     adjustFontSize();
     resizeCharts();
 }
 
-// Check if the window is being resized (not just virtual keyboard on mobile)
 function hasTrueWindowResizing() {
     return !('ontouchstart' in window) || window.matchMedia("(min-width: 1024px)").matches;
 }
 
-// Adjust font size based on window height and container width
 function adjustFontSize() {
     const referenceHeight = hasTrueWindowResizing() 
         ? Math.min(window.innerHeight, window.screen.height) 
@@ -762,7 +741,6 @@ function adjustFontSize() {
     });
 }
 
-// Resize all charts
 function resizeCharts() {
     updateFontSizesAndPadding();
     updatePieChartFontSizesAndPadding();
@@ -789,7 +767,6 @@ function resizeCharts() {
     });
 }
 
-// Handle window resize with debouncing
 let resizeTimeout;
 function handleResize() {
     clearTimeout(resizeTimeout);
@@ -799,7 +776,6 @@ function handleResize() {
     }, 200);
 }
 
-// Handle orientation change
 window.addEventListener('orientationchange', () => {
     stableHeight = null;
     clearTimeout(resizeTimeout);
@@ -811,22 +787,18 @@ window.addEventListener('resize', handleResize);
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded and parsed');
 
-    // Check if fetchData is defined
     if (typeof fetchData !== 'function') {
         console.error('fetchData is not a function');
         return;
     }
 
-    // Reset first load flags for pie charts
     isFirstLoadPublishes = true;
     isFirstLoadRewards = true;
     isFirstLoadStaked = true;
 
-    // Initial font size adjustment and chart resize
     adjustFontSize();
     resizeCharts();
 
-    // Render line charts with empty data initially
     PriceChartInstance = renderChart({
         canvasId: 'PriceChart',
         labels: [],
@@ -862,11 +834,10 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstPublishesLoad
     });
 
-    // Render pie charts with empty data initially
     renderPieChart({
         canvasId: 'publishesPieChart',
         legendContainerId: 'customLegendContainer',
-        data: [], // Empty array for initial render
+        data: [],
         chartInstance: window.publishesPieChartInstance,
         isFirstLoad: isFirstLoadPublishes
     });
@@ -874,7 +845,7 @@ document.addEventListener('DOMContentLoaded', function () {
     renderPieChart({
         canvasId: 'rewardsPieChart',
         legendContainerId: 'customRewardsLegendContainer',
-        data: [], // Empty array for initial render
+        data: [],
         chartInstance: window.rewardsPieChartInstance,
         isFirstLoad: isFirstLoadRewards
     });
@@ -882,12 +853,11 @@ document.addEventListener('DOMContentLoaded', function () {
     renderPieChart({
         canvasId: 'stakedPieChart',
         legendContainerId: 'customStakedLegendContainer',
-        data: [], // Empty array for initial render
+        data: [],
         chartInstance: window.stakedPieChartInstance,
         isFirstLoad: isFirstLoadStaked
     });
 
-    // Fetch actual data
     console.log('Calling fetchData...');
     fetchData()
         .then(() => {
@@ -917,6 +887,25 @@ let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = 
 let tickFontSize, labelFontSize, chartPadding;
 
 let isFirstDataLoad = true, isFirstSpendLoad = true, isFirstPublishesLoad = true;
+
+function resetCanvas(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) {
+        console.error(`${canvasId} canvas not found!`);
+        return;
+    }
+
+    const parent = canvas.parentElement;
+    const newCanvas = document.createElement('canvas');
+    newCanvas.id = canvasId;
+    parent.removeChild(canvas);
+    parent.appendChild(newCanvas);
+
+    if (window[`${canvasId}Instance`]) {
+        window[`${canvasId}Instance`].destroy();
+        window[`${canvasId}Instance`] = null;
+    }
+}
     
 function renderChart({
     canvasId,
@@ -936,10 +925,9 @@ function renderChart({
     }
     const ctx = canvas.getContext('2d');
 
-    // If no chart instance exists or it's the first load, create a new one
     if (!chartInstance || isFirstLoad) {
         if (chartInstance) {
-            chartInstance.destroy(); // Destroy the existing instance
+            chartInstance.destroy(); 
         }
 
         chartInstance = new Chart(ctx, {
@@ -961,7 +949,7 @@ function renderChart({
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: animate ? {} : false, // Enable default animation only if `animate` is true
+                animation: animate ? {} : false,
                 scales: {
                     x: {
                         grid: {
@@ -1013,10 +1001,9 @@ function renderChart({
             }
         });
     } else {
-        // If the chart instance exists, update its data
         chartInstance.data.labels = labels;
         chartInstance.data.datasets[0].data = values;
-        chartInstance.update({ duration: 0 }); // No animation on updates
+        chartInstance.update({ duration: 0 }); 
     }
 
     return chartInstance;
@@ -1027,16 +1014,14 @@ let rewardspiechartInstance = null;
 let stakedpiechartinstance = null;
 
 function renderPieChart({
-    canvasId, // ID of the canvas element
-    legendContainerId, // ID of the custom legend container
-    data, // Array of data values
-    chartInstance, // Reference to the chart instance (e.g., publishesPieChartInstance)
-    isFirstLoad // Flag to track first load
+    canvasId,
+    legendContainerId,
+    data,
+    chartInstance,
+    isFirstLoad
 }) {
     const ctx = document.getElementById(canvasId).getContext("2d");
     const total = data.reduce((sum, value) => sum + value, 0);
-
-    // Combine labels, data, and colors into an array of objects for sorting
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
@@ -1044,10 +1029,8 @@ function renderPieChart({
         color: ["#262626", "#1f62a1", "#076940"][i]
     }));
 
-    // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Render custom legend
     const legendContainer = document.getElementById(legendContainerId);
     if (legendContainer) {
         legendContainer.innerHTML = combinedData.map(item => `
@@ -1066,7 +1049,6 @@ function renderPieChart({
         `).join("");
     }
 
-    // Update or create the chart
     if (isFirstLoad) {
         window[`${canvasId}Instance`] = new Chart(ctx, {
             type: "doughnut",
@@ -1086,7 +1068,7 @@ function renderPieChart({
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false // Disable default legend
+                        display: false
                     }
                 }
             }
@@ -1123,10 +1105,8 @@ function fetchChartData() {
                         ? data.map(item => parseFloat(item.value.toFixed(2)))
                         : data.map(item => item.value);
 
-                    // Reset the canvas to fully remove the placeholder chart.
                     resetCanvas(endpoint.chartId);
 
-                    // Create a new chart instance with animation enabled for the first data load.
                     window[`${endpoint.chartId}Instance`] = renderChart({
                         canvasId: endpoint.chartId,
                         labels: labels,
@@ -1134,8 +1114,8 @@ function fetchChartData() {
                         datasetLabel: endpoint.datasetLabel,
                         yAxisTitle: endpoint.yAxisTitle,
                         yAxisFormatter: endpoint.yAxisFormatter,
-                        animate: true, // Enable animation on initial data load.
-                        chartInstance: null, // Start fresh.
+                        animate: true,
+                        chartInstance: null,
                         isFirstLoad: true
                     });
                 } else {
@@ -1152,12 +1132,11 @@ function fetchChartData() {
     });
 }
 
-// For subsequent data updates (when animation is not required), update the chart normally.
 function updateChartData(chartInstance, newLabels, newValues) {
     if (chartInstance) {
         chartInstance.data.labels = newLabels;
         chartInstance.data.datasets[0].data = newValues;
-        chartInstance.update({ duration: 0 }); // Update without animation.
+        chartInstance.update({ duration: 0 });
     }
 }
     
@@ -1173,7 +1152,6 @@ function fetchPieChartData() {
                 return;
             }
 
-            // Array of chart configurations
             const chartsConfig = [
                 {
                     canvasId: 'publishesPieChart',
