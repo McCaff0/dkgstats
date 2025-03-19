@@ -555,7 +555,6 @@ h1 {
 </div>
 
   <script>
-let PriceChartInstance, SpendChartInstance, PublishesChartInstance;
 let priceLabels = [], priceValues = [];
 let spendLabels = [], spendValues = [];
 let publishesLabels = [], publishesValues = [];
@@ -567,7 +566,10 @@ let tickFontSize, labelFontSize, chartPadding;
 let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
 let stableHeight = null;
 let resizeTimeout;
-
+    
+let PriceChartInstance = null;
+let SpendChartInstance = null;
+let PublishesChartInstance = null;
 let publishespiechartInstance = null;
 let rewardspiechartInstance = null;
 let stakedpiechartinstance = null;
@@ -789,16 +791,6 @@ function handleResize() {
         resizeCharts();
     }, 200);
 }
-
-function resetCanvas(canvasId) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) {
-        console.error(`${canvasId} canvas not found!`);
-        return;
-    }
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-}
     
 function renderChart({
     canvasId,
@@ -817,16 +809,13 @@ function renderChart({
         return;
     }
 
-    // Reset the canvas before creating a new chart
-    resetCanvas(canvasId);
-
-    const ctx = canvas.getContext('2d');
-
     // Destroy the existing chart instance if it exists
     if (chartInstance) {
         chartInstance.destroy();
         chartInstance = null;
     }
+
+    const ctx = canvas.getContext('2d');
 
     // Create a new chart instance
     chartInstance = new Chart(ctx, {
@@ -999,21 +988,23 @@ function fetchChartData() {
                     // Check if this is the first data load
                     const isFirstLoad = !window[`${endpoint.chartId}Instance`];
 
-                    // Reset the canvas before rendering the chart
-                    resetCanvas(endpoint.chartId);
-
-                    // Create or update the chart instance
-                    window[`${endpoint.chartId}Instance`] = renderChart({
-                        canvasId: endpoint.chartId,
-                        labels: labels,
-                        values: values,
-                        datasetLabel: endpoint.datasetLabel,
-                        yAxisTitle: endpoint.yAxisTitle,
-                        yAxisFormatter: endpoint.yAxisFormatter,
-                        animate: isFirstLoad, // Enable animation only on first load
-                        chartInstance: window[`${endpoint.chartId}Instance`],
-                        isFirstLoad: isFirstLoad
-                    });
+                    if (isFirstLoad) {
+                        // Create a new chart instance on first load
+                        window[`${endpoint.chartId}Instance`] = renderChart({
+                            canvasId: endpoint.chartId,
+                            labels: labels,
+                            values: values,
+                            datasetLabel: endpoint.datasetLabel,
+                            yAxisTitle: endpoint.yAxisTitle,
+                            yAxisFormatter: endpoint.yAxisFormatter,
+                            animate: true, // Enable animation on first load
+                            chartInstance: window[`${endpoint.chartId}Instance`],
+                            isFirstLoad: isFirstLoad
+                        });
+                    } else {
+                        // Update the existing chart instance without recreating it
+                        updateChartData(window[`${endpoint.chartId}Instance`], labels, values);
+                    }
                 } else {
                     console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
                 }
@@ -1114,15 +1105,16 @@ document.addEventListener('DOMContentLoaded', function () {
     adjustFontSize();
     resizeCharts();
 
+    // Initialize line charts with empty data
     PriceChartInstance = renderChart({
         canvasId: 'PriceChart',
         labels: [],
         values: [],
         datasetLabel: 'Price',
         yAxisTitle: 'Price (USD)',
-        animate: false,
+        animate: false, // No animation for empty chart
         chartInstance: PriceChartInstance,
-        isFirstLoad: true
+        isFirstLoad: true 
     });
 
     SpendChartInstance = renderChart({
@@ -1132,9 +1124,9 @@ document.addEventListener('DOMContentLoaded', function () {
         datasetLabel: 'Spend',
         yAxisTitle: 'Spend (USD)',
         yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
-        animate: false,
+        animate: false, // No animation for empty chart
         chartInstance: SpendChartInstance,
-        isFirstLoad: true
+        isFirstLoad: true 
     });
 
     PublishesChartInstance = renderChart({
@@ -1144,11 +1136,11 @@ document.addEventListener('DOMContentLoaded', function () {
         datasetLabel: 'Publishes',
         yAxisTitle: 'Publishes',
         yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
-        animate: false,
+        animate: false, // No animation for empty chart
         chartInstance: PublishesChartInstance,
-        isFirstLoad: true
+        isFirstLoad: true 
     });
-
+a
     renderPieChart({
         canvasId: 'publishesPieChart',
         legendContainerId: 'customLegendContainer',
