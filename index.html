@@ -568,6 +568,10 @@ let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBord
 let stableHeight = null;
 let resizeTimeout;
 
+let publishespiechartInstance = null;
+let rewardspiechartInstance = null;
+let stakedpiechartinstance = null;
+
 function formatNumber(value, decimals = 0, isCurrency = false) {
     if (value == null || value === '') return 'Loading...';
     const number = Number(value);
@@ -778,7 +782,6 @@ function resizeCharts() {
     });
 }
 
-let resizeTimeout;
 function handleResize() {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
@@ -786,17 +789,6 @@ function handleResize() {
         resizeCharts();
     }, 200);
 }
-
-let PriceChartInstance, SpendChartInstance, PublishesChartInstance;
-let priceLabels = [], priceValues = [];
-let spendLabels = [], spendValues = [];
-let publishesLabels = [], publishesValues = [];
-
-let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = true;
-
-let tickFontSize, labelFontSize, chartPadding;
-
-let isFirstDataLoad = true, isFirstSpendLoad = true, isFirstPublishesLoad = true;
 
 function resetCanvas(canvasId) {
     const canvas = document.getElementById(canvasId);
@@ -919,10 +911,6 @@ function renderChart({
     return chartInstance;
 }
     
-let publishespiechartInstance = null;
-let rewardspiechartInstance = null;
-let stakedpiechartinstance = null;
-
 function renderChart({
     canvasId,
     labels,
