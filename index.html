@@ -1007,10 +1007,15 @@ function fetchChartData() {
 
     // Ensure charts exist before resizing
     Promise.all(fetchPromises).then(() => {
-        console.log("All charts initialized. Calling resizeCharts...");
+    console.log("All charts initialized. Checking before resizing...");
+    
+    // Ensure all chart instances exist before resizing
+    if (PriceChartInstance && SpendChartInstance && PublishesChartInstance) {
         resizeCharts();
-    });
-}
+    } else {
+        console.warn("Some charts are not initialized yet. Skipping resize.");
+    }
+});
 
 function updateChartData(chartInstance, newLabels, newValues) {
     if (chartInstance) {
@@ -1072,8 +1077,6 @@ function fetchPieChartData() {
             console.error("Error fetching chains data:", error);
         });
 }
-
-fetchPieChartData();
 
 window.addEventListener('orientationchange', () => {
     stableHeight = null;
