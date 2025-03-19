@@ -915,8 +915,7 @@ function adjustFontSize() {
         }
 
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
-        updateFontSizesAndPadding();
-        resizeCharts();
+        updateFontSizesAndPadding(); // ✅ Update font sizes and padding, but don't call resizeCharts here
     });
 }
 
