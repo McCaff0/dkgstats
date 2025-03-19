@@ -1075,7 +1075,10 @@ function renderChart({
                         ticks: {
                             beginAtZero: false,
                             font: { size: tickFontSize, family: 'Play, sans-serif' },
-                            callback: yAxisFormatter // Use the provided formatter
+                            callback: yAxisFormatter || function (value) {
+                                // Default formatting: 1 decimal place for Price Chart
+                                return parseFloat(value).toFixed(1);
+                            }
                         }
                     }
                 },
@@ -1101,21 +1104,17 @@ function renderChart({
 
     return chartInstance; // Return the chart instance for future updates
 }
-
-// Render Price Chart
 PriceChartInstance = renderChart({
     canvasId: 'PriceChart',
-    labels: priceLabels,
-    values: priceValues,
+    labels: [], // Empty array for initial render
+    values: [], // Empty array for initial render
     datasetLabel: 'Price',
     yAxisTitle: 'Price (USD)',
-    yAxisFormatter: (value) => value, // No special formatting
-    animate: true,
+    animate: false,
     chartInstance: PriceChartInstance,
     isFirstLoad: isFirstDataLoad
 });
 
-// Render Spend Chart
 SpendChartInstance = renderChart({
     canvasId: 'SpendChart',
     labels: spendLabels,
@@ -1128,7 +1127,6 @@ SpendChartInstance = renderChart({
     isFirstLoad: isFirstSpendLoad
 });
 
-// Render Publishes Chart
 PublishesChartInstance = renderChart({
     canvasId: 'PublishesChart',
     labels: publishesLabels,
@@ -1141,7 +1139,6 @@ PublishesChartInstance = renderChart({
     isFirstLoad: isFirstPublishesLoad
 });
     
-// Add references for the pie charts
 let publishespiechartInstance = null;
 let rewardspiechartInstance = null;
 let stakedpiechartinstance = null;
