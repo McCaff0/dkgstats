@@ -861,19 +861,23 @@ window.addEventListener('resize', handleResize);
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded and parsed');
 
+    // Check if fetchData is defined
     if (typeof fetchData !== 'function') {
         console.error('fetchData is not a function');
         return;
     }
 
+    // Reset first load flags for pie charts
     isFirstLoadPublishes = true;
     isFirstLoadRewards = true;
     isFirstLoadStaked = true;
 
+    // Initial font size adjustment and chart resize
     adjustFontSize();
     resizeCharts();
 
-        PriceChartInstance = renderChart({
+    // Render line charts with empty data initially
+    PriceChartInstance = renderChart({
         canvasId: 'PriceChart',
         labels: [],
         values: [],
@@ -908,10 +912,32 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstPublishesLoad
     });
 
-    renderPublishesPieChart([], true);
-    renderRewardsPieChart([], true);
-    renderStakedPieChart([], true);
+    // Render pie charts with empty data initially
+    renderPieChart({
+        canvasId: 'publishesPieChart',
+        legendContainerId: 'customLegendContainer',
+        data: [], // Empty array for initial render
+        chartInstance: window.publishesPieChartInstance,
+        isFirstLoad: isFirstLoadPublishes
+    });
 
+    renderPieChart({
+        canvasId: 'rewardsPieChart',
+        legendContainerId: 'customRewardsLegendContainer',
+        data: [], // Empty array for initial render
+        chartInstance: window.rewardsPieChartInstance,
+        isFirstLoad: isFirstLoadRewards
+    });
+
+    renderPieChart({
+        canvasId: 'stakedPieChart',
+        legendContainerId: 'customStakedLegendContainer',
+        data: [], // Empty array for initial render
+        chartInstance: window.stakedPieChartInstance,
+        isFirstLoad: isFirstLoadStaked
+    });
+
+    // Fetch actual data
     console.log('Calling fetchData...');
     fetchData()
         .then(() => {
@@ -1247,13 +1273,13 @@ function fetchPieChartData() {
                     data.gnosis?.stakedAmount || 0
                 ];
 
-                // Render the charts
+                // Render the charts with real data
                 renderPieChart({
                     canvasId: 'publishesPieChart',
                     legendContainerId: 'customLegendContainer',
                     data: publishesValues,
                     chartInstance: window.publishesPieChartInstance,
-                    isFirstLoad: isFirstLoadPublishes
+                    isFirstLoad: false
                 });
 
                 renderPieChart({
@@ -1261,7 +1287,7 @@ function fetchPieChartData() {
                     legendContainerId: 'customRewardsLegendContainer',
                     data: rewardsValues,
                     chartInstance: window.rewardsPieChartInstance,
-                    isFirstLoad: isFirstLoadRewards
+                    isFirstLoad: false
                 });
 
                 renderPieChart({
@@ -1269,7 +1295,7 @@ function fetchPieChartData() {
                     legendContainerId: 'customStakedLegendContainer',
                     data: stakedValues,
                     chartInstance: window.stakedPieChartInstance,
-                    isFirstLoad: isFirstLoadStaked
+                    isFirstLoad: false
                 });
             } else {
                 console.warn("No valid chains data received.");
