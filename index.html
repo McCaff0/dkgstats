@@ -1242,59 +1242,54 @@ function fetchPieChartData() {
         .then(response => response.json())
         .then(data => {
             console.log("Chains Data:", data);
+            if (!data) {
+                console.warn("No valid chains data received.");
+                return;
+            }
 
-            if (data) {
-                const publishesValues = [
-                    data.neuroweb?.epochPublishes || 0,
-                    data.base?.epochPublishes || 0,
-                    data.gnosis?.epochPublishes || 0
-                ];
-
-                const rewardsValues = [
-                    data.neuroweb?.epochRewards || 0,
-                    data.base?.epochRewards || 0,
-                    data.gnosis?.epochRewards || 0
-                ];
-
-                const stakedValues = [
-                    data.neuroweb?.stakedAmount || 0,
-                    data.base?.stakedAmount || 0,
-                    data.gnosis?.stakedAmount || 0
-                ];
-
-                renderPieChart({
+            // Array of chart configurations
+            const chartsConfig = [
+                {
                     canvasId: 'publishesPieChart',
                     legendContainerId: 'customLegendContainer',
-                    data: publishesValues,
-                    chartInstance: window.publishesPieChartInstance,
-                    isFirstLoad: false
-                });
-
-                renderPieChart({
+                    field: 'epochPublishes',
+                    instanceKey: 'publishesPieChartInstance'
+                },
+                {
                     canvasId: 'rewardsPieChart',
                     legendContainerId: 'customRewardsLegendContainer',
-                    data: rewardsValues,
-                    chartInstance: window.rewardsPieChartInstance,
-                    isFirstLoad: false
-                });
-
-                renderPieChart({
+                    field: 'epochRewards',
+                    instanceKey: 'rewardsPieChartInstance'
+                },
+                {
                     canvasId: 'stakedPieChart',
                     legendContainerId: 'customStakedLegendContainer',
-                    data: stakedValues,
-                    chartInstance: window.stakedPieChartInstance,
+                    field: 'stakedAmount',
+                    instanceKey: 'stakedPieChartInstance'
+                }
+            ];
+
+            chartsConfig.forEach(chart => {
+                const values = [
+                    data.neuroweb?.[chart.field] || 0,
+                    data.base?.[chart.field] || 0,
+                    data.gnosis?.[chart.field] || 0
+                ];
+                renderPieChart({
+                    canvasId: chart.canvasId,
+                    legendContainerId: chart.legendContainerId,
+                    data: values,
+                    chartInstance: window[chart.instanceKey],
                     isFirstLoad: false
                 });
-            } else {
-                console.warn("No valid chains data received.");
-            }
+            });
         })
         .catch(error => {
             console.error("Error fetching chains data:", error);
         });
 }
 
-    fetchPieChartData();
+fetchPieChartData();
     
 let dataInterval, chartInterval, piechartInterval;
 
