@@ -977,14 +977,12 @@ function fetchChartData() {
 
                     const isFirstLoad = !window[`${endpoint.chartId}Instance`];
 
-                    // Destroy old chart instance before creating a new one
                     if (window[`${endpoint.chartId}Instance`]) {
                         console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
                         window[`${endpoint.chartId}Instance`].destroy();
                         window[`${endpoint.chartId}Instance`] = null;
                     }
-                    
-                    // Create and store the new chart instance globally
+   
                     window[`${endpoint.chartId}Instance`] = renderChart({
                         canvasId: endpoint.chartId,
                         labels: labels,
@@ -1005,7 +1003,6 @@ function fetchChartData() {
             })
     );
 
-    // Ensure charts exist before resizing
     Promise.all(fetchPromises).then(() => {
         console.log("All charts initialized. Calling resizeCharts...");
         resizeCharts();
@@ -1119,7 +1116,6 @@ document.addEventListener('DOMContentLoaded', function () {
         animate: false,
     });
 
-    // Initialize pie charts with empty data
     renderPieChart({
         canvasId: 'publishesPieChart',
         legendContainerId: 'customLegendContainer',
@@ -1141,17 +1137,10 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstLoadStaked
     });
 
-    // ✅ Resize the empty charts after initialization
     console.log('Resizing empty charts...');
     resizeCharts();
-
     console.log('Fetching data...');
-    
-    // Fetch data and resize again after rendering
-    fetchChartData().then(() => {
-        console.log("Data fetched. Resizing charts again...");
-        resizeCharts();  // ✅ Ensure charts are resized after being populated
-    });
+    fetchChartData();
 
     fetchPieChartData();
 
