@@ -949,6 +949,157 @@ document.addEventListener('DOMContentLoaded', function () {
     // Reapply scaling after a slight delay
     setTimeout(reapplyScaling, 1000);
 });
+
+function renderChart({
+    canvasId, // ID of the canvas element
+    labels, // Array of labels for the x-axis
+    values, // Array of values for the y-axis
+    datasetLabel, // Label for the dataset (e.g., 'Price', 'Spend', 'Publishes')
+    yAxisTitle, // Title for the y-axis
+    yAxisFormatter, // Function to format y-axis ticks (e.g., adding 'K' or 'M')
+    animate = false, // Whether to animate the chart
+    chartInstance, // Reference to the chart instance (e.g., PriceChartInstance)
+    isFirstLoad // Flag to track first load (e.g., isFirstDataLoad)
+}) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) {
+        console.error(`${canvasId} canvas not found!`);
+        return;
+    }
+    const ctx = canvas.getContext('2d');
+
+    // Check if we need to create a new chart:
+    // Create a new chart if no instance exists OR if the existing chart has no data.
+    if (!chartInstance || chartInstance.data.datasets[0].data.length === 0) {
+        // If an instance exists but has no data, destroy it first.
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        // Determine if we should animate (only on first real data load)
+        const shouldAnimate = (isFirstLoad && values.length > 0) || animate;
+
+        // Create a new chart instance with animation enabled
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels || [],
+                datasets: [{
+                    label: datasetLabel,
+                    data: values || [],
+                    borderColor: 'rgba(146, 176, 174, 0.8)',
+                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: shouldAnimate ? { duration: 300, easing: 'easeInOutQuad' } : false,
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        type: 'time',
+                        time: {
+                            parser: 'yyyy-MM-dd',
+                            unit: 'day',
+                            tooltipFormat: 'PP',
+                            displayFormats: { day: 'MMM d' }
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 10,
+                            callback: function (value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            },
+                            font: { size: tickFontSize, family: 'Play, sans-serif' },
+                            padding: 0,
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        title: {
+                            display: true,
+                            text: yAxisTitle,
+                            font: { size: labelFontSize, family: 'Play, sans-serif' }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            font: { size: tickFontSize, family: 'Play, sans-serif' },
+                            callback: yAxisFormatter // Use the provided formatter
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                layout: {
+                    padding: chartPadding
+                }
+            }
+        });
+    } else {
+        // Subsequent updates: update data instantly with no animation
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets[0].data = values;
+        chartInstance.update({ duration: 0 });
+    }
+
+    if (values.length > 0) {
+        isFirstLoad = false;
+    }
+
+    return chartInstance; // Return the chart instance for future updates
+}
+
+// Render Price Chart
+PriceChartInstance = renderChart({
+    canvasId: 'PriceChart',
+    labels: priceLabels,
+    values: priceValues,
+    datasetLabel: 'Price',
+    yAxisTitle: 'Price (USD)',
+    yAxisFormatter: (value) => value, // No special formatting
+    animate: true,
+    chartInstance: PriceChartInstance,
+    isFirstLoad: isFirstDataLoad
+});
+
+// Render Spend Chart
+SpendChartInstance = renderChart({
+    canvasId: 'SpendChart',
+    labels: spendLabels,
+    values: spendValues,
+    datasetLabel: 'Spend',
+    yAxisTitle: 'Spend (USD)',
+    yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value, // Format as 'K'
+    animate: true,
+    chartInstance: SpendChartInstance,
+    isFirstLoad: isFirstSpendLoad
+});
+
+// Render Publishes Chart
+PublishesChartInstance = renderChart({
+    canvasId: 'PublishesChart',
+    labels: publishesLabels,
+    values: publishesValues,
+    datasetLabel: 'Publishes',
+    yAxisTitle: 'Publishes',
+    yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value, // Format as 'M'
+    animate: true,
+    chartInstance: PublishesChartInstance,
+    isFirstLoad: isFirstPublishesLoad
+});
     
 // Add references for the pie charts
 let publishespiechartInstance = null;
@@ -1004,299 +1155,7 @@ function renderpiechart(container, chartInstance, labels, values) {
     });
 }
     
-function renderPriceChart(priceLabels, priceValues, animate = false) {
-    const canvas = document.getElementById('PriceChart');
-    if (!canvas) {
-        console.error("PriceChart canvas not found!");
-        return;
-    }
-    const ctx = canvas.getContext('2d');
 
-    // Check if we need to create a new chart:
-    // Create a new chart if no instance exists OR if the existing chart has no data.
-    if (!PriceChartInstance || PriceChartInstance.data.datasets[0].data.length === 0) {
-        // If an instance exists but has no data, destroy it first.
-        if (PriceChartInstance) {
-            PriceChartInstance.destroy();
-        }
-
-        // Determine if we should animate (only on first real data load)
-        const shouldAnimate = (isFirstDataLoad && priceValues.length > 0) || animate;
-
-        // Create a new chart instance with animation enabled
-        PriceChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: priceLabels || [],
-                datasets: [{
-                    label: 'Price',
-                    data: priceValues || [],
-                    borderColor: 'rgba(146, 176, 174, 1)',
-                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
-                    fill: true,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: shouldAnimate ? { duration: 300, easing: 'easeInOutQuad' } : false,
-                scales: {
-                    x: {
-                        grid: {
-                          color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        type: 'time',
-                        time: {
-                            parser: 'yyyy-MM-dd',
-                            unit: 'day',
-                            tooltipFormat: 'PP',
-                            displayFormats: { day: 'MMM d' }
-                        },
-                        ticks: {
-                            autoSkip: true,
-                            maxTicksLimit: 10,
-                            callback: function(value) {
-                                const date = new Date(value);
-                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            },
-                            font: { size: tickFontSize, family: 'Play, sans-serif' },
-                            padding: 0,
-                        }
-                    },
-                    y: {
-                        grid: {
-                          color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Price (USD)',
-                            font: { size: labelFontSize, family: 'Play, sans-serif' }
-                        },
-                        ticks: {
-                            beginAtZero: false,
-                            font: { size: tickFontSize, family: 'Play, sans-serif' }
-                        }
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    title: { display: false }
-                },
-                layout: {
-                    padding: chartPadding
-                }
-            }
-        });
-    } else {
-        // Subsequent updates: update data instantly with no animation
-        PriceChartInstance.data.labels = priceLabels;
-        PriceChartInstance.data.datasets[0].data = priceValues;
-        PriceChartInstance.update({ duration: 0 });
-    }
-
-    if (priceValues.length > 0) {
-        isFirstDataLoad = false;
-    }
-}
-
-function renderSpendChart(spendLabels, spendValues, animate = false) {
-    const canvas = document.getElementById('SpendChart');
-    if (!canvas) {
-        console.error("SpendChart canvas not found!");
-        return;
-    }
-    const ctx = canvas.getContext('2d');
-
-    // Determine if the chart is "empty" (i.e. no data loaded yet)
-    const isEmpty = !SpendChartInstance || (SpendChartInstance.data.datasets[0].data.length === 0);
-
-    if (isEmpty) {
-        // If no chart exists or it has no data, create it with the animation (grow-in effect)
-        if (SpendChartInstance) {
-            SpendChartInstance.destroy();  // Destroy the empty chart if it exists
-        }
-        SpendChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: spendLabels || [],
-                datasets: [{
-                    label: 'Spend',
-                    data: spendValues || [],
-                    borderColor: 'rgba(146, 176, 174, 0.8)',
-                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
-                    fill: true,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                // Use animation on first load
-                animation: { duration: 300, easing: 'easeInOutQuad' },
-                scales: {
-                    x: {
-                        grid: {
-                          color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        type: 'time',
-                        time: {
-                            parser: 'yyyy-MM-dd',
-                            unit: 'day',
-                            tooltipFormat: 'PP',
-                            displayFormats: { day: 'MMM d' }
-                        },
-                        ticks: {
-                            autoSkip: true,
-                            maxTicksLimit: 10,
-                            callback: function(value) {
-                                const date = new Date(value);
-                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            },
-                            font: { size: tickFontSize, family: 'Play, sans-serif' },
-                            padding: 0,
-                        }
-                    },
-                    y: {
-                        grid: {
-                          color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Spend (USD)',
-                            font: { size: labelFontSize, family: 'Play, sans-serif' }
-                        },
-                        ticks: {
-                            beginAtZero: false,
-                            font: { size: tickFontSize, family: 'Play, sans-serif' },
-                            callback: function(value) {
-                                return value >= 1000 ? (value / 1000) + 'K' : value;
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    title: { display: false }
-                },
-                layout: {
-                    padding: chartPadding
-                }
-            }
-        });
-    } else {
-        // For subsequent updates, update the chart data with no animation
-        SpendChartInstance.data.labels = spendLabels;
-        SpendChartInstance.data.datasets[0].data = spendValues;
-        SpendChartInstance.update({ duration: 0 });
-    }
-
-    if (spendValues.length > 0) {
-        isFirstSpendLoad = false;
-    }
-}
-
-
-function renderPublishesChart(publishesLabels, publishesValues) {
-    const canvas = document.getElementById('PublishesChart');
-    if (!canvas) {
-        console.error("PublishesChart canvas not found!");
-        return;
-    }
-    const ctx = canvas.getContext('2d');
-
-    if (!PublishesChartInstance || PublishesChartInstance.data.datasets[0].data.length === 0) {
-        if (PublishesChartInstance) {
-            PublishesChartInstance.destroy();
-        }
-        // Create chart with default animation (grow in effect)
-        PublishesChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: publishesLabels || [],
-                datasets: [{
-                    label: 'Publishes',
-                    data: publishesValues || [],
-                    borderColor: 'rgba(146, 176, 174, 0.8)',
-                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
-                    fill: true,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: { duration: 300, easing: 'easeInOutQuad' },
-                scales: {
-                    x: {
-                        grid: {
-                          color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        type: 'time',
-                        time: {
-                            parser: 'yyyy-MM-dd',
-                            unit: 'day',
-                            tooltipFormat: 'PP',
-                            displayFormats: { day: 'MMM d' }
-                        },
-                        ticks: {
-                            autoSkip: true,
-                            maxTicksLimit: 10,
-                            callback: function(value) {
-                                const date = new Date(value);
-                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            },
-                            font: { size: tickFontSize, family: 'Play, sans-serif' },
-                            padding: 0,
-                        }
-                    },
-                    y: {
-                        grid: {
-                          color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Publishes',
-                            font: { size: labelFontSize, family: 'Play, sans-serif' }
-                        },
-                        ticks: {
-                            beginAtZero: false,
-                            font: { size: tickFontSize, family: 'Play, sans-serif' },
-                            callback: function(value) {
-                                return value >= 1000000 ? (value / 1000000) + 'M' : value;
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    title: { display: false }
-                },
-                layout: {
-                    padding: chartPadding
-                }
-            }
-        });
-    } else {
-        // Update existing chart without animation
-        PublishesChartInstance.data.labels = publishesLabels;
-        PublishesChartInstance.data.datasets[0].data = publishesValues;
-        PublishesChartInstance.update({ duration: 0 });
-    }
-
-    if (publishesValues.length > 0) {
-        isFirstPublishesLoad = false;
-    }
-}
 
 let isFirstLoadPublishes = true; // Flag to track first load
 
