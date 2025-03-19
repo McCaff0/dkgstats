@@ -1203,7 +1203,6 @@ function fetchChartData() {
                         window[`${endpoint.chartId}Instance`].destroy();
                     }
 
-                    // Create a new chart instance with the fetched data
                     window[`${endpoint.chartId}Instance`] = renderChart({
                         canvasId: endpoint.chartId,
                         labels: labels,
@@ -1238,7 +1237,6 @@ function fetchPieChartData() {
             console.log("Chains Data:", data);
 
             if (data) {
-                // Extract values for each category
                 const publishesValues = [
                     data.neuroweb?.epochPublishes || 0,
                     data.base?.epochPublishes || 0,
@@ -1257,7 +1255,6 @@ function fetchPieChartData() {
                     data.gnosis?.stakedAmount || 0
                 ];
 
-                // Render the charts with real data
                 renderPieChart({
                     canvasId: 'publishesPieChart',
                     legendContainerId: 'customLegendContainer',
