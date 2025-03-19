@@ -1161,92 +1161,47 @@ function renderPieChart({
 }
     
 function fetchChartData() {
-    let hasSuccessfulFetch = false;
-
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com//data/charts';
 
-    fetch(CHART_DATA_BASE_URL + '/price.json')
-        .then(response => response.json())
-        .then(data => {
-            console.log("Price Data:", data);
+    const endpoints = [
+        { path: '/price.json', chartId: 'PriceChart', datasetLabel: 'Price', yAxisTitle: 'Price (USD)', yAxisFormatter: null },
+        { path: '/spend.json', chartId: 'SpendChart', datasetLabel: 'Spend', yAxisTitle: 'Spend (USD)', yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value },
+        { path: '/publishes.json', chartId: 'PublishesChart', datasetLabel: 'Publishes', yAxisTitle: 'Publishes', yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value }
+    ];
 
-            if (Array.isArray(data) && data.length > 0) {
-                priceLabels = data.map(item => item.date);
-                priceValues = data.map(item => parseFloat(item.value.toFixed(2)));
-                PriceChartInstance = renderChart({
-                    canvasId: 'PriceChart',
-                    labels: priceLabels,
-                    values: priceValues,
-                    datasetLabel: 'Price',
-                    yAxisTitle: 'Price (USD)',
-                    animate: true,
-                    chartInstance: PriceChartInstance,
-                    isFirstLoad: false
-                });
-                hasSuccessfulFetch = true;
-            } else {
-                console.warn("No valid price data received.");
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching price data:", error);
-        });
+    const fetchPromises = endpoints.map(endpoint => 
+        fetch(CHART_DATA_BASE_URL + endpoint.path)
+            .then(response => response.json())
+            .then(data => {
+                console.log(`${endpoint.datasetLabel} Data:`, data);
 
-    fetch(CHART_DATA_BASE_URL + '/spend.json')
-        .then(response => response.json())
-        .then(data => {
-            console.log("Spend Data:", data);
+                if (Array.isArray(data) && data.length > 0) {
+                    const labels = data.map(item => item.date);
+                    const values = endpoint.path === '/price.json' ? data.map(item => parseFloat(item.value.toFixed(2))) : data.map(item => item.value);
 
-            if (Array.isArray(data) && data.length > 0) {
-                spendLabels = data.map(item => item.date);
-                spendValues = data.map(item => item.value);
-                SpendChartInstance = renderChart({
-                    canvasId: 'SpendChart',
-                    labels: spendLabels,
-                    values: spendValues,
-                    datasetLabel: 'Spend',
-                    yAxisTitle: 'Spend (USD)',
-                    yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
-                    animate: true,
-                    chartInstance: SpendChartInstance,
-                    isFirstLoad: false
-                });
-                hasSuccessfulFetch = true;
-            } else {
-                console.warn("No valid spend data received.");
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching spend data:", error);
-        });
+                    window[`${endpoint.chartId}Instance`] = renderChart({
+                        canvasId: endpoint.chartId,
+                        labels: labels,
+                        values: values,
+                        datasetLabel: endpoint.datasetLabel,
+                        yAxisTitle: endpoint.yAxisTitle,
+                        yAxisFormatter: endpoint.yAxisFormatter,
+                        animate: true,
+                        chartInstance: window[`${endpoint.chartId}Instance`],
+                        isFirstLoad: false
+                    });
+                } else {
+                    console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
+                }
+            })
+            .catch(error => {
+                console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data:`, error);
+            })
+    );
 
-    fetch(CHART_DATA_BASE_URL + '/publishes.json')
-        .then(response => response.json())
-        .then(data => {
-            console.log("Publishes Data:", data);
-
-            if (Array.isArray(data) && data.length > 0) {
-                publishesLabels = data.map(item => item.date);
-                publishesValues = data.map(item => item.value);
-                PublishesChartInstance = renderChart({
-                    canvasId: 'PublishesChart',
-                    labels: publishesLabels,
-                    values: publishesValues,
-                    datasetLabel: 'Publishes',
-                    yAxisTitle: 'Publishes',
-                    yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
-                    animate: true,
-                    chartInstance: PublishesChartInstance,
-                    isFirstLoad: false
-                });
-                hasSuccessfulFetch = true;
-            } else {
-                console.warn("No valid publishes data received.");
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching publishes data:", error);
-        });
+    Promise.all(fetchPromises).then(() => {
+        console.log("All chart data fetched and rendered.");
+    });
 }
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
