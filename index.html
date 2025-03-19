@@ -1073,14 +1073,6 @@ function fetchPieChartData() {
         });
 }
 
-window.addEventListener('orientationchange', () => {
-    stableHeight = null;
-    clearTimeout(resizeTimeout);
-    setTimeout(handleResize, 200);
-});
-
-window.addEventListener('resize', handleResize);
-
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded and parsed');
 
@@ -1149,7 +1141,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstLoadStaked
     });
 
-    // ✅ Resize the empty charts before loading data
+    // ✅ Resize the empty charts after initialization
     console.log('Resizing empty charts...');
     resizeCharts();
 
@@ -1178,6 +1170,14 @@ window.addEventListener('load', function () {
     reapplyScaling();
     setTimeout(reapplyScaling, 1000);
 });
+
+window.addEventListener('orientationchange', () => {
+    stableHeight = null;
+    clearTimeout(resizeTimeout);
+    setTimeout(handleResize, 200);
+});
+
+window.addEventListener('resize', handleResize);
     
 let dataInterval, chartInterval, piechartInterval;
 
