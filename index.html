@@ -1395,14 +1395,13 @@ function fetchChartData() {
 
             if (Array.isArray(data) && data.length > 0) {
                 priceLabels = data.map(item => item.date);
-                priceValues = data.map(item => item.value);
+                priceValues = data.map(item => parseFloat(item.value.toFixed(2))); // Round to 2 decimal places
                 PriceChartInstance = renderChart({
                     canvasId: 'PriceChart',
                     labels: priceLabels,
                     values: priceValues,
                     datasetLabel: 'Price',
                     yAxisTitle: 'Price (USD)',
-                    yAxisFormatter: (value) => value,
                     animate: true,
                     chartInstance: PriceChartInstance,
                     isFirstLoad: false
@@ -1472,7 +1471,6 @@ function fetchChartData() {
             console.error("Error fetching publishes data:", error);
         });
 }
-
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
 
