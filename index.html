@@ -259,59 +259,44 @@ h1 {
     max-height: 8.5rem;
     pointer-events: none;
 }
-#customLegendContainer {
-    position: absolute;
-    top: 4.35rem;
-    right: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    font-family: "Play", sans-serif;
-    font-size: 1rem;
-    color: #a6a6a6;
-    z-index: 10;
-    width: 59.3%;
-}
-    #customRewardsLegendContainer {
-    position: absolute;
-    top: 12.6rem; 
-    right: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    font-family: "Play", sans-serif;
-    font-size: 1rem;
-    color: #a6a6a6;
-    z-index: 10;
-    width: 59.3%;
-}
-    #customStakedLegendContainer {
-    position: absolute;
-    top: 20.8rem;
-    right: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    font-family: "Play", sans-serif;
-    font-size: 1rem;
-    color: #a6a6a6;
-    z-index: 10;
-    width: 59.3%;
-}
-    #publishesPieChart {
-    margin-top: 1.5rem;
-    left: -33%;
-}
-
-#rewardsPieChart {
-    margin-top: 9.75rem;
-    left: -33%;
-}
-
-#stakedPieChart {
-    margin-top: 17.95rem;
-    left: -33%;
-}
+  .custom-legend-container {
+      position: absolute;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      font-family: "Play", sans-serif;
+      font-size: 1rem;
+      color: #a6a6a6;
+      z-index: 10;
+      width: 59.3%;
+  }
+  
+  #customLegendContainer {
+      top: 4.35rem;
+  }
+  
+  #customRewardsLegendContainer {
+      top: 12.6rem;
+  }
+  
+  #customStakedLegendContainer {
+      top: 20.8rem;
+  }
+      #publishesPieChart {
+      margin-top: 1.5rem;
+      left: -33%;
+  }
+  
+  #rewardsPieChart {
+      margin-top: 9.75rem;
+      left: -33%;
+  }
+  
+  #stakedPieChart {
+      margin-top: 17.95rem;
+      left: -33%;
+  }
       .epoch-box h2 {
         text-align: center;
         font-size: 1.25rem;
@@ -1070,55 +1055,17 @@ let publishespiechartInstance = null;
 let rewardspiechartInstance = null;
 let stakedpiechartinstance = null;
 
-function renderpiechart(container, chartInstance, labels, values) {
-    if (!container) {
-        console.error("Epoch box container not found!");
-        return;
-    }
-
-    let canvas = container.querySelector('canvas');
-    if (!canvas) {
-        console.error("Canvas element not found inside the container!");
-        return;
-    }
-
-    const ctx = canvas.getContext('2d');
-
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
-
-    return new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: labels || [],
-            datasets: [{
-                data: values || [],
-                backgroundColor: [
-                    'rgba(146, 176, 174, 0.8)',
-                    'rgba(200, 150, 150, 0.8)',
-                    'rgba(180, 180, 80, 0.8)',
-                    'rgba(120, 200, 150, 0.8)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
-}
-    
-function renderPublishesPieChart(data = []) {
-    const ctx = document.getElementById("publishesPieChart").getContext("2d");
+function renderPieChart({
+    canvasId, // ID of the canvas element
+    legendContainerId, // ID of the custom legend container
+    data, // Array of data values
+    chartInstance, // Reference to the chart instance (e.g., publishesPieChartInstance)
+    isFirstLoad // Flag to track first load
+}) {
+    const ctx = document.getElementById(canvasId).getContext("2d");
     const total = data.reduce((sum, value) => sum + value, 0);
 
+    // Combine labels, data, and colors into an array of objects for sorting
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
@@ -1126,75 +1073,11 @@ function renderPublishesPieChart(data = []) {
         color: ["#262626", "#1f62a1", "#076940"][i]
     }));
 
+    // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-const legendContainer = document.getElementById("customLegendContainer");
-if (legendContainer) {
-    legendContainer.innerHTML = combinedData.map(item => `
-        <div style="display: flex; align-items: center; margin-bottom: 0.5rem; font-family: 'Play', sans-serif;">
-            <div style="
-                width: ${pieChartFontSize}px; 
-                height: ${pieChartFontSize}px; 
-                background: ${item.color}; 
-                border: ${pieChartBorderWidth}px solid #a6a6a6; 
-                border-radius: 50%; 
-                margin-right: 0.5rem;
-            "></div>
-            <span style="font-weight: bold;">${item.label} - ${formatValueInMillions(item.value)}</span>
-            <span style="margin-left: auto; font-weight: bold;">${item.percentage}%</span>
-        </div>
-    `).join("");
-}
-
-    if (isFirstLoadPublishes) {
-        window.publishesPieChartInstance = new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                labels: combinedData.map(item => item.label),
-                datasets: [{
-                    data: combinedData.map(item => item.value),
-                    backgroundColor: combinedData.map(item => item.color),
-                    borderColor: "#a6a6a6",
-                    hoverOffset: 10,
-                    borderWidth: pieChartBorderWidth,
-                    cutout: "55%"
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false 
-                    }
-                }
-            }
-        });
-        isFirstLoadPublishes = false;
-    } else {
-        if (window.publishesPieChartInstance) {
-            window.publishesPieChartInstance.data.labels = combinedData.map(item => item.label);
-            window.publishesPieChartInstance.data.datasets[0].data = combinedData.map(item => item.value);
-            window.publishesPieChartInstance.data.datasets[0].backgroundColor = combinedData.map(item => item.color);
-            window.publishesPieChartInstance.update();
-        }
-    }
-}
-
-function renderRewardsPieChart(data = []) {
-    const ctx = document.getElementById("rewardsPieChart").getContext("2d");
-    const total = data.reduce((sum, value) => sum + value, 0);
-
-    const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
-        label: label,
-        value: data[i],
-        percentage: (data[i] / total * 100).toFixed(1),
-        color: ["#262626", "#1f62a1", "#076940"][i] 
-    }));
-
-    combinedData.sort((a, b) => b.percentage - a.percentage);
-
-    const legendContainer = document.getElementById("customRewardsLegendContainer");
+    // Render custom legend
+    const legendContainer = document.getElementById(legendContainerId);
     if (legendContainer) {
         legendContainer.innerHTML = combinedData.map(item => `
             <div style="display: flex; align-items: center; margin-bottom: 0.5rem; font-family: 'Play', sans-serif;">
@@ -1212,8 +1095,9 @@ function renderRewardsPieChart(data = []) {
         `).join("");
     }
 
-    if (isFirstLoadRewards) {
-        window.rewardsPieChartInstance = new Chart(ctx, {
+    // Update or create the chart
+    if (isFirstLoad) {
+        window[`${canvasId}Instance`] = new Chart(ctx, {
             type: "doughnut",
             data: {
                 labels: combinedData.map(item => item.label),
@@ -1229,100 +1113,20 @@ function renderRewardsPieChart(data = []) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                layout: {
-                    padding: pieChartLayoutPadding
-                },
                 plugins: {
                     legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        enabled: true
+                        display: false // Disable default legend
                     }
                 }
             }
         });
-
-        isFirstLoadRewards = false;
+        isFirstLoad = false;
     } else {
-        if (window.rewardsPieChartInstance) {
-            window.rewardsPieChartInstance.data.labels = combinedData.map(item => item.label);
-            window.rewardsPieChartInstance.data.datasets[0].data = combinedData.map(item => item.value);
-            window.rewardsPieChartInstance.data.datasets[0].backgroundColor = combinedData.map(item => item.color);
-            window.rewardsPieChartInstance.update();
-        }
-    }
-}
-
-function renderStakedPieChart(data = []) {
-    const ctx = document.getElementById("stakedPieChart").getContext("2d");
-    const total = data.reduce((sum, value) => sum + value, 0);
-
-    const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
-        label: label,
-        value: data[i],
-        percentage: (data[i] / total * 100).toFixed(1),
-        color: ["#262626", "#1f62a1", "#076940"][i]
-    }));
-
-    combinedData.sort((a, b) => b.percentage - a.percentage);
-
-    const legendContainer = document.getElementById("customStakedLegendContainer");
-    if (legendContainer) {
-        legendContainer.innerHTML = combinedData.map(item => `
-            <div style="display: flex; align-items: center; margin-bottom: 0.5rem; font-family: 'Play', sans-serif;">
-                <div style="
-                    width: ${pieChartFontSize}px; 
-                    height: ${pieChartFontSize}px; 
-                    background: ${item.color}; 
-                    border: ${pieChartBorderWidth}px solid #a6a6a6; 
-                    border-radius: 50%; 
-                    margin-right: 0.5rem;
-                "></div>
-                <span style="font-weight: bold;">${item.label} - ${formatValueInMillions(item.value)}</span>
-                <span style="margin-left: auto; font-weight: bold;">${item.percentage}%</span>
-            </div>
-        `).join("");
-    }
-
-    if (isFirstLoadStaked) {
-        window.stakedPieChartInstance = new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                labels: combinedData.map(item => item.label),
-                datasets: [{
-                    data: combinedData.map(item => item.value),
-                    backgroundColor: combinedData.map(item => item.color),
-                    borderColor: "#a6a6a6", // Outline color of the chart
-                    hoverOffset: 10,
-                    borderWidth: pieChartBorderWidth,
-                    cutout: "55%"
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                layout: {
-                    padding: pieChartLayoutPadding
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                }
-            }
-        });
-
-        isFirstLoadStaked = false; 
-    } else {
-        if (window.stakedPieChartInstance) {
-            window.stakedPieChartInstance.data.labels = combinedData.map(item => item.label);
-            window.stakedPieChartInstance.data.datasets[0].data = combinedData.map(item => item.value);
-            window.stakedPieChartInstance.data.datasets[0].backgroundColor = combinedData.map(item => item.color);
-            window.stakedPieChartInstance.update();
+        if (window[`${canvasId}Instance`]) {
+            window[`${canvasId}Instance`].data.labels = combinedData.map(item => item.label);
+            window[`${canvasId}Instance`].data.datasets[0].data = combinedData.map(item => item.value);
+            window[`${canvasId}Instance`].data.datasets[0].backgroundColor = combinedData.map(item => item.color);
+            window[`${canvasId}Instance`].update();
         }
     }
 }
@@ -1424,6 +1228,7 @@ function fetchPieChartData() {
             console.log("Chains Data:", data);
 
             if (data) {
+                // Extract values for each category
                 const publishesValues = [
                     data.neuroweb?.epochPublishes || 0,
                     data.base?.epochPublishes || 0,
@@ -1442,9 +1247,30 @@ function fetchPieChartData() {
                     data.gnosis?.stakedAmount || 0
                 ];
 
-                renderPublishesPieChart(publishesValues);
-                renderRewardsPieChart(rewardsValues);
-                renderStakedPieChart(stakedValues);
+                // Render the charts
+                renderPieChart({
+                    canvasId: 'publishesPieChart',
+                    legendContainerId: 'customLegendContainer',
+                    data: publishesValues,
+                    chartInstance: window.publishesPieChartInstance,
+                    isFirstLoad: isFirstLoadPublishes
+                });
+
+                renderPieChart({
+                    canvasId: 'rewardsPieChart',
+                    legendContainerId: 'customRewardsLegendContainer',
+                    data: rewardsValues,
+                    chartInstance: window.rewardsPieChartInstance,
+                    isFirstLoad: isFirstLoadRewards
+                });
+
+                renderPieChart({
+                    canvasId: 'stakedPieChart',
+                    legendContainerId: 'customStakedLegendContainer',
+                    data: stakedValues,
+                    chartInstance: window.stakedPieChartInstance,
+                    isFirstLoad: isFirstLoadStaked
+                });
             } else {
                 console.warn("No valid chains data received.");
             }
