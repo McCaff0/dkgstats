@@ -970,6 +970,27 @@ let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = 
 let tickFontSize, labelFontSize, chartPadding;
 
 let isFirstDataLoad = true, isFirstSpendLoad = true, isFirstPublishesLoad = true;
+
+function resetCanvas(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) {
+        console.error(`${canvasId} canvas not found!`);
+        return;
+    }
+
+    // Remove the canvas element from the DOM
+    const parent = canvas.parentElement;
+    const newCanvas = document.createElement('canvas');
+    newCanvas.id = canvasId;
+    parent.removeChild(canvas);
+    parent.appendChild(newCanvas);
+
+    // Clear the chart instance reference
+    if (window[`${canvasId}Instance`]) {
+        window[`${canvasId}Instance`].destroy();
+        window[`${canvasId}Instance`] = null;
+    }
+}
     
 function renderChart({
     canvasId,
@@ -988,12 +1009,6 @@ function renderChart({
         return;
     }
     const ctx = canvas.getContext('2d');
-
-    // If the chart instance exists and it's the first load, destroy it
-    if (chartInstance && isFirstLoad) {
-        chartInstance.destroy();
-        chartInstance = null;
-    }
 
     // If no chart instance exists, create a new one
     if (!chartInstance) {
@@ -1178,11 +1193,8 @@ function fetchChartData() {
                     const labels = data.map(item => item.date);
                     const values = endpoint.path === '/price.json' ? data.map(item => parseFloat(item.value.toFixed(2))) : data.map(item => item.value);
 
-                    // Destroy the existing chart instance if it exists
-                    if (window[`${endpoint.chartId}Instance`]) {
-                        window[`${endpoint.chartId}Instance`].destroy();
-                        window[`${endpoint.chartId}Instance`] = null; // Clear the reference
-                    }
+                    // Reset the canvas element
+                    resetCanvas(endpoint.chartId);
 
                     // Create a new chart instance with the fetched data
                     window[`${endpoint.chartId}Instance`] = renderChart({
