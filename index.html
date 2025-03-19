@@ -857,22 +857,23 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstLoadStaked
     });
 
+    console.log('Calling fetchChartData and fetchPieChartData...');
+    fetchChartData();
+    fetchPieChartData();
+
     console.log('Calling fetchData...');
     fetchData()
         .then(() => {
             console.log('fetchData completed successfully');
-            fetchChartData();
-            fetchPieChartData();
         })
         .catch((error) => {
             console.error('Error in fetchData:', error);
         });
 });
-    window.addEventListener('load', function () {
+
+window.addEventListener('load', function () {
     console.log('Page fully loaded');
-
     reapplyScaling();
-
     setTimeout(reapplyScaling, 1000);
 });
 
