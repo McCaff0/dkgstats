@@ -895,6 +895,82 @@ function renderChart({
 
     return chartInstance;
 }
+
+function renderPieChart({
+    canvasId,
+    legendContainerId,
+    data,
+    chartInstance,
+    isFirstLoad
+}) {
+    const ctx = document.getElementById(canvasId).getContext("2d");
+    const total = data.reduce((sum, value) => sum + value, 0);
+
+    // Combine labels, data, and colors into an array of objects for sorting
+    const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
+        label: label,
+        value: data[i],
+        percentage: (data[i] / total * 100).toFixed(1),
+        color: ["#262626", "#1f62a1", "#076940"][i]
+    }));
+
+    // Sort by percentage in descending order
+    combinedData.sort((a, b) => b.percentage - a.percentage);
+
+    // Render custom legend
+    const legendContainer = document.getElementById(legendContainerId);
+    if (legendContainer) {
+        legendContainer.innerHTML = combinedData.map(item => `
+            <div style="display: flex; align-items: center; margin-bottom: 0.5rem; font-family: 'Play', sans-serif;">
+                <div style="
+                    width: ${pieChartFontSize}px; 
+                    height: ${pieChartFontSize}px; 
+                    background: ${item.color}; 
+                    border: ${pieChartBorderWidth}px solid #a6a6a6; 
+                    border-radius: 50%; 
+                    margin-right: 0.5rem;
+                "></div>
+                <span style="font-weight: bold;">${item.label} - ${formatValueInMillions(item.value)}</span>
+                <span style="margin-left: auto; font-weight: bold;">${item.percentage}%</span>
+            </div>
+        `).join("");
+    }
+
+    // Update or create the chart
+    if (isFirstLoad) {
+        window[`${canvasId}Instance`] = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                labels: combinedData.map(item => item.label),
+                datasets: [{
+                    data: combinedData.map(item => item.value),
+                    backgroundColor: combinedData.map(item => item.color),
+                    borderColor: "#a6a6a6",
+                    hoverOffset: 10,
+                    borderWidth: pieChartBorderWidth,
+                    cutout: "55%"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false // Disable default legend
+                    }
+                }
+            }
+        });
+        isFirstLoad = false;
+    } else {
+        if (window[`${canvasId}Instance`]) {
+            window[`${canvasId}Instance`].data.labels = combinedData.map(item => item.label);
+            window[`${canvasId}Instance`].data.datasets[0].data = combinedData.map(item => item.value);
+            window[`${canvasId}Instance`].data.datasets[0].backgroundColor = combinedData.map(item => item.color);
+            window[`${canvasId}Instance`].update();
+        }
+    }
+}
     
 function fetchChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
