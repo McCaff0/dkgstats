@@ -912,13 +912,12 @@ document.addEventListener('DOMContentLoaded', function () {
     resizeCharts();
 
     // Render line charts with empty data initially
-    PriceChartInstance = renderChart({
+        PriceChartInstance = renderChart({
         canvasId: 'PriceChart',
         labels: [], // Empty array for initial render
         values: [], // Empty array for initial render
         datasetLabel: 'Price',
         yAxisTitle: 'Price (USD)',
-        yAxisFormatter: (value) => value,
         animate: false,
         chartInstance: PriceChartInstance,
         isFirstLoad: isFirstDataLoad
@@ -1104,40 +1103,6 @@ function renderChart({
 
     return chartInstance; // Return the chart instance for future updates
 }
-PriceChartInstance = renderChart({
-    canvasId: 'PriceChart',
-    labels: [], // Empty array for initial render
-    values: [], // Empty array for initial render
-    datasetLabel: 'Price',
-    yAxisTitle: 'Price (USD)',
-    animate: false,
-    chartInstance: PriceChartInstance,
-    isFirstLoad: isFirstDataLoad
-});
-
-SpendChartInstance = renderChart({
-    canvasId: 'SpendChart',
-    labels: spendLabels,
-    values: spendValues,
-    datasetLabel: 'Spend',
-    yAxisTitle: 'Spend (USD)',
-    yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value, // Format as 'K'
-    animate: true,
-    chartInstance: SpendChartInstance,
-    isFirstLoad: isFirstSpendLoad
-});
-
-PublishesChartInstance = renderChart({
-    canvasId: 'PublishesChart',
-    labels: publishesLabels,
-    values: publishesValues,
-    datasetLabel: 'Publishes',
-    yAxisTitle: 'Publishes',
-    yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value, // Format as 'M'
-    animate: true,
-    chartInstance: PublishesChartInstance,
-    isFirstLoad: isFirstPublishesLoad
-});
     
 let publishespiechartInstance = null;
 let rewardspiechartInstance = null;
