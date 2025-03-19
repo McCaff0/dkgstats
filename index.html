@@ -620,6 +620,26 @@ function formatValueInMillions(value) {
     if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
     return Math.round(value).toString();
 }
+
+function fetchData() {
+    const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
+
+    return fetch(FIREBASE_URL)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Fetched Data:", data);
+            if (data.sheetData) {
+                handleData(data.sheetData, data.records);
+            } else {
+                console.error("Error: sheetData not found");
+            }
+            return data;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            throw error;
+        });
+}
     
 function handleData(sheetData, records) {
     if (!sheetData || !records) {
@@ -673,125 +693,7 @@ function handleData(sheetData, records) {
     updateRecordData(records.tracSpendRecord, 'tracSpendRecordDate', 'tracSpendRecordValue');
     updateRecordData(records.usdSpendRecord, 'usdSpendRecordDate', 'usdSpendRecordValue');
 }
-
-function fetchData() {
-    const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
-
-    return fetch(FIREBASE_URL)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Fetched Data:", data);
-            if (data.sheetData) {
-                handleData(data.sheetData, data.records);
-            } else {
-                console.error("Error: sheetData not found");
-            }
-            return data;
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            throw error;
-        });
-}
-
-function updateFontSizesAndPadding() {
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    tickFontSize = rootFontSize * 0.75;
-    labelFontSize = rootFontSize * 0.875;
-
-    chartPadding = {
-        left: rootFontSize * 0.625,
-        right: rootFontSize * 1.5625,
-        top: rootFontSize * 1.8,
-        bottom: rootFontSize * 0
-    };
-}
-
-function updatePieChartFontSizesAndPadding() {
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-
-    pieChartFontSize = rootFontSize * 1.05;
-    pieChartLayoutPadding = rootFontSize * 1
-    pieChartLegendPadding = rootFontSize * 0.7;
-    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125);
-}
-
-function reapplyScaling() {
-    console.log('Reapplying scaling...');
-    adjustFontSize();
-    resizeCharts();
-}
-
-function hasTrueWindowResizing() {
-    return !('ontouchstart' in window) || window.matchMedia("(min-width: 1024px)").matches;
-}
-
-function adjustFontSize() {
-    const referenceHeight = hasTrueWindowResizing() 
-        ? Math.min(window.innerHeight, window.screen.height) 
-        : (stableHeight ?? (stableHeight = Math.min(window.innerHeight, window.screen.height)));
-
-    const baseFontSize = 16;
-    const scalingFactor = referenceHeight / 973;
-    let newFontSize = baseFontSize * scalingFactor * 1.07;
-
-    const minScaleFactor = 0.6;
-    const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
-    newFontSize = Math.max(newFontSize, minFontSize);
-
-    const container = document.querySelector('.container');
-    if (!container) return;
-
-    requestAnimationFrame(() => {
-        const containerWidth = container.offsetWidth;
-        const viewportWidth = window.innerWidth;
-        const maxWidth = 0.98 * viewportWidth;
-
-        if (containerWidth > maxWidth) {
-            const widthRatio = maxWidth / containerWidth;
-            newFontSize *= widthRatio;
-        }
-
-        document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
-        updateFontSizesAndPadding();
-        resizeCharts();
-    });
-}
-
-function resizeCharts() {
-    updateFontSizesAndPadding();
-    updatePieChartFontSizesAndPadding();
-
-    const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
-    const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
-
-    chartInstances.forEach(chart => {
-        if (chart) {
-            chart.options.scales.x.ticks.font.size = tickFontSize;
-            chart.options.scales.y.ticks.font.size = tickFontSize;
-            chart.options.scales.y.title.font.size = labelFontSize;
-            chart.options.layout.padding = chartPadding;
-            chart.update();
-        }
-    });
-
-    pieChartInstances.forEach(chart => {
-        if (chart) {
-            chart.options.layout.padding = pieChartLayoutPadding;
-            chart.options.elements.arc.borderWidth = pieChartBorderWidth;
-            chart.update();
-        }
-    });
-}
-
-function handleResize() {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        adjustFontSize();
-        resizeCharts();
-    }, 200);
-}
-    
+   
 function renderChart({
     canvasId,
     labels = [],
@@ -953,6 +855,104 @@ function renderPieChart({
         }
     }
 }
+
+function updateFontSizesAndPadding() {
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    tickFontSize = rootFontSize * 0.75;
+    labelFontSize = rootFontSize * 0.875;
+
+    chartPadding = {
+        left: rootFontSize * 0.625,
+        right: rootFontSize * 1.5625,
+        top: rootFontSize * 1.8,
+        bottom: rootFontSize * 0
+    };
+}
+
+function updatePieChartFontSizesAndPadding() {
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+    pieChartFontSize = rootFontSize * 1.05;
+    pieChartLayoutPadding = rootFontSize * 1
+    pieChartLegendPadding = rootFontSize * 0.7;
+    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125);
+}
+
+function reapplyScaling() {
+    console.log('Reapplying scaling...');
+    adjustFontSize();
+    resizeCharts();
+}
+
+function hasTrueWindowResizing() {
+    return !('ontouchstart' in window) || window.matchMedia("(min-width: 1024px)").matches;
+}
+
+function adjustFontSize() {
+    const referenceHeight = hasTrueWindowResizing() 
+        ? Math.min(window.innerHeight, window.screen.height) 
+        : (stableHeight ?? (stableHeight = Math.min(window.innerHeight, window.screen.height)));
+
+    const baseFontSize = 16;
+    const scalingFactor = referenceHeight / 973;
+    let newFontSize = baseFontSize * scalingFactor * 1.07;
+
+    const minScaleFactor = 0.6;
+    const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
+    newFontSize = Math.max(newFontSize, minFontSize);
+
+    const container = document.querySelector('.container');
+    if (!container) return;
+
+    requestAnimationFrame(() => {
+        const containerWidth = container.offsetWidth;
+        const viewportWidth = window.innerWidth;
+        const maxWidth = 0.98 * viewportWidth;
+
+        if (containerWidth > maxWidth) {
+            const widthRatio = maxWidth / containerWidth;
+            newFontSize *= widthRatio;
+        }
+
+        document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
+        updateFontSizesAndPadding();
+        resizeCharts();
+    });
+}
+
+function resizeCharts() {
+    updateFontSizesAndPadding();
+    updatePieChartFontSizesAndPadding();
+
+    const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
+    const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
+
+    chartInstances.forEach(chart => {
+        if (chart) {
+            chart.options.scales.x.ticks.font.size = tickFontSize;
+            chart.options.scales.y.ticks.font.size = tickFontSize;
+            chart.options.scales.y.title.font.size = labelFontSize;
+            chart.options.layout.padding = chartPadding;
+            chart.update();
+        }
+    });
+
+    pieChartInstances.forEach(chart => {
+        if (chart) {
+            chart.options.layout.padding = pieChartLayoutPadding;
+            chart.options.elements.arc.borderWidth = pieChartBorderWidth;
+            chart.update();
+        }
+    });
+}
+
+function handleResize() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        adjustFontSize();
+        resizeCharts();
+    }, 200);
+}
     
 function fetchChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
@@ -979,7 +979,7 @@ function fetchChartData() {
 
                     // Destroy old chart instance before creating a new one
                     if (window[`${endpoint.chartId}Instance`]) {
-                        console.log(`Destroying existing chart instance for ${endpoint.chartId}`); // Debugging
+                        console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
                         window[`${endpoint.chartId}Instance`].destroy();
                         window[`${endpoint.chartId}Instance`] = null;
                     }
@@ -995,8 +995,7 @@ function fetchChartData() {
                         animate: isFirstLoad
                     });
 
-
-                    console.log(`Created new chart instance for ${endpoint.chartId}`); // Debugging
+                    console.log(`Created new chart instance for ${endpoint.chartId}`);
                 } else {
                     console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
                 }
@@ -1006,8 +1005,10 @@ function fetchChartData() {
             })
     );
 
+    // Ensure charts exist before resizing
     Promise.all(fetchPromises).then(() => {
-        console.log("All chart data fetched and rendered.");
+        console.log("All charts initialized. Calling resizeCharts...");
+        resizeCharts();
     });
 }
 
@@ -1094,8 +1095,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let isFirstLoadRewards = true;
     let isFirstLoadStaked = true;
 
-    adjustFontSize();
-    resizeCharts();
+    adjustFontSize(); // Adjust font sizes before rendering charts
+
+    console.log('Initializing empty charts...');
 
     // Initialize line charts with empty data
     PriceChartInstance = renderChart({
@@ -1104,9 +1106,7 @@ document.addEventListener('DOMContentLoaded', function () {
         values: [],
         datasetLabel: 'Price',
         yAxisTitle: 'Price (USD)',
-        animate: false, // No animation for empty chart
-        chartInstance: PriceChartInstance,
-        isFirstLoad: true 
+        animate: false,
     });
 
     SpendChartInstance = renderChart({
@@ -1116,9 +1116,7 @@ document.addEventListener('DOMContentLoaded', function () {
         datasetLabel: 'Spend',
         yAxisTitle: 'Spend (USD)',
         yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
-        animate: false, // No animation for empty chart
-        chartInstance: SpendChartInstance,
-        isFirstLoad: true 
+        animate: false,
     });
 
     PublishesChartInstance = renderChart({
@@ -1128,16 +1126,14 @@ document.addEventListener('DOMContentLoaded', function () {
         datasetLabel: 'Publishes',
         yAxisTitle: 'Publishes',
         yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
-        animate: false, // No animation for empty chart
-        chartInstance: PublishesChartInstance,
-        isFirstLoad: true 
+        animate: false,
     });
 
+    // Initialize pie charts with empty data
     renderPieChart({
         canvasId: 'publishesPieChart',
         legendContainerId: 'customLegendContainer',
         data: [],
-        chartInstance: window.publishesPieChartInstance,
         isFirstLoad: isFirstLoadPublishes
     });
 
@@ -1145,7 +1141,6 @@ document.addEventListener('DOMContentLoaded', function () {
         canvasId: 'rewardsPieChart',
         legendContainerId: 'customRewardsLegendContainer',
         data: [],
-        chartInstance: window.rewardsPieChartInstance,
         isFirstLoad: isFirstLoadRewards
     });
 
@@ -1153,15 +1148,23 @@ document.addEventListener('DOMContentLoaded', function () {
         canvasId: 'stakedPieChart',
         legendContainerId: 'customStakedLegendContainer',
         data: [],
-        chartInstance: window.stakedPieChartInstance,
         isFirstLoad: isFirstLoadStaked
     });
 
-    console.log('Calling fetchChartData and fetchPieChartData...');
-    fetchChartData();
+    // ✅ Resize the empty charts before loading data
+    console.log('Resizing empty charts...');
+    resizeCharts();
+
+    console.log('Fetching data...');
+    
+    // Fetch data and resize again after rendering
+    fetchChartData().then(() => {
+        console.log("Data fetched. Resizing charts again...");
+        resizeCharts();  // ✅ Ensure charts are resized after being populated
+    });
+
     fetchPieChartData();
 
-    console.log('Calling fetchData...');
     fetchData()
         .then(() => {
             console.log('fetchData completed successfully');
@@ -1170,6 +1173,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error in fetchData:', error);
         });
 });
+
 
 window.addEventListener('load', function () {
     console.log('Page fully loaded');
