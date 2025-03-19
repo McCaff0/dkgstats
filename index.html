@@ -24,8 +24,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png" />
   <meta name="apple-mobile-web-app-title" content="DKGStats.IO" />
   <link rel="manifest" href="/assets/favicons/site.webmanifest" />
-
- 
+  <link rel="canonical" href="https://dkgstats.io">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -201,27 +200,27 @@ h1 {
         z-index: -1;
 }
 
-.graph-box {
-    background: #0f0f0f;
-    border-radius: 0.5rem;
-    min-width: 23.75rem;
-    max-width: 26.5625rem;
-    width: 100%;
-    height: 16rem; /* Fixed height */
-    position: relative; /* So the canvas can be positioned inside */
-    align-items: center;
-    justify-content: center;
+    .graph-box {
+        background: #0f0f0f;
+        border-radius: 0.5rem;
+        min-width: 23.75rem;
+        max-width: 26.5625rem;
+        width: 100%;
+        height: 16rem; 
+        position: relative; 
+        align-items: center;
+        justify-content: center;
 }
 
-.graph-box canvas {
-    position: absolute; /* Removes it from document flow */
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100%;
-    max-height: 100%;
-    pointer-events: none; /* Ensures the graph does not interfere */
+    .graph-box canvas {
+        position: absolute; 
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100%;
+        max-height: 100%;
+        pointer-events: none; 
 }
 
 .graph-box h3 {
@@ -243,60 +242,60 @@ h1 {
     min-width: 23.75rem;
     max-width: 26.5625rem;
     width: 100%;
-    height: 16rem; /* Fixed height */
-    position: relative; /* So the pie chart can be positioned inside */
+    height: 16rem;
+    position: relative;
     align-items: center;
     justify-content: center;
-    padding: 0rem; /* Add padding around the chart */
+    padding: 0rem;
 }
 
 .epoch-box canvas {
-    position: absolute; /* Removes it from document flow */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100% !important;
     height: 8.5rem !important;
     max-width: 100%;
     max-height: 8.5rem;
-    pointer-events: none; /* Ensures the graph does not interfere */
+    pointer-events: none;
 }
 #customLegendContainer {
     position: absolute;
-    top: 4.35rem; /* Adjust as needed */
-    right: 1.5rem; /* Adjust as needed */
+    top: 4.35rem;
+    right: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0; /* 8px equivalent in rem */
-    font-family: "Play", sans-serif; /* Ensure the font is applied */
-    font-size: 1rem; /* 17.6px equivalent */
+    gap: 0;
+    font-family: "Play", sans-serif;
+    font-size: 1rem;
     color: #a6a6a6;
-    z-index: 10; /* Ensure it appears above the chart */
+    z-index: 10;
     width: 59.3%;
 }
     #customRewardsLegendContainer {
     position: absolute;
-    top: 12.6rem; /* Adjust as needed */
-    right: 1.5rem; /* Adjust as needed */
+    top: 12.6rem; 
+    right: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0; /* 8px equivalent in rem */
-    font-family: "Play", sans-serif; /* Ensure the font is applied */
-    font-size: 1rem; /* 17.6px equivalent */
+    gap: 0;
+    font-family: "Play", sans-serif;
+    font-size: 1rem;
     color: #a6a6a6;
-    z-index: 10; /* Ensure it appears above the chart */
+    z-index: 10;
     width: 59.3%;
 }
     #customStakedLegendContainer {
     position: absolute;
-    top: 20.8rem; /* Adjust as needed */
-    right: 1.5rem; /* Adjust as needed */
+    top: 20.8rem;
+    right: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0; /* 8px equivalent in rem */
-    font-family: "Play", sans-serif; /* Ensure the font is applied */
-    font-size: 1rem; /* 17.6px equivalent */
+    gap: 0;
+    font-family: "Play", sans-serif;
+    font-size: 1rem;
     color: #a6a6a6;
-    z-index: 10; /* Ensure it appears above the chart */
+    z-index: 10;
     width: 59.3%;
 }
     #publishesPieChart {
@@ -324,22 +323,21 @@ h1 {
 }
 .epoch-box h3 {
     font-family: 'Play', sans-serif;
-    font-size: 1.125rem; /* Slightly larger font */
+    font-size: 1.125rem;
     font-weight: bold;
     text-align: left;
     margin-top: 0.7rem;
     margin-bottom: -0.3125rem;
     margin-left: 35%;
-    color: #999999; /* Same as stats-box heading */
+    color: #999999;
 }
 
-/* nth-of-type selectors for the epoch-boxes to adjust heights */
 .epoch-box:nth-of-type(2) {
-    height: 26.7rem; /* Adjust the height of the first epoch-box */
+    height: 26.7rem;
 }
 
 .epoch-box:nth-of-type(3) {
-    height: 10.3rem; /* Adjust the height of the second epoch-box */
+    height: 10.3rem;
 }
     .date-value {
    position: absolute;
@@ -353,7 +351,6 @@ h1 {
 }
 
 </style>
-
   <!-- Google Analytics Tag -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
   <script>
@@ -754,7 +751,6 @@ function updateFontSizesAndPadding() {
     };
 }
 
-
 let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
 
 function updatePieChartFontSizesAndPadding() {
@@ -783,46 +779,37 @@ function reapplyScaling() {
     resizeCharts();
 }
     
-let stableHeight = null; // Store the locked height for mobile devices
+let stableHeight = null;
 
-// ✅ Detect if the device allows true window resizing
 function hasTrueWindowResizing() {
-    // If no touch support → it's a desktop/laptop (true resizing allowed)
     if (!('ontouchstart' in window)) return true;
-
-    // If the device is large enough (tablet in desktop mode) → allow resizing
     return window.matchMedia("(min-width: 1024px)").matches;
 }
 
-// ✅ Adjusts font size based on a stable height reference
 function adjustFontSize() {
     let referenceHeight;
 
     if (hasTrueWindowResizing()) {
-        // Desktop & resizable tablets → allow dynamic scaling
         referenceHeight = Math.min(window.innerHeight, window.screen.height);
-        stableHeight = null; // Ensure it remains dynamic
+        stableHeight = null;
     } else {
-        // Mobile devices → lock height to prevent address bar effect
         if (stableHeight === null) {
             stableHeight = Math.min(window.innerHeight, window.screen.height);
         }
-        referenceHeight = stableHeight; // Lock scaling
+        referenceHeight = stableHeight;
     }
 
     const baseFontSize = 16;
     const scalingFactor = referenceHeight / 973;
     let newFontSize = baseFontSize * scalingFactor * 1.07;
 
-    // ✅ Minimum scaling logic (50% of screen height)
-    const minScaleFactor = 0.6; // Minimum scale factor (50% of screen height)
+    const minScaleFactor = 0.6; 
     const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
-    newFontSize = Math.max(newFontSize, minFontSize); // Ensure the font size doesn't go below the minimum
+    newFontSize = Math.max(newFontSize, minFontSize);
 
     const container = document.querySelector('.container');
-    if (!container) return; // Ensure container exists
+    if (!container) return; 
 
-    // Wait for the next frame to ensure layout is updated
     requestAnimationFrame(() => {
         const containerWidth = container.offsetWidth;
         const viewportWidth = window.innerWidth;
@@ -830,92 +817,81 @@ function adjustFontSize() {
 
         if (containerWidth > maxWidth) {
             const widthRatio = maxWidth / containerWidth;
-            newFontSize *= widthRatio; // Scale down
+            newFontSize *= widthRatio;
         }
 
-        // Directly update the font size
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
-        updateFontSizesAndPadding(); // Update font sizes & padding
-        resizeCharts(); // Resize charts immediately after font update
+        updateFontSizesAndPadding();
+        resizeCharts();
     });
 }
 
 function resizeCharts() {
-    updateFontSizesAndPadding(); // Update font sizes & padding
-    updatePieChartFontSizesAndPadding(); // Update pie chart sizes & padding
+    updateFontSizesAndPadding();
+    updatePieChartFontSizesAndPadding();
 
     const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
     
-    // ✅ Resize bar charts
     chartInstances.forEach(chart => {
         if (chart) {
             chart.options.scales.x.ticks.font.size = tickFontSize;
             chart.options.scales.y.ticks.font.size = tickFontSize;
             chart.options.scales.y.title.font.size = labelFontSize;
             chart.options.layout.padding = chartPadding;
-            chart.update(); // Directly update chart sizes
+            chart.update();
         }
     });
 
-    // ✅ Resize Pie charts with dynamically scaled settings
     const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
 
     pieChartInstances.forEach(chart => {
         if (chart) {
-            // Update pie chart properties (excluding legend)
             chart.options.layout.padding = pieChartLayoutPadding;
             chart.options.elements.arc.borderWidth = pieChartBorderWidth;
-            chart.update(); // Update the pie chart sizes
+            chart.update();
         }
     });
 }
 
-// Debounced resize handler to avoid excessive calls
 let resizeTimeout;
 
 function handleResize() {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
         adjustFontSize();
-        resizeCharts(); // Resize charts after font size is adjusted
-    }, 200); // Debounce time of 200ms
+        resizeCharts();
+    }, 200);
 }
 
-// Handle orientation change specifically for mobile
 window.addEventListener('orientationchange', () => {
-    stableHeight = null; // Reset for new orientation
-    clearTimeout(resizeTimeout); // Clear any pending resize timeout
+    stableHeight = null;
+    clearTimeout(resizeTimeout);
     setTimeout(() => {
-        handleResize(); // Call handleResize after a short delay
-    }, 200); // Delay to allow correct height detection
+        handleResize();
+    }, 200);
 });
 
-// Add resize event listener
 window.addEventListener('resize', handleResize);
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded and parsed');
 
-    // Check if fetchData is defined
     if (typeof fetchData !== 'function') {
         console.error('fetchData is not a function');
         return;
     }
 
-    // Reset first load flags for pie charts
     isFirstLoadPublishes = true;
     isFirstLoadRewards = true;
     isFirstLoadStaked = true;
 
-    // Initial font size adjustment and chart resize
     adjustFontSize();
     resizeCharts();
 
-    // Render line charts with empty data initially
         PriceChartInstance = renderChart({
         canvasId: 'PriceChart',
-        labels: [], // Empty array for initial render
-        values: [], // Empty array for initial render
+        labels: [],
+        values: [],
         datasetLabel: 'Price',
         yAxisTitle: 'Price (USD)',
         animate: false,
@@ -925,8 +901,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     SpendChartInstance = renderChart({
         canvasId: 'SpendChart',
-        labels: [], // Empty array for initial render
-        values: [], // Empty array for initial render
+        labels: [],
+        values: [],
         datasetLabel: 'Spend',
         yAxisTitle: 'Spend (USD)',
         yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
@@ -937,8 +913,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     PublishesChartInstance = renderChart({
         canvasId: 'PublishesChart',
-        labels: [], // Empty array for initial render
-        values: [], // Empty array for initial render
+        labels: [],
+        values: [],
         datasetLabel: 'Publishes',
         yAxisTitle: 'Publishes',
         yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
@@ -947,12 +923,10 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstPublishesLoad
     });
 
-    // Render pie charts with empty data initially
     renderPublishesPieChart([], true);
     renderRewardsPieChart([], true);
     renderStakedPieChart([], true);
 
-    // Fetch actual data
     console.log('Calling fetchData...');
     fetchData()
         .then(() => {
@@ -967,38 +941,32 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('load', function () {
     console.log('Page fully loaded');
 
-    // Initial scaling on load
     reapplyScaling();
 
-    // Reapply scaling after a slight delay
     setTimeout(reapplyScaling, 1000);
 });
 
-// Global variables for line charts
 let PriceChartInstance, SpendChartInstance, PublishesChartInstance;
 let priceLabels = [], priceValues = [];
 let spendLabels = [], spendValues = [];
 let publishesLabels = [], publishesValues = [];
 
-// Global variables for pie charts
 let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = true;
 
-// Other global variables
 let tickFontSize, labelFontSize, chartPadding;
 
-// First load flags for line charts
 let isFirstDataLoad = true, isFirstSpendLoad = true, isFirstPublishesLoad = true;
     
 function renderChart({
-    canvasId, // ID of the canvas element
-    labels, // Array of labels for the x-axis
-    values, // Array of values for the y-axis
-    datasetLabel, // Label for the dataset (e.g., 'Price', 'Spend', 'Publishes')
-    yAxisTitle, // Title for the y-axis
-    yAxisFormatter, // Function to format y-axis ticks (e.g., adding 'K' or 'M')
-    animate = false, // Whether to animate the chart
-    chartInstance, // Reference to the chart instance (e.g., PriceChartInstance)
-    isFirstLoad // Flag to track first load (e.g., isFirstDataLoad)
+    canvasId,
+    labels,
+    values,
+    datasetLabel,
+    yAxisTitle,
+    yAxisFormatter,
+    animate = false,
+    chartInstance,
+    isFirstLoad
 }) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) {
@@ -1007,18 +975,13 @@ function renderChart({
     }
     const ctx = canvas.getContext('2d');
 
-    // Check if we need to create a new chart:
-    // Create a new chart if no instance exists OR if the existing chart has no data.
     if (!chartInstance || chartInstance.data.datasets[0].data.length === 0) {
-        // If an instance exists but has no data, destroy it first.
         if (chartInstance) {
             chartInstance.destroy();
         }
 
-        // Determine if we should animate (only on first real data load)
         const shouldAnimate = (isFirstLoad && values.length > 0) || animate;
 
-        // Create a new chart instance with animation enabled
         chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -1091,7 +1054,6 @@ function renderChart({
             }
         });
     } else {
-        // Subsequent updates: update data instantly with no animation
         chartInstance.data.labels = labels;
         chartInstance.data.datasets[0].data = values;
         chartInstance.update({ duration: 0 });
@@ -1101,7 +1063,7 @@ function renderChart({
         isFirstLoad = false;
     }
 
-    return chartInstance; // Return the chart instance for future updates
+    return chartInstance;
 }
     
 let publishespiechartInstance = null;
@@ -1109,13 +1071,11 @@ let rewardspiechartInstance = null;
 let stakedpiechartinstance = null;
 
 function renderpiechart(container, chartInstance, labels, values) {
-    // Check if the container exists (i.e., the canvas should be inside a parent container with a specific ID)
     if (!container) {
         console.error("Epoch box container not found!");
         return;
     }
 
-    // Check for the canvas element within the container and create one if not found
     let canvas = container.querySelector('canvas');
     if (!canvas) {
         console.error("Canvas element not found inside the container!");
@@ -1124,12 +1084,10 @@ function renderpiechart(container, chartInstance, labels, values) {
 
     const ctx = canvas.getContext('2d');
 
-    // If there's an existing chart instance, destroy it
     if (chartInstance) {
         chartInstance.destroy();
     }
 
-    // Create a new chart with the given data
     return new Chart(ctx, {
         type: 'pie',
         data: {
@@ -1161,7 +1119,6 @@ function renderPublishesPieChart(data = []) {
     const ctx = document.getElementById("publishesPieChart").getContext("2d");
     const total = data.reduce((sum, value) => sum + value, 0);
 
-    // Combine labels, data, and colors into an array of objects for sorting
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
@@ -1169,10 +1126,8 @@ function renderPublishesPieChart(data = []) {
         color: ["#262626", "#1f62a1", "#076940"][i]
     }));
 
-    // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Render custom legend
 const legendContainer = document.getElementById("customLegendContainer");
 if (legendContainer) {
     legendContainer.innerHTML = combinedData.map(item => `
@@ -1191,7 +1146,6 @@ if (legendContainer) {
     `).join("");
 }
 
-    // Update or create the chart
     if (isFirstLoadPublishes) {
         window.publishesPieChartInstance = new Chart(ctx, {
             type: "doughnut",
@@ -1211,7 +1165,7 @@ if (legendContainer) {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false // Disable default legend
+                        display: false 
                     }
                 }
             }
@@ -1231,18 +1185,15 @@ function renderRewardsPieChart(data = []) {
     const ctx = document.getElementById("rewardsPieChart").getContext("2d");
     const total = data.reduce((sum, value) => sum + value, 0);
 
-    // Combine labels, data, and colors into an array of objects for sorting
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(1),
-        color: ["#262626", "#1f62a1", "#076940"][i] // Use actual colors for data
+        color: ["#262626", "#1f62a1", "#076940"][i] 
     }));
 
-    // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Render custom legend
     const legendContainer = document.getElementById("customRewardsLegendContainer");
     if (legendContainer) {
         legendContainer.innerHTML = combinedData.map(item => `
@@ -1261,7 +1212,6 @@ function renderRewardsPieChart(data = []) {
         `).join("");
     }
 
-    // Update or create the chart
     if (isFirstLoadRewards) {
         window.rewardsPieChartInstance = new Chart(ctx, {
             type: "doughnut",
@@ -1270,7 +1220,7 @@ function renderRewardsPieChart(data = []) {
                 datasets: [{
                     data: combinedData.map(item => item.value),
                     backgroundColor: combinedData.map(item => item.color),
-                    borderColor: "#a6a6a6", // Outline color of the chart
+                    borderColor: "#a6a6a6",
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
                     cutout: "55%"
@@ -1284,23 +1234,22 @@ function renderRewardsPieChart(data = []) {
                 },
                 plugins: {
                     legend: {
-                        display: false // Disable default legend
+                        display: false
                     },
                     tooltip: {
-                        enabled: true // Enable tooltips for actual data
+                        enabled: true
                     }
                 }
             }
         });
 
-        isFirstLoadRewards = false; // Mark first load as complete
+        isFirstLoadRewards = false;
     } else {
-        // On updates, update the existing chart's data without recreating it
         if (window.rewardsPieChartInstance) {
             window.rewardsPieChartInstance.data.labels = combinedData.map(item => item.label);
             window.rewardsPieChartInstance.data.datasets[0].data = combinedData.map(item => item.value);
             window.rewardsPieChartInstance.data.datasets[0].backgroundColor = combinedData.map(item => item.color);
-            window.rewardsPieChartInstance.update(); // Update without animation
+            window.rewardsPieChartInstance.update();
         }
     }
 }
@@ -1309,18 +1258,15 @@ function renderStakedPieChart(data = []) {
     const ctx = document.getElementById("stakedPieChart").getContext("2d");
     const total = data.reduce((sum, value) => sum + value, 0);
 
-    // Combine labels, data, and colors into an array of objects for sorting
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
         percentage: (data[i] / total * 100).toFixed(1),
-        color: ["#262626", "#1f62a1", "#076940"][i] // Match colors to labels
+        color: ["#262626", "#1f62a1", "#076940"][i]
     }));
 
-    // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Render custom legend
     const legendContainer = document.getElementById("customStakedLegendContainer");
     if (legendContainer) {
         legendContainer.innerHTML = combinedData.map(item => `
@@ -1339,7 +1285,6 @@ function renderStakedPieChart(data = []) {
         `).join("");
     }
 
-    // If it's the first load, create the chart with default animations
     if (isFirstLoadStaked) {
         window.stakedPieChartInstance = new Chart(ctx, {
             type: "doughnut",
@@ -1362,23 +1307,22 @@ function renderStakedPieChart(data = []) {
                 },
                 plugins: {
                     legend: {
-                        display: false // Disable default legend
+                        display: false
                     },
                     tooltip: {
-                        enabled: true // Enable tooltips for actual data
+                        enabled: true
                     }
                 }
             }
         });
 
-        isFirstLoadStaked = false; // Mark first load as complete
+        isFirstLoadStaked = false; 
     } else {
-        // On updates, update the existing chart's data without recreating it
         if (window.stakedPieChartInstance) {
             window.stakedPieChartInstance.data.labels = combinedData.map(item => item.label);
             window.stakedPieChartInstance.data.datasets[0].data = combinedData.map(item => item.value);
             window.stakedPieChartInstance.data.datasets[0].backgroundColor = combinedData.map(item => item.color);
-            window.stakedPieChartInstance.update(); // Update without animation
+            window.stakedPieChartInstance.update();
         }
     }
 }
@@ -1395,7 +1339,7 @@ function fetchChartData() {
 
             if (Array.isArray(data) && data.length > 0) {
                 priceLabels = data.map(item => item.date);
-                priceValues = data.map(item => parseFloat(item.value.toFixed(2))); // Round to 2 decimal places
+                priceValues = data.map(item => parseFloat(item.value.toFixed(2)));
                 PriceChartInstance = renderChart({
                     canvasId: 'PriceChart',
                     labels: priceLabels,
@@ -1480,7 +1424,6 @@ function fetchPieChartData() {
             console.log("Chains Data:", data);
 
             if (data) {
-                // Extract values for each category
                 const publishesValues = [
                     data.neuroweb?.epochPublishes || 0,
                     data.base?.epochPublishes || 0,
@@ -1499,7 +1442,6 @@ function fetchPieChartData() {
                     data.gnosis?.stakedAmount || 0
                 ];
 
-                // Render the charts
                 renderPublishesPieChart(publishesValues);
                 renderRewardsPieChart(rewardsValues);
                 renderStakedPieChart(stakedValues);
