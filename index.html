@@ -1185,7 +1185,7 @@ function fetchChartData() {
         { path: '/publishes.json', chartId: 'PublishesChart', datasetLabel: 'Publishes', yAxisTitle: 'Publishes', yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value }
     ];
 
-    const fetchPromises = endpoints.map(endpoint => 
+    const fetchPromises = endpoints.map(endpoint =>
         fetch(CHART_DATA_BASE_URL + endpoint.path)
             .then(response => response.json())
             .then(data => {
@@ -1193,17 +1193,14 @@ function fetchChartData() {
 
                 if (Array.isArray(data) && data.length > 0) {
                     const labels = data.map(item => item.date);
-                    const values = endpoint.path === '/price.json' ? data.map(item => parseFloat(item.value.toFixed(2))) : data.map(item => item.value);
+                    const values = endpoint.path === '/price.json'
+                        ? data.map(item => parseFloat(item.value.toFixed(2)))
+                        : data.map(item => item.value);
 
-                    // Check if this is the first data load
-                    const isFirstLoad = !window[`${endpoint.chartId}Instance`] || window[`${endpoint.chartId}Instance`].isFirstLoad;
+                    // Reset the canvas to fully remove the placeholder chart.
+                    resetCanvas(endpoint.chartId);
 
-                    // Destroy the existing chart instance if it's the first load
-                    if (isFirstLoad && window[`${endpoint.chartId}Instance`]) {
-                        window[`${endpoint.chartId}Instance`].destroy();
-                    }
-
-                    // Create or update the chart instance
+                    // Create a new chart instance with animation enabled for the first data load.
                     window[`${endpoint.chartId}Instance`] = renderChart({
                         canvasId: endpoint.chartId,
                         labels: labels,
@@ -1211,9 +1208,9 @@ function fetchChartData() {
                         datasetLabel: endpoint.datasetLabel,
                         yAxisTitle: endpoint.yAxisTitle,
                         yAxisFormatter: endpoint.yAxisFormatter,
-                        animate: isFirstLoad, // Enable animation only on first load
-                        chartInstance: window[`${endpoint.chartId}Instance`],
-                        isFirstLoad: isFirstLoad
+                        animate: true, // Enable animation on initial data load.
+                        chartInstance: null, // Start fresh.
+                        isFirstLoad: true
                     });
                 } else {
                     console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
@@ -1227,6 +1224,15 @@ function fetchChartData() {
     Promise.all(fetchPromises).then(() => {
         console.log("All chart data fetched and rendered.");
     });
+}
+
+// For subsequent data updates (when animation is not required), update the chart normally.
+function updateChartData(chartInstance, newLabels, newValues) {
+    if (chartInstance) {
+        chartInstance.data.labels = newLabels;
+        chartInstance.data.datasets[0].data = newValues;
+        chartInstance.update({ duration: 0 }); // Update without animation.
+    }
 }
     
 function fetchPieChartData() {
