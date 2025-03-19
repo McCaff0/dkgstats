@@ -1234,6 +1234,108 @@ function fetchPieChartData() {
 }
 
 fetchPieChartData();
+
+window.addEventListener('orientationchange', () => {
+    stableHeight = null;
+    clearTimeout(resizeTimeout);
+    setTimeout(handleResize, 200);
+});
+
+window.addEventListener('resize', handleResize);
+
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM fully loaded and parsed');
+
+    if (typeof fetchData !== 'function') {
+        console.error('fetchData is not a function');
+        return;
+    }
+
+    isFirstLoadPublishes = true;
+    isFirstLoadRewards = true;
+    isFirstLoadStaked = true;
+
+    adjustFontSize();
+    resizeCharts();
+
+    PriceChartInstance = renderChart({
+        canvasId: 'PriceChart',
+        labels: [],
+        values: [],
+        datasetLabel: 'Price',
+        yAxisTitle: 'Price (USD)',
+        animate: false,
+        chartInstance: PriceChartInstance,
+        isFirstLoad: isFirstDataLoad
+    });
+
+    SpendChartInstance = renderChart({
+        canvasId: 'SpendChart',
+        labels: [],
+        values: [],
+        datasetLabel: 'Spend',
+        yAxisTitle: 'Spend (USD)',
+        yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
+        animate: false,
+        chartInstance: SpendChartInstance,
+        isFirstLoad: isFirstSpendLoad
+    });
+
+    PublishesChartInstance = renderChart({
+        canvasId: 'PublishesChart',
+        labels: [],
+        values: [],
+        datasetLabel: 'Publishes',
+        yAxisTitle: 'Publishes',
+        yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
+        animate: false,
+        chartInstance: PublishesChartInstance,
+        isFirstLoad: isFirstPublishesLoad
+    });
+
+    renderPieChart({
+        canvasId: 'publishesPieChart',
+        legendContainerId: 'customLegendContainer',
+        data: [],
+        chartInstance: window.publishesPieChartInstance,
+        isFirstLoad: isFirstLoadPublishes
+    });
+
+    renderPieChart({
+        canvasId: 'rewardsPieChart',
+        legendContainerId: 'customRewardsLegendContainer',
+        data: [],
+        chartInstance: window.rewardsPieChartInstance,
+        isFirstLoad: isFirstLoadRewards
+    });
+
+    renderPieChart({
+        canvasId: 'stakedPieChart',
+        legendContainerId: 'customStakedLegendContainer',
+        data: [],
+        chartInstance: window.stakedPieChartInstance,
+        isFirstLoad: isFirstLoadStaked
+    });
+
+    console.log('Calling fetchChartData and fetchPieChartData...');
+    fetchChartData();
+    fetchPieChartData();
+
+    console.log('Calling fetchData...');
+    fetchData()
+        .then(() => {
+            console.log('fetchData completed successfully');
+        })
+        .catch((error) => {
+            console.error('Error in fetchData:', error);
+        });
+});
+
+window.addEventListener('load', function () {
+    console.log('Page fully loaded');
+    reapplyScaling();
+    setTimeout(reapplyScaling, 1000);
+});
     
 let dataInterval, chartInterval, piechartInterval;
 
