@@ -741,15 +741,6 @@ function fetchData() {
     });
 }
     
-let PriceChartInstance = null;
-let SpendChartInstance = null;
-let PublishesChartInstance = null;
-let isFirstDataLoad = true;
-let isFirstSpendLoad = true;
-let isFirstPublishesLoad = true;
-
-let tickFontSize, labelFontSize, chartPadding;
-
 function updateFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
     tickFontSize = rootFontSize * 0.75;
