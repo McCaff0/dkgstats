@@ -1292,19 +1292,16 @@ function fetchPieChartData() {
 let dataInterval, chartInterval, piechartInterval;
 
 function startIntervals() {
-    if (dataInterval) clearInterval(dataInterval);
-    if (chartInterval) clearInterval(chartInterval);
-    if (piechartInterval) clearInterval(piechartInterval);
+    clearInterval(dataInterval);
+    clearInterval(chartInterval);
+    clearInterval(piechartInterval);
 
-    // Set new intervals
-    dataInterval = setInterval(() => fetchData(), 10000);
-    chartInterval = setInterval(() => fetchChartData(), 60000);
-    piechartInterval = setInterval(() => fetchPieChartData(), 60000);
-    
-} 
+    dataInterval = setInterval(fetchData, 10000);
+    chartInterval = setInterval(fetchChartData, 60000);
+    piechartInterval = setInterval(fetchPieChartData, 60000);
+}
 
 startIntervals();
-
   </script>
   
 </body>
