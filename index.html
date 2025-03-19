@@ -1035,7 +1035,7 @@ function renderChart({
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: animate ? { duration: 300, easing: 'easeInOutQuad' } : false, // Enable animation only if `animate` is true
+                animation: animate ? {} : false, // Enable default animation only if `animate` is true
                 scales: {
                     x: {
                         grid: {
@@ -1196,13 +1196,14 @@ function fetchChartData() {
                     const values = endpoint.path === '/price.json' ? data.map(item => parseFloat(item.value.toFixed(2))) : data.map(item => item.value);
 
                     // Check if this is the first data load
-                    const isFirstLoad = !window[`${endpoint.chartId}Instance`];
+                    const isFirstLoad = !window[`${endpoint.chartId}Instance`] || window[`${endpoint.chartId}Instance`].isFirstLoad;
 
-                    // Destroy the existing chart instance if it exists
-                    if (window[`${endpoint.chartId}Instance`]) {
+                    // Destroy the existing chart instance if it's the first load
+                    if (isFirstLoad && window[`${endpoint.chartId}Instance`]) {
                         window[`${endpoint.chartId}Instance`].destroy();
                     }
 
+                    // Create or update the chart instance
                     window[`${endpoint.chartId}Instance`] = renderChart({
                         canvasId: endpoint.chartId,
                         labels: labels,
@@ -1211,7 +1212,7 @@ function fetchChartData() {
                         yAxisTitle: endpoint.yAxisTitle,
                         yAxisFormatter: endpoint.yAxisFormatter,
                         animate: isFirstLoad, // Enable animation only on first load
-                        chartInstance: null, // Pass null to create a new instance
+                        chartInstance: window[`${endpoint.chartId}Instance`],
                         isFirstLoad: isFirstLoad
                     });
                 } else {
