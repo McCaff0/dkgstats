@@ -1012,75 +1012,110 @@ let publishespiechartInstance = null;
 let rewardspiechartInstance = null;
 let stakedpiechartinstance = null;
 
-function renderPieChart({
+function renderChart({
     canvasId,
-    legendContainerId,
-    data,
+    labels,
+    values,
+    datasetLabel,
+    yAxisTitle,
+    yAxisFormatter,
+    animate = false,
     chartInstance,
     isFirstLoad
 }) {
-    const ctx = document.getElementById(canvasId).getContext("2d");
-    const total = data.reduce((sum, value) => sum + value, 0);
-    const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
-        label: label,
-        value: data[i],
-        percentage: (data[i] / total * 100).toFixed(1),
-        color: ["#262626", "#1f62a1", "#076940"][i]
-    }));
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) {
+        console.error(`${canvasId} canvas not found!`);
+        return;
+    }
+    const ctx = canvas.getContext('2d');
 
-    combinedData.sort((a, b) => b.percentage - a.percentage);
-
-    const legendContainer = document.getElementById(legendContainerId);
-    if (legendContainer) {
-        legendContainer.innerHTML = combinedData.map(item => `
-            <div style="display: flex; align-items: center; margin-bottom: 0.5rem; font-family: 'Play', sans-serif;">
-                <div style="
-                    width: ${pieChartFontSize}px; 
-                    height: ${pieChartFontSize}px; 
-                    background: ${item.color}; 
-                    border: ${pieChartBorderWidth}px solid #a6a6a6; 
-                    border-radius: 50%; 
-                    margin-right: 0.5rem;
-                "></div>
-                <span style="font-weight: bold;">${item.label} - ${formatValueInMillions(item.value)}</span>
-                <span style="margin-left: auto; font-weight: bold;">${item.percentage}%</span>
-            </div>
-        `).join("");
+    // Destroy the existing chart instance if it's the first load
+    if (isFirstLoad && chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
     }
 
-    if (isFirstLoad) {
-        window[`${canvasId}Instance`] = new Chart(ctx, {
-            type: "doughnut",
+    // Create a new chart instance if it's the first load or no instance exists
+    if (!chartInstance || isFirstLoad) {
+        chartInstance = new Chart(ctx, {
+            type: 'line',
             data: {
-                labels: combinedData.map(item => item.label),
+                labels: labels || [],
                 datasets: [{
-                    data: combinedData.map(item => item.value),
-                    backgroundColor: combinedData.map(item => item.color),
-                    borderColor: "#a6a6a6",
-                    hoverOffset: 10,
-                    borderWidth: pieChartBorderWidth,
-                    cutout: "55%"
+                    label: datasetLabel,
+                    data: values || [],
+                    borderColor: 'rgba(146, 176, 174, 0.8)',
+                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
+                animation: animate ? {} : false, // Enable animation only on first load
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        type: 'time',
+                        time: {
+                            parser: 'yyyy-MM-dd',
+                            unit: 'day',
+                            tooltipFormat: 'PP',
+                            displayFormats: { day: 'MMM d' }
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 10,
+                            callback: function (value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            },
+                            font: { size: tickFontSize, family: 'Play, sans-serif' },
+                            padding: 0,
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        title: {
+                            display: true,
+                            text: yAxisTitle,
+                            font: { size: labelFontSize, family: 'Play, sans-serif' }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            font: { size: tickFontSize, family: 'Play, sans-serif' },
+                            callback: yAxisFormatter || function (value) {
+                                return parseFloat(value).toFixed(1);
+                            }
+                        }
                     }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                layout: {
+                    padding: chartPadding
                 }
             }
         });
-        isFirstLoad = false;
     } else {
-        if (window[`${canvasId}Instance`]) {
-            window[`${canvasId}Instance`].data.labels = combinedData.map(item => item.label);
-            window[`${canvasId}Instance`].data.datasets[0].data = combinedData.map(item => item.value);
-            window[`${canvasId}Instance`].data.datasets[0].backgroundColor = combinedData.map(item => item.color);
-            window[`${canvasId}Instance`].update();
-        }
+        // Update the existing chart instance without animation
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets[0].data = values;
+        chartInstance.update({ duration: 0 }); // No animation for updates
     }
+
+    return chartInstance;
 }
     
 function fetchChartData() {
@@ -1104,8 +1139,13 @@ function fetchChartData() {
                         ? data.map(item => parseFloat(item.value.toFixed(2)))
                         : data.map(item => item.value);
 
+                    // Check if this is the first data load
+                    const isFirstLoad = !window[`${endpoint.chartId}Instance`];
+
+                    // Reset the canvas to completely remove the placeholder
                     resetCanvas(endpoint.chartId);
 
+                    // Create or update the chart instance
                     window[`${endpoint.chartId}Instance`] = renderChart({
                         canvasId: endpoint.chartId,
                         labels: labels,
@@ -1113,9 +1153,9 @@ function fetchChartData() {
                         datasetLabel: endpoint.datasetLabel,
                         yAxisTitle: endpoint.yAxisTitle,
                         yAxisFormatter: endpoint.yAxisFormatter,
-                        animate: true,
-                        chartInstance: null,
-                        isFirstLoad: true
+                        animate: isFirstLoad, // Enable animation only on first load
+                        chartInstance: window[`${endpoint.chartId}Instance`],
+                        isFirstLoad: isFirstLoad
                     });
                 } else {
                     console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
@@ -1135,7 +1175,7 @@ function updateChartData(chartInstance, newLabels, newValues) {
     if (chartInstance) {
         chartInstance.data.labels = newLabels;
         chartInstance.data.datasets[0].data = newValues;
-        chartInstance.update({ duration: 0 });
+        chartInstance.update({ duration: 0 }); // No animation for updates
     }
 }
     
