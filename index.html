@@ -811,9 +811,14 @@ function renderChart({
 
     // Destroy the existing chart instance if it exists
     if (chartInstance) {
+        console.log(`Destroying chart instance for ${canvasId}`); // Debugging
         chartInstance.destroy();
         chartInstance = null;
     }
+
+    // Reset the canvas by setting its width and height
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
 
     const ctx = canvas.getContext('2d');
 
@@ -985,26 +990,27 @@ function fetchChartData() {
                         ? data.map(item => parseFloat(item.value.toFixed(2)))
                         : data.map(item => item.value);
 
-                    // Check if this is the first data load
                     const isFirstLoad = !window[`${endpoint.chartId}Instance`];
 
-                    if (isFirstLoad) {
-                        // Create a new chart instance on first load
-                        window[`${endpoint.chartId}Instance`] = renderChart({
-                            canvasId: endpoint.chartId,
-                            labels: labels,
-                            values: values,
-                            datasetLabel: endpoint.datasetLabel,
-                            yAxisTitle: endpoint.yAxisTitle,
-                            yAxisFormatter: endpoint.yAxisFormatter,
-                            animate: true, // Enable animation on first load
-                            chartInstance: window[`${endpoint.chartId}Instance`],
-                            isFirstLoad: isFirstLoad
-                        });
-                    } else {
-                        // Update the existing chart instance without recreating it
-                        updateChartData(window[`${endpoint.chartId}Instance`], labels, values);
+                    if (window[`${endpoint.chartId}Instance`]) {
+                        console.log(`Destroying existing chart instance for ${endpoint.chartId}`); // Debugging
+                        window[`${endpoint.chartId}Instance`].destroy();
+                        window[`${endpoint.chartId}Instance`] = null;
                     }
+
+                    window[`${endpoint.chartId}Instance`] = renderChart({
+                        canvasId: endpoint.chartId,
+                        labels: labels,
+                        values: values,
+                        datasetLabel: endpoint.datasetLabel,
+                        yAxisTitle: endpoint.yAxisTitle,
+                        yAxisFormatter: endpoint.yAxisFormatter,
+                        animate: isFirstLoad, // Enable animation only on first load
+                        chartInstance: window[`${endpoint.chartId}Instance`],
+                        isFirstLoad: isFirstLoad
+                    });
+
+                    console.log(`Created new chart instance for ${endpoint.chartId}`); // Debugging
                 } else {
                     console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
                 }
