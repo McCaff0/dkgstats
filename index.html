@@ -917,27 +917,6 @@ let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = 
 let tickFontSize, labelFontSize, chartPadding;
 
 let isFirstDataLoad = true, isFirstSpendLoad = true, isFirstPublishesLoad = true;
-
-function resetCanvas(canvasId) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) {
-        console.error(`${canvasId} canvas not found!`);
-        return;
-    }
-
-    // Remove the canvas element from the DOM
-    const parent = canvas.parentElement;
-    const newCanvas = document.createElement('canvas');
-    newCanvas.id = canvasId;
-    parent.removeChild(canvas);
-    parent.appendChild(newCanvas);
-
-    // Clear the chart instance reference
-    if (window[`${canvasId}Instance`]) {
-        window[`${canvasId}Instance`].destroy();
-        window[`${canvasId}Instance`] = null;
-    }
-}
     
 function renderChart({
     canvasId,
