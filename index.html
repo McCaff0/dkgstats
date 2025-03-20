@@ -694,7 +694,6 @@ function renderChart({
     datasetLabel = 'Dataset',
     yAxisTitle = 'Value',
     yAxisFormatter = null,
-    animate = false,
     isFirstLoad = false
 }) {
     const canvas = document.getElementById(canvasId);
@@ -703,7 +702,6 @@ function renderChart({
         return;
     }
 
-    // Get context of canvas
     const ctx = canvas.getContext('2d');
 
     // Destroy the existing chart instance if it exists
@@ -713,10 +711,7 @@ function renderChart({
         window[`${canvasId}Instance`] = null;
     }
 
-    // Determine if we should animate (only on first real data load)
-    const shouldAnimate = (isFirstLoad && values.length > 0) || animate;
-
-    // Create a new chart instance and store it globally
+    // Create a new chart instance, and do not set any animation options for the first load
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -736,7 +731,6 @@ function renderChart({
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: animate ? {} : false,
             scales: {
                 x: {
                     grid: {
@@ -789,8 +783,7 @@ function renderChart({
     console.log(`Created new chart instance for ${canvasId}`);
     return window[`${canvasId}Instance`]; // Ensure correct reference
 }
-
-  
+ 
 function renderPieChart({
     canvasId,
     legendContainerId,
@@ -997,7 +990,7 @@ function fetchChartData() {
                     window[`${endpoint.chartId}Instance`] = null;
                 }
 
-                // Pass `animate: true` for the first real data load, `false` otherwise
+                // Call renderChart without the animate property for first data load
                 window[`${endpoint.chartId}Instance`] = renderChart({
                     canvasId: endpoint.chartId,
                     labels: labels,
@@ -1005,7 +998,7 @@ function fetchChartData() {
                     datasetLabel: endpoint.datasetLabel,
                     yAxisTitle: endpoint.yAxisTitle,
                     yAxisFormatter: endpoint.yAxisFormatter,
-                    animate: isFirstLoad // If it's the first data load, animate
+                    isFirstLoad: isFirstLoad // The first data load triggers the default animation
                 });
 
                 console.log(`Created new chart instance for ${endpoint.chartId}`);
