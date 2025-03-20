@@ -703,17 +703,14 @@ function renderChart({
         return;
     }
 
-    // Reset the canvas
     const ctx = canvas.getContext('2d');
 
-    // Destroy the existing chart instance if it exists
     if (window[`${canvasId}Instance`]) {
         console.log(`Destroying chart instance for ${canvasId}`);
         window[`${canvasId}Instance`].destroy();
         window[`${canvasId}Instance`] = null;
     }
 
-    // Create a new chart instance and store it globally
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -736,27 +733,27 @@ function renderChart({
             animation: animate ? {} : false,
             scales: {
                 x: {
-                        grid: {
-                          color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        type: 'time',
-                        time: {
-                            parser: 'yyyy-MM-dd',
-                            unit: 'day',
-                            tooltipFormat: 'PP',
-                            displayFormats: { day: 'MMM d' }
-                        },
-                        ticks: {
-                            autoSkip: true,
-                            maxTicksLimit: 10,
-                            callback: function(value) {
-                                const date = new Date(value);
-                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            },
-                            font: { size: tickFontSize, family: 'Play, sans-serif' },
-                            padding: 0,
-                        }
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)'
                     },
+                    type: 'time',
+                    time: {
+                        parser: 'yyyy-MM-dd',
+                        unit: 'day',
+                        tooltipFormat: 'PP',
+                        displayFormats: { day: 'MMM d' }
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 10,
+                        callback: function(value) {
+                            const date = new Date(value);
+                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        },
+                        font: { size: tickFontSize, family: 'Play, sans-serif' },
+                        padding: 0,
+                    }
+                },
                 y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     title: {
@@ -770,6 +767,11 @@ function renderChart({
                         }
                     }
                 }
+            },
+            plugins: {
+                legend: {
+                    display: false 
+                }
             }
         }
     });
@@ -777,6 +779,7 @@ function renderChart({
     console.log(`Created new chart instance for ${canvasId}`);
     return window[`${canvasId}Instance`]; // Ensure correct reference
 }
+
   
 function renderPieChart({
     canvasId,
