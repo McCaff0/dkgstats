@@ -1185,7 +1185,7 @@ function startIntervals() {
     clearInterval(piechartInterval);
 
     dataInterval = setInterval(fetchData, 10000);
-    chartInterval = setInterval(fetchChartData, 60000);
+    chartInterval = setInterval(updateChartData, 60000);
     piechartInterval = setInterval(fetchPieChartData, 60000);
 }
 
