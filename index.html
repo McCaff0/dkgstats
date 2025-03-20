@@ -990,12 +990,14 @@ function fetchChartData() {
 
                 const isFirstLoad = !window[`${endpoint.chartId}Instance`];
 
+                // Destroy the existing chart instance if it exists
                 if (window[`${endpoint.chartId}Instance`]) {
                     console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
                     window[`${endpoint.chartId}Instance`].destroy();
                     window[`${endpoint.chartId}Instance`] = null;
                 }
 
+                // Use `isFirstLoad` to control whether to animate or not
                 window[`${endpoint.chartId}Instance`] = renderChart({
                     canvasId: endpoint.chartId,
                     labels: labels,
@@ -1018,6 +1020,7 @@ function fetchChartData() {
         resizeCharts();
     });
 }
+
 
 
 function updateChartData(chartInstance, newLabels, newValues) {
