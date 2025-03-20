@@ -337,6 +337,7 @@ h1 {
         width: 100%;
       color: #656666;
 }
+
 </style>
   <!-- Google Analytics Tag -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-16V8B7YWR9"></script>
@@ -554,109 +555,104 @@ h1 {
   </div>
 </div>
 
+  
   <script>
-let priceLabels = [], priceValues = [];
-let spendLabels = [], spendValues = [];
-let publishesLabels = [], publishesValues = [];
-
-let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = true;
-let isFirstDataLoad = true, isFirstSpendLoad = true, isFirstPublishesLoad = true;
-
-let tickFontSize, labelFontSize, chartPadding;
-let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
-let stableHeight = null;
-let resizeTimeout;
+    function formatNumber(value, decimals = 0, isCurrency = false) {
+      if (value == null || value === '') return 'Loading...';
+      let number = Number(value);
+      if (isNaN(number)) return value;
+      let [integer, decimal] = number.toFixed(decimals).split('.');
+      let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return decimal ? formattedInteger + '.' + decimal : formattedInteger;
+    }
     
-let PriceChartInstance = null;
-let SpendChartInstance = null;
-let PublishesChartInstance = null;
-let publishespiechartInstance = null;
-let rewardspiechartInstance = null;
-let stakedpiechartinstance = null;
+    function formatPercentage(value, period) {
+      if (value == null || value === '') return ' ';
+      let number = Number(value);
+      if (isNaN(number)) return value;
+      let sign = number > 0 ? '+' : number < 0 ? '-' : '';
+      let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
+      let p = Math.abs(number) * 100;
+      let formatted;
+      if (p < 10) {
+        formatted = p.toFixed(2);
+      } else if (p < 100) {
+        formatted = p.toFixed(1);
+      } else {
+        formatted = p.toFixed(0);
+      }
+      return '<span class="' + className + '">' + sign + formatted + '% (' + period + ')</span>';
+    }
 
-function formatNumber(value, decimals = 0, isCurrency = false) {
-    if (value == null || value === '') return 'Loading...';
-    const number = Number(value);
-    if (isNaN(number)) return value;
-    const [integer, decimal] = number.toFixed(decimals).split('.');
-    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
-}
+    function formatNumberChange(value, label = '') {
+      if (value == null || value === '') return ' ';
+      let number = Number(value);
+      if (isNaN(number)) return value;
+      
+      let sign = number > 0 ? '+' : number < 0 ? '-' : '';
+      let className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
+    
+      let [integer, decimal] = Math.abs(number).toFixed(0).split('.');
+      let formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    
+      let formattedNumber = decimal ? formattedInteger + '.' + decimal : formattedInteger;
+    
+      return '<span class="' + className + '">' + sign + formattedNumber + '</span>' + 
+             (label ? ' <span class="' + className + '">' + label + '</span>' : '');
+      
+    }
 
-function formatPercentage(value, period) {
-    if (value == null || value === '') return ' ';
-    const number = Number(value);
-    if (isNaN(number)) return value;
-    const sign = number > 0 ? '+' : number < 0 ? '-' : '';
-    const className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
-    const p = Math.abs(number) * 100;
-    const formatted = p < 10 ? p.toFixed(2) : p < 100 ? p.toFixed(1) : p.toFixed(0);
-    return `<span class="${className}">${sign}${formatted}% (${period})</span>`;
-}
+    function formatDate(isoDate) {
+      console.log("formatDate input:", isoDate);
+      if (!isoDate) return 'N/A';
+      const date = new Date(isoDate);
+      if (isNaN(date.getTime())) return 'N/A';
+      let result = date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit'
+      });
+      console.log("formatDate output:", result);
+      return result;
+    }
 
-function formatNumberChange(value, label = '') {
-    if (value == null || value === '') return ' ';
-    const number = Number(value);
-    if (isNaN(number)) return value;
-    const sign = number > 0 ? '+' : number < 0 ? '-' : '';
-    const className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
-    const [integer, decimal] = Math.abs(number).toFixed(0).split('.');
-    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    const formattedNumber = decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
-    return `<span class="${className}">${sign}${formattedNumber}</span>` + 
-           (label ? ` <span class="${className}">${label}</span>` : '');
-}
+        function formatValueInMillions(value) {
+    if (typeof value !== "number" || isNaN(value)) {
+        return "0"; // Return a default value if the input is invalid
+    }
 
-function formatDate(isoDate) {
-    if (!isoDate) return 'N/A';
-    const date = new Date(isoDate);
-    if (isNaN(date.getTime())) return 'N/A';
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
-}
-
-function formatValueInMillions(value) {
-    if (typeof value !== "number" || isNaN(value)) return "0";
-    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
-    return Math.round(value).toString();
-}
-
-function fetchData() {
-    const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
-
-    return fetch(FIREBASE_URL)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Fetched Data:", data);
-            if (data.sheetData) {
-                handleData(data.sheetData, data.records);
-            } else {
-                console.error("Error: sheetData not found");
-            }
-            return data;
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            throw error;
-        });
+    if (value >= 1000000) {
+        // Format as 1.0M, 2.5M, etc.
+        return `${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+        // Format as 1.2K, 45.6K, etc.
+        return `${(value / 1000).toFixed(1)}K`;
+    } else {
+        // Format as whole numbers for values less than 1000
+        return Math.round(value).toString();
+    }
 }
     
 function handleData(sheetData, records) {
+    console.log("✅ handleData received:");
+    console.log("➡ sheetData:", sheetData);
+    console.log("➡ records:", records);
+
     if (!sheetData || !records) {
-        console.error("Missing required data:", { sheetData, records });
+        console.error("❌ Missing required data:", { sheetData, records });
         return;
     }
 
     const updateText = (id, value) => {
         const element = document.getElementById(id);
         if (element) element.innerText = value;
-        else console.warn(`Element #${id} not found in DOM.`);
+        else console.warn(`⚠️ Element #${id} not found in DOM.`);
     };
 
     const updateHTML = (id, value) => {
         const element = document.getElementById(id);
         if (element) element.innerHTML = value;
-        else console.warn(`Element #${id} not found in DOM.`);
+        else console.warn(`⚠️ Element #${id} not found in DOM.`);
     };
 
     updateText('tracprice', formatNumber(sheetData.tracprice, 4));
@@ -683,110 +679,416 @@ function handleData(sheetData, records) {
 
     const updateRecordData = (record, dateId, valueId, decimals = 0, currency = false) => {
         if (!record) {
-            console.warn(`Missing record data for ${dateId} and ${valueId}`);
+            console.warn(`⚠️ Missing record data for ${dateId} and ${valueId}`);
             return;
         }
         updateText(dateId, formatDate(record.date));
         updateText(valueId, formatNumber(record.value, decimals, currency));
     };
+
+    console.log("📌 Checking Records Data:");
+    console.log("➡ Publish Record:", records.publishRecord);
+    console.log("➡ TRAC Spend Record:", records.tracSpendRecord);
+    console.log("➡ USD Spend Record:", records.usdSpendRecord);
+
     updateRecordData(records.publishRecord, 'publishRecordDate', 'publishRecordValue');
     updateRecordData(records.tracSpendRecord, 'tracSpendRecordDate', 'tracSpendRecordValue');
     updateRecordData(records.usdSpendRecord, 'usdSpendRecordDate', 'usdSpendRecordValue');
 }
-   
+
+function fetchData() {
+  const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
+
+  // Return the fetch chain to make it chainable
+  return fetch(FIREBASE_URL)
+    .then(response => response.json())
+    .then(data => {
+      console.log("Fetched Data:", data);
+
+      const sheetData = data.sheetData;
+      const records = data.records;
+
+      console.log("Sheet Data:", sheetData);
+      console.log("Records Data:", records);
+
+      if (sheetData) {
+        console.log("Handling Data with sheetData...");
+        handleData(sheetData, records);
+      } else {
+        console.error("Error: sheetData not found");
+      }
+
+      return data; // Return the data for further processing
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+      throw error; // Re-throw the error to be caught by the caller
+    });
+}
+    
+function updateFontSizesAndPadding() {
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    tickFontSize = rootFontSize * 0.75;
+    labelFontSize = rootFontSize * 0.875;
+
+    chartPadding = {
+        left: rootFontSize * 0.625,
+        right: rootFontSize * 1.5625,
+        top: rootFontSize * 1.8,
+        bottom: rootFontSize * 0
+    };
+}
+
+let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
+
+function updatePieChartFontSizesAndPadding() {
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+    // Font size for legend labels
+    pieChartFontSize = rootFontSize * 1.05;
+
+    // Individual padding values for layout
+    pieChartLayoutPadding = {
+        left: rootFontSize * 0,   // Adjust left padding
+        top: rootFontSize * 1.1,  // Adjust top padding
+        right: rootFontSize * 0,  // Adjust right padding
+        bottom: rootFontSize * 1 // Adjust bottom padding
+    };
+
+    // Padding between legend items
+    pieChartLegendPadding = rootFontSize * 0.7;
+
+    // Border width of the pie chart segments
+    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125);
+}
+function reapplyScaling() {
+    console.log('Reapplying scaling...');
+    adjustFontSize();
+    resizeCharts();
+}
+    
+let stableHeight = null;
+
+function hasTrueWindowResizing() {
+    if (!('ontouchstart' in window)) return true;
+    return window.matchMedia("(min-width: 1024px)").matches;
+}
+
+function adjustFontSize() {
+    let referenceHeight;
+
+    if (hasTrueWindowResizing()) {
+        referenceHeight = Math.min(window.innerHeight, window.screen.height);
+        stableHeight = null;
+    } else {
+        if (stableHeight === null) {
+            stableHeight = Math.min(window.innerHeight, window.screen.height);
+        }
+        referenceHeight = stableHeight;
+    }
+
+    const baseFontSize = 16;
+    const scalingFactor = referenceHeight / 973;
+    let newFontSize = baseFontSize * scalingFactor * 1.07;
+
+    const minScaleFactor = 0.6; 
+    const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
+    newFontSize = Math.max(newFontSize, minFontSize);
+
+    const container = document.querySelector('.container');
+    if (!container) return; 
+
+    requestAnimationFrame(() => {
+        const containerWidth = container.offsetWidth;
+        const viewportWidth = window.innerWidth;
+        const maxWidth = 0.98 * viewportWidth;
+
+        if (containerWidth > maxWidth) {
+            const widthRatio = maxWidth / containerWidth;
+            newFontSize *= widthRatio;
+        }
+
+        document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
+        updateFontSizesAndPadding();
+        resizeCharts();
+    });
+}
+
+function resizeCharts() {
+    updateFontSizesAndPadding();
+    updatePieChartFontSizesAndPadding();
+
+    const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
+    
+    chartInstances.forEach(chart => {
+        if (chart) {
+            chart.options.scales.x.ticks.font.size = tickFontSize;
+            chart.options.scales.y.ticks.font.size = tickFontSize;
+            chart.options.scales.y.title.font.size = labelFontSize;
+            chart.options.layout.padding = chartPadding;
+            chart.update();
+        }
+    });
+
+    const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
+
+    pieChartInstances.forEach(chart => {
+        if (chart) {
+            chart.options.layout.padding = pieChartLayoutPadding;
+            chart.options.elements.arc.borderWidth = pieChartBorderWidth;
+            chart.update();
+        }
+    });
+}
+
+let resizeTimeout;
+
+function handleResize() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        adjustFontSize();
+        resizeCharts();
+    }, 200);
+}
+
+window.addEventListener('orientationchange', () => {
+    stableHeight = null;
+    clearTimeout(resizeTimeout);
+    setTimeout(() => {
+        handleResize();
+    }, 200);
+});
+
+window.addEventListener('resize', handleResize);
+
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM fully loaded and parsed');
+
+    // Check if fetchData is defined
+    if (typeof fetchData !== 'function') {
+        console.error('fetchData is not a function');
+        return;
+    }
+
+    // Reset first load flags for pie charts
+    isFirstLoadPublishes = true;
+    isFirstLoadRewards = true;
+    isFirstLoadStaked = true;
+
+    // Initial font size adjustment and chart resize
+    adjustFontSize();
+    resizeCharts();
+
+    // Render line charts with empty data initially
+    PriceChartInstance = renderChart({
+        canvasId: 'PriceChart',
+        labels: [],
+        values: [],
+        datasetLabel: 'Price',
+        yAxisTitle: 'Price (USD)',
+        animate: false,
+        chartInstance: PriceChartInstance,
+        isFirstLoad: isFirstDataLoad
+    });
+
+    SpendChartInstance = renderChart({
+        canvasId: 'SpendChart',
+        labels: [],
+        values: [],
+        datasetLabel: 'Spend',
+        yAxisTitle: 'Spend (USD)',
+        yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
+        animate: false,
+        chartInstance: SpendChartInstance,
+        isFirstLoad: isFirstSpendLoad
+    });
+
+    PublishesChartInstance = renderChart({
+        canvasId: 'PublishesChart',
+        labels: [],
+        values: [],
+        datasetLabel: 'Publishes',
+        yAxisTitle: 'Publishes',
+        yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
+        animate: false,
+        chartInstance: PublishesChartInstance,
+        isFirstLoad: isFirstPublishesLoad
+    });
+
+    // Render pie charts with empty data initially
+    renderPieChart({
+        canvasId: 'publishesPieChart',
+        legendContainerId: 'customLegendContainer',
+        data: [], // Empty array for initial render
+        chartInstance: window.publishesPieChartInstance,
+        isFirstLoad: isFirstLoadPublishes
+    });
+
+    renderPieChart({
+        canvasId: 'rewardsPieChart',
+        legendContainerId: 'customRewardsLegendContainer',
+        data: [], // Empty array for initial render
+        chartInstance: window.rewardsPieChartInstance,
+        isFirstLoad: isFirstLoadRewards
+    });
+
+    renderPieChart({
+        canvasId: 'stakedPieChart',
+        legendContainerId: 'customStakedLegendContainer',
+        data: [], // Empty array for initial render
+        chartInstance: window.stakedPieChartInstance,
+        isFirstLoad: isFirstLoadStaked
+    });
+
+    // Fetch actual data
+    console.log('Calling fetchData...');
+    fetchData()
+        .then(() => {
+            console.log('fetchData completed successfully');
+            fetchChartData();
+            fetchPieChartData();
+        })
+        .catch((error) => {
+            console.error('Error in fetchData:', error);
+        });
+});
+    window.addEventListener('load', function () {
+    console.log('Page fully loaded');
+
+    reapplyScaling();
+
+    setTimeout(reapplyScaling, 1000);
+});
+
+let PriceChartInstance, SpendChartInstance, PublishesChartInstance;
+let priceLabels = [], priceValues = [];
+let spendLabels = [], spendValues = [];
+let publishesLabels = [], publishesValues = [];
+
+let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = true;
+
+let tickFontSize, labelFontSize, chartPadding;
+
+let isFirstDataLoad = true, isFirstSpendLoad = true, isFirstPublishesLoad = true;
+    
 function renderChart({
     canvasId,
-    labels = [],
-    values = [],
-    datasetLabel = 'Dataset',
-    yAxisTitle = 'Value',
-    yAxisFormatter = null,
+    labels,
+    values,
+    datasetLabel,
+    yAxisTitle,
+    yAxisFormatter,
     animate = false,
-    isFirstLoad = false
+    chartInstance,
+    isFirstLoad
 }) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) {
         console.error(`${canvasId} canvas not found!`);
         return;
     }
-
-    // Reset the canvas
     const ctx = canvas.getContext('2d');
 
-    // Destroy the existing chart instance if it exists
-    if (window[`${canvasId}Instance`]) {
-        console.log(`Destroying chart instance for ${canvasId}`);
-        window[`${canvasId}Instance`].destroy();
-        window[`${canvasId}Instance`] = null;
+    // If the chart instance exists and it's the first load, destroy it
+    if (chartInstance && isFirstLoad) {
+        chartInstance.destroy();
+        chartInstance = null;
     }
 
-    // Create a new chart instance and store it globally
-    window[`${canvasId}Instance`] = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: datasetLabel,
-                data: values,
-                borderColor: 'rgba(146, 176, 174, 0.8)',
-                backgroundColor: 'rgba(146, 176, 174, 0.1)',
-                fill: true,
-                tension: 0.1,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: animate ? {} : false,
-            scales: {
-                x: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    type: 'time',
-                    time: {
-                        parser: 'yyyy-MM-dd',
-                        unit: 'day',
-                        tooltipFormat: 'PP',
-                        displayFormats: { day: 'MMM d' }
-                    },
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10,
-                        callback: function (value) {
-                            const date = new Date(value);
-                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    // If no chart instance exists, create a new one
+    if (!chartInstance) {
+        const shouldAnimate = isFirstLoad && values.length > 0;
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels || [],
+                datasets: [{
+                    label: datasetLabel,
+                    data: values || [],
+                    borderColor: 'rgba(146, 176, 174, 0.8)',
+                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: shouldAnimate ? { duration: 300, easing: 'easeInOutQuad' } : false,
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
                         },
-                    }
-                },
-                y: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    title: {
-                        display: true,
-                        text: yAxisTitle
+                        type: 'time',
+                        time: {
+                            parser: 'yyyy-MM-dd',
+                            unit: 'day',
+                            tooltipFormat: 'PP',
+                            displayFormats: { day: 'MMM d' }
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 10,
+                            callback: function (value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            },
+                            font: { size: tickFontSize, family: 'Play, sans-serif' },
+                            padding: 0,
+                        }
                     },
-                    ticks: {
-                        beginAtZero: false,
-                        callback: yAxisFormatter || function (value) {
-                            return parseFloat(value).toFixed(1);
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        title: {
+                            display: true,
+                            text: yAxisTitle,
+                            font: { size: labelFontSize, family: 'Play, sans-serif' }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            font: { size: tickFontSize, family: 'Play, sans-serif' },
+                            callback: yAxisFormatter || function (value) {
+                                return parseFloat(value).toFixed(1);
+                            }
                         }
                     }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                layout: {
+                    padding: chartPadding
                 }
             }
-        }
-    });
+        });
+    } else {
+        // If the chart instance exists, update its data
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets[0].data = values;
+        chartInstance.update({ duration: 0 });
+    }
 
-    console.log(`Created new chart instance for ${canvasId}`);
-    return window[`${canvasId}Instance`]; // Ensure correct reference
+    return chartInstance;
 }
-  
+    
+let publishespiechartInstance = null;
+let rewardspiechartInstance = null;
+let stakedpiechartinstance = null;
+
 function renderPieChart({
-    canvasId,
-    legendContainerId,
-    data,
-    chartInstance,
-    isFirstLoad
+    canvasId, // ID of the canvas element
+    legendContainerId, // ID of the custom legend container
+    data, // Array of data values
+    chartInstance, // Reference to the chart instance (e.g., publishesPieChartInstance)
+    isFirstLoad // Flag to track first load
 }) {
     const ctx = document.getElementById(canvasId).getContext("2d");
     const total = data.reduce((sum, value) => sum + value, 0);
@@ -856,104 +1158,6 @@ function renderPieChart({
         }
     }
 }
-
-function updateFontSizesAndPadding() {
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    tickFontSize = rootFontSize * 0.75;
-    labelFontSize = rootFontSize * 0.875;
-
-    chartPadding = {
-        left: rootFontSize * 0.625,
-        right: rootFontSize * 1.5625,
-        top: rootFontSize * 1.8,
-        bottom: rootFontSize * 0
-    };
-}
-
-function updatePieChartFontSizesAndPadding() {
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-
-    pieChartFontSize = rootFontSize * 1.05;
-    pieChartLayoutPadding = rootFontSize * 1
-    pieChartLegendPadding = rootFontSize * 0.7;
-    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125);
-}
-
-function reapplyScaling() {
-    console.log('Reapplying scaling...');
-    adjustFontSize();
-    resizeCharts();
-}
-
-function hasTrueWindowResizing() {
-    return !('ontouchstart' in window) || window.matchMedia("(min-width: 1024px)").matches;
-}
-
-function adjustFontSize() {
-    const referenceHeight = hasTrueWindowResizing() 
-        ? Math.min(window.innerHeight, window.screen.height) 
-        : (stableHeight ?? (stableHeight = Math.min(window.innerHeight, window.screen.height)));
-
-    const baseFontSize = 16;
-    const scalingFactor = referenceHeight / 973;
-    let newFontSize = baseFontSize * scalingFactor * 1.07;
-
-    const minScaleFactor = 0.6;
-    const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
-    newFontSize = Math.max(newFontSize, minFontSize);
-
-    const container = document.querySelector('.container');
-    if (!container) return;
-
-    requestAnimationFrame(() => {
-        const containerWidth = container.offsetWidth;
-        const viewportWidth = window.innerWidth;
-        const maxWidth = 0.98 * viewportWidth;
-
-        if (containerWidth > maxWidth) {
-            const widthRatio = maxWidth / containerWidth;
-            newFontSize *= widthRatio;
-        }
-
-        // ✅ Set the new font size
-        document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
-    });
-}
-
-function resizeCharts() {
-    updateFontSizesAndPadding();
-    updatePieChartFontSizesAndPadding();
-
-    // ✅ Use `window` for all global chart instances
-    const chartInstances = [window.PublishesChartInstance, window.PriceChartInstance, window.SpendChartInstance];
-    const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
-
-    chartInstances.forEach(chart => {
-        if (chart) {
-            chart.options.scales.x.ticks.font.size = tickFontSize;
-            chart.options.scales.y.ticks.font.size = tickFontSize;
-            chart.options.scales.y.title.font.size = labelFontSize;
-            chart.options.layout.padding = chartPadding;
-            chart.update();
-        }
-    });
-
-    pieChartInstances.forEach(chart => {
-        if (chart) {
-            chart.options.layout.padding = pieChartLayoutPadding;
-            chart.options.elements.arc.borderWidth = pieChartBorderWidth;
-            chart.update();
-        }
-    });
-}
-
-function handleResize() {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        adjustFontSize();
-        resizeCharts();
-    }, 200);
-}
     
 function fetchChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
@@ -964,7 +1168,7 @@ function fetchChartData() {
         { path: '/publishes.json', chartId: 'PublishesChart', datasetLabel: 'Publishes', yAxisTitle: 'Publishes', yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value }
     ];
 
-    const fetchPromises = endpoints.map(endpoint =>
+    const fetchPromises = endpoints.map(endpoint => 
         fetch(CHART_DATA_BASE_URL + endpoint.path)
             .then(response => response.json())
             .then(data => {
@@ -972,18 +1176,15 @@ function fetchChartData() {
 
                 if (Array.isArray(data) && data.length > 0) {
                     const labels = data.map(item => item.date);
-                    const values = endpoint.path === '/price.json'
-                        ? data.map(item => parseFloat(item.value.toFixed(2)))
-                        : data.map(item => item.value);
+                    const values = endpoint.path === '/price.json' ? data.map(item => parseFloat(item.value.toFixed(2))) : data.map(item => item.value);
 
-                    const isFirstLoad = !window[`${endpoint.chartId}Instance`];
-
+                    // Destroy the existing chart instance if it exists
                     if (window[`${endpoint.chartId}Instance`]) {
-                        console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
                         window[`${endpoint.chartId}Instance`].destroy();
-                        window[`${endpoint.chartId}Instance`] = null;
+                        window[`${endpoint.chartId}Instance`] = null; // Clear the reference
                     }
-   
+
+                    // Create a new chart instance with the fetched data
                     window[`${endpoint.chartId}Instance`] = renderChart({
                         canvasId: endpoint.chartId,
                         labels: labels,
@@ -991,10 +1192,10 @@ function fetchChartData() {
                         datasetLabel: endpoint.datasetLabel,
                         yAxisTitle: endpoint.yAxisTitle,
                         yAxisFormatter: endpoint.yAxisFormatter,
-                        animate: isFirstLoad
+                        animate: true,
+                        chartInstance: null, // Pass null to create a new instance
+                        isFirstLoad: false
                     });
-
-                    console.log(`Created new chart instance for ${endpoint.chartId}`);
                 } else {
                     console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
                 }
@@ -1005,17 +1206,8 @@ function fetchChartData() {
     );
 
     Promise.all(fetchPromises).then(() => {
-        console.log("All charts initialized. Calling resizeCharts...");
-        resizeCharts();
+        console.log("All chart data fetched and rendered.");
     });
-}
-
-function updateChartData(chartInstance, newLabels, newValues) {
-    if (chartInstance) {
-        chartInstance.data.labels = newLabels;
-        chartInstance.data.datasets[0].data = newValues;
-        chartInstance.update({ duration: 0 }); // No animation for updates
-    }
 }
     
 function fetchPieChartData() {
@@ -1025,164 +1217,78 @@ function fetchPieChartData() {
         .then(response => response.json())
         .then(data => {
             console.log("Chains Data:", data);
-            if (!data) {
-                console.warn("No valid chains data received.");
-                return;
-            }
 
-            const chartsConfig = [
-                {
+            if (data) {
+                // Extract values for each category
+                const publishesValues = [
+                    data.neuroweb?.epochPublishes || 0,
+                    data.base?.epochPublishes || 0,
+                    data.gnosis?.epochPublishes || 0
+                ];
+
+                const rewardsValues = [
+                    data.neuroweb?.epochRewards || 0,
+                    data.base?.epochRewards || 0,
+                    data.gnosis?.epochRewards || 0
+                ];
+
+                const stakedValues = [
+                    data.neuroweb?.stakedAmount || 0,
+                    data.base?.stakedAmount || 0,
+                    data.gnosis?.stakedAmount || 0
+                ];
+
+                // Render the charts with real data
+                renderPieChart({
                     canvasId: 'publishesPieChart',
                     legendContainerId: 'customLegendContainer',
-                    field: 'epochPublishes',
-                    instanceKey: 'publishesPieChartInstance'
-                },
-                {
-                    canvasId: 'rewardsPieChart',
-                    legendContainerId: 'customRewardsLegendContainer',
-                    field: 'epochRewards',
-                    instanceKey: 'rewardsPieChartInstance'
-                },
-                {
-                    canvasId: 'stakedPieChart',
-                    legendContainerId: 'customStakedLegendContainer',
-                    field: 'stakedAmount',
-                    instanceKey: 'stakedPieChartInstance'
-                }
-            ];
-
-            chartsConfig.forEach(chart => {
-                const values = [
-                    data.neuroweb?.[chart.field] || 0,
-                    data.base?.[chart.field] || 0,
-                    data.gnosis?.[chart.field] || 0
-                ];
-                renderPieChart({
-                    canvasId: chart.canvasId,
-                    legendContainerId: chart.legendContainerId,
-                    data: values,
-                    chartInstance: window[chart.instanceKey],
+                    data: publishesValues,
+                    chartInstance: window.publishesPieChartInstance,
                     isFirstLoad: false
                 });
-            });
+
+                renderPieChart({
+                    canvasId: 'rewardsPieChart',
+                    legendContainerId: 'customRewardsLegendContainer',
+                    data: rewardsValues,
+                    chartInstance: window.rewardsPieChartInstance,
+                    isFirstLoad: false
+                });
+
+                renderPieChart({
+                    canvasId: 'stakedPieChart',
+                    legendContainerId: 'customStakedLegendContainer',
+                    data: stakedValues,
+                    chartInstance: window.stakedPieChartInstance,
+                    isFirstLoad: false
+                });
+            } else {
+                console.warn("No valid chains data received.");
+            }
         })
         .catch(error => {
             console.error("Error fetching chains data:", error);
         });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOM fully loaded and parsed');
-
-    if (typeof fetchData !== 'function') {
-        console.error('fetchData is not a function');
-        return;
-    }
-
-    let isFirstLoadPublishes = true;
-    let isFirstLoadRewards = true;
-    let isFirstLoadStaked = true;
-
-    adjustFontSize(); // Adjust font sizes before rendering charts
-
-    console.log('Initializing empty charts...');
-
-    // Initialize line charts with empty data and store them on `window`
-    window.PriceChartInstance = renderChart({
-        canvasId: 'PriceChart',
-        labels: [],
-        values: [],
-        datasetLabel: 'Price',
-        yAxisTitle: 'Price (USD)',
-        animate: false,
-    });
-
-    window.SpendChartInstance = renderChart({
-        canvasId: 'SpendChart',
-        labels: [],
-        values: [],
-        datasetLabel: 'Spend',
-        yAxisTitle: 'Spend (USD)',
-        yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value,
-        animate: false,
-    });
-
-    window.PublishesChartInstance = renderChart({
-        canvasId: 'PublishesChart',
-        labels: [],
-        values: [],
-        datasetLabel: 'Publishes',
-        yAxisTitle: 'Publishes',
-        yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value,
-        animate: false,
-    });
-
-    // Initialize pie charts with empty data
-    renderPieChart({
-        canvasId: 'publishesPieChart',
-        legendContainerId: 'customLegendContainer',
-        data: [],
-        isFirstLoad: isFirstLoadPublishes
-    });
-
-    renderPieChart({
-        canvasId: 'rewardsPieChart',
-        legendContainerId: 'customRewardsLegendContainer',
-        data: [],
-        isFirstLoad: isFirstLoadRewards
-    });
-
-    renderPieChart({
-        canvasId: 'stakedPieChart',
-        legendContainerId: 'customStakedLegendContainer',
-        data: [],
-        isFirstLoad: isFirstLoadStaked
-    });
-
-    console.log('Resizing empty charts...');
-    resizeCharts();
-    console.log('Fetching data...');
-    fetchChartData();
-
     fetchPieChartData();
-
-    fetchData()
-        .then(() => {
-            console.log('fetchData completed successfully');
-        })
-        .catch((error) => {
-            console.error('Error in fetchData:', error);
-        });
-});
-
-
-window.addEventListener('load', function () {
-    console.log('Page fully loaded');
-    reapplyScaling();
-    setTimeout(reapplyScaling, 1000);
-});
-
-window.addEventListener('orientationchange', () => {
-    stableHeight = null;
-    clearTimeout(resizeTimeout);
-    setTimeout(handleResize, 200);
-});
-
-window.addEventListener('resize', handleResize);
     
 let dataInterval, chartInterval, piechartInterval;
 
 function startIntervals() {
-    clearInterval(dataInterval);
-    clearInterval(chartInterval);
-    clearInterval(piechartInterval);
+    if (dataInterval) clearInterval(dataInterval);
+    if (chartInterval) clearInterval(chartInterval);
+    if (piechartInterval) clearInterval(piechartInterval);
 
-    dataInterval = setInterval(fetchData, 10000);
-    chartInterval = setInterval(fetchChartData, 60000);
-    piechartInterval = setInterval(fetchPieChartData, 60000);
+    // Set new intervals
+    dataInterval = setInterval(() => fetchData(), 10000);
+    chartInterval = setInterval(() => fetchChartData(), 60000);
+    piechartInterval = setInterval(() => fetchPieChartData(), 60000);
+    
 }
 
 startIntervals();
+
   </script>
   
 </body>
