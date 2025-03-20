@@ -560,19 +560,12 @@ let spendLabels = [], spendValues = [];
 let publishesLabels = [], publishesValues = [];
 
 let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = true;
-let isFirstDataLoad = true, isFirstSpendLoad = true, isFirstPublishesLoad = true;
+let isFirstDataLoad = false, isFirstSpendLoad = false, isFirstPublishesLoad = false;
 
 let tickFontSize, labelFontSize, chartPadding;
 let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
 let stableHeight = null;
 let resizeTimeout;
-    
-let PriceChartInstance = null;
-let SpendChartInstance = null;
-let PublishesChartInstance = null;
-let publishespiechartInstance = null;
-let rewardspiechartInstance = null;
-let stakedpiechartinstance = null;
 
 function formatNumber(value, decimals = 0, isCurrency = false) {
     if (value == null || value === '') return 'Loading...';
@@ -743,23 +736,27 @@ function renderChart({
             animation: animate ? {} : false,
             scales: {
                 x: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    type: 'time',
-                    time: {
-                        parser: 'yyyy-MM-dd',
-                        unit: 'day',
-                        tooltipFormat: 'PP',
-                        displayFormats: { day: 'MMM d' }
-                    },
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10,
-                        callback: function (value) {
-                            const date = new Date(value);
-                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        grid: {
+                          color: 'rgba(255, 255, 255, 0.05)'
                         },
-                    }
-                },
+                        type: 'time',
+                        time: {
+                            parser: 'yyyy-MM-dd',
+                            unit: 'day',
+                            tooltipFormat: 'PP',
+                            displayFormats: { day: 'MMM d' }
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 10,
+                            callback: function(value) {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            },
+                            font: { size: tickFontSize, family: 'Play, sans-serif' },
+                            padding: 0,
+                        }
+                    },
                 y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     title: {
@@ -968,11 +965,14 @@ function fetchChartData() {
             .then(data => {
                 console.log(`${endpoint.datasetLabel} Data:`, data);
 
-                if (Array.isArray(data) && data.length > 0) {
-                    const labels = data.map(item => item.date);
-                    const values = endpoint.path === '/price.json'
-                        ? data.map(item => parseFloat(item.value.toFixed(2)))
-                        : data.map(item => item.value);
+                if (!Array.isArray(data) || data.length === 0) {
+                        console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
+                        return;
+                    }
+                    const labels = data.map(item => item.date) || [];
+                    const values = data.map(item => 
+                        endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value
+                    ) || [];
 
                     const isFirstLoad = !window[`${endpoint.chartId}Instance`];
 
