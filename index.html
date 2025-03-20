@@ -703,22 +703,28 @@ function renderChart({
         return;
     }
 
+    // Get context of canvas
     const ctx = canvas.getContext('2d');
 
+    // Destroy the existing chart instance if it exists
     if (window[`${canvasId}Instance`]) {
         console.log(`Destroying chart instance for ${canvasId}`);
         window[`${canvasId}Instance`].destroy();
         window[`${canvasId}Instance`] = null;
     }
 
+    // Determine if we should animate (only on first real data load)
+    const shouldAnimate = (isFirstLoad && values.length > 0) || animate;
+
+    // Create a new chart instance and store it globally
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels,
+            labels: labels || [],
             datasets: [{
                 label: datasetLabel,
-                data: values,
-                borderColor: 'rgba(146, 176, 174, 0.8)',
+                data: values || [],
+                borderColor: 'rgba(146, 176, 174, 1)',
                 backgroundColor: 'rgba(146, 176, 174, 0.1)',
                 fill: true,
                 tension: 0.1,
@@ -730,7 +736,7 @@ function renderChart({
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            animation: animate ? {} : false,
+            animation: shouldAnimate ? { duration: 300, easing: 'easeInOutQuad' } : false,
             scales: {
                 x: {
                     grid: {
@@ -751,17 +757,19 @@ function renderChart({
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         },
                         font: { size: tickFontSize, family: 'Play, sans-serif' },
-                        padding: 0,
+                        padding: 0
                     }
                 },
                 y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     title: {
                         display: true,
-                        text: yAxisTitle
+                        text: yAxisTitle,
+                        font: { size: labelFontSize, family: 'Play, sans-serif' }
                     },
                     ticks: {
                         beginAtZero: false,
+                        font: { size: tickFontSize, family: 'Play, sans-serif' },
                         callback: yAxisFormatter || function (value) {
                             return parseFloat(value).toFixed(1);
                         }
@@ -769,9 +777,11 @@ function renderChart({
                 }
             },
             plugins: {
-                legend: {
-                    display: false 
-                }
+                legend: { display: false },
+                title: { display: false }
+            },
+            layout: {
+                padding: chartPadding
             }
         }
     });
