@@ -961,18 +961,19 @@ function fetchChartData() {
 
     const fetchPromises = endpoints.map(endpoint =>
         fetch(CHART_DATA_BASE_URL + endpoint.path)
-            .then(response => response.json())
-            .then(data => {
-                console.log(`${endpoint.datasetLabel} Data:`, data);
+        .then(response => response.json())
+        .then(data => {
+            console.log(`${endpoint.datasetLabel} Data:`, data);
 
-                if (!Array.isArray(data) || data.length === 0) {
-                        console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
-                        return;
-                    }
-                    const labels = data.map(item => item.date) || [];
-                    const values = data.map(item => 
-                        endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value
-                    ) || [];
+            if (!Array.isArray(data) || data.length === 0) {
+                console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
+                return;
+            }
+
+            const labels = data.map(item => item.date);
+            const values = data.map(item =>
+                endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value
+            );
 
                     const isFirstLoad = !window[`${endpoint.chartId}Instance`];
 
