@@ -715,7 +715,7 @@ function renderChart({
 
     // Destroy the existing chart instance if it exists
     if (window[`${canvasId}Instance`]) {
-        console.log(`Destroying chart instance for ${canvasId}`); // Debugging
+        console.log(`Destroying chart instance for ${canvasId}`);
         window[`${canvasId}Instance`].destroy();
         window[`${canvasId}Instance`] = null;
     }
@@ -777,6 +777,7 @@ function renderChart({
         }
     });
 
+    console.log(`Created new chart instance for ${canvasId}`);
     return window[`${canvasId}Instance`]; // Ensure correct reference
 }
   
@@ -923,7 +924,8 @@ function resizeCharts() {
     updateFontSizesAndPadding();
     updatePieChartFontSizesAndPadding();
 
-    const chartInstances = [PublishesChartInstance, PriceChartInstance, SpendChartInstance];
+    // ✅ Use `window` for all global chart instances
+    const chartInstances = [window.PublishesChartInstance, window.PriceChartInstance, window.SpendChartInstance];
     const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
 
     chartInstances.forEach(chart => {
@@ -1085,8 +1087,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     console.log('Initializing empty charts...');
 
-    // Initialize line charts with empty data
-    PriceChartInstance = renderChart({
+    // Initialize line charts with empty data and store them on `window`
+    window.PriceChartInstance = renderChart({
         canvasId: 'PriceChart',
         labels: [],
         values: [],
@@ -1095,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', function () {
         animate: false,
     });
 
-    SpendChartInstance = renderChart({
+    window.SpendChartInstance = renderChart({
         canvasId: 'SpendChart',
         labels: [],
         values: [],
@@ -1105,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', function () {
         animate: false,
     });
 
-    PublishesChartInstance = renderChart({
+    window.PublishesChartInstance = renderChart({
         canvasId: 'PublishesChart',
         labels: [],
         values: [],
@@ -1115,6 +1117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         animate: false,
     });
 
+    // Initialize pie charts with empty data
     renderPieChart({
         canvasId: 'publishesPieChart',
         legendContainerId: 'customLegendContainer',
