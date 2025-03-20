@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1", maximum-scale=1>
-  <link href="https://fonts.googleapis.com/css2?family=Play&display=swap" rel="stylesheet">
   <title>DKGStats.io</title>
   <meta name="description" content="Real-time statistics on the OriginTrail Decentralised Knowledge Graph.">
   <meta name="keywords" content="OriginTrail, Decentralised Knowledge Graph, DKG, TRAC, DKG analytics, DKG Stats, staking APY, TRAC price, knowledge assets, base, gnosis, neuroweb, crypto, OT, blockchain">
@@ -18,18 +17,17 @@
   <meta name="twitter:description" content="Real-time statistics on the OriginTrail Decentralised Knowledge Graph.">
   <meta name="twitter:image" content="https://dkgstats.io/preview-image.jpg">
 
+  <link href="https://fonts.googleapis.com/css2?family=Play&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/assets/favicons/favicon.svg" />
   <link rel="shortcut icon" href="/assets/favicons/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png" />
-  <meta name="apple-mobile-web-app-title" content="DKGStats.IO" />
+  <meta name="apple-mobile-web-app-title" content="DKGStats.io" />
   <link rel="manifest" href="/assets/favicons/site.webmanifest" />
   <link rel="canonical" href="https://dkgstats.io">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
- 
-  <link rel="canonical" href="https://dkgstats.io">
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,7 +36,7 @@
         padding: 0;
         width: 100%;
         height: 100%;
-  }
+}
       body {
         font-family: 'Play', sans-serif;
         background: #0a0a0a;
@@ -79,103 +77,103 @@
       flex-grow: 1;
 }
 
-      .container {
-        background: #373737;
-        padding: 0.5rem;
-        border-radius: 1rem;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 0.5rem;
-        max-width: 27.5625rem;
-        min-width: 24.75rem;
-        flex-grow: 1;
-        position: relative;
-        height: 50rem;
+    .container {
+      background: #373737;
+      padding: 0.5rem;
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0.5rem;
+      max-width: 27.5625rem;
+      min-width: 24.75rem;
+      flex-grow: 1;
+      position: relative;
+      height: 50rem;
 
 }
     
-      .container::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: transparent;
-        box-shadow: 0 0 6.25rem rgb(78 78 78 / 40%);
-        border-radius: 1rem;
-        z-index: -1;
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: transparent;
+      box-shadow: 0 0 6.25rem rgb(78 78 78 / 40%);
+      border-radius: 1rem;
+      z-index: -1;
 }
     
-      .box {
-        background: #0f0f0f;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        min-width: 23.75rem;
-        max-width: 26.5625rem;
-        width: 100%;
+    .box {
+      background: #0f0f0f;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      min-width: 23.75rem;
+      max-width: 26.5625rem;
+      width: 100%;
 }
       
-      .box h3 {
-        text-align: center;
-        font-size: 1.25rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        margin-bottom: 0;
-        color: #acafb0;
+    .box h3 {
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 0;
+      color: #acafb0;
 }
       
-      .box p {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin: 0.2rem 0;
-        color: #b4b7b8;
+    .box p {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 0.2rem 0;
+      color: #b4b7b8;
 }
-      .box:nth-of-type(1) {
-        height: 36.25rem;
-}
-
-      .box:nth-of-type(2) {
-        height:12.25rem;
+    .box:nth-of-type(1) {
+      height: 36.25rem;
 }
 
-      .half-line {
-        display: block;
-        height: 0.875rem
+    .box:nth-of-type(2) {
+      height:12.25rem;
 }
-      .pie-space {
-        display: block;
-        height: 6.5rem
+
+    .half-line {
+      display: block;
+      height: 0.875rem
+}
+    .pie-space {
+      display: block;
+      height: 6.5rem
 }
        
-      .value-container {
-        position: relative;
-        width: 10rem;
-        height: 2.5rem;
+    .value-container {
+      position: relative;
+      width: 10rem;
+      height: 2.5rem;
 }
       
-      .number-value {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        text-align: right;
-        width: 100%;
+    .number-value {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: right;
+      width: 100%;
 }
       
-      .percentage-change {
-        position: absolute;
-        right: 0;
-        top: 96%;
-        transform: translateY(-50%);
-        text-align: right;
-        font-size: 1rem;
-        width: 100%;
+    .percentage-change {
+      position: absolute;
+      right: 0;
+      top: 96%;
+      transform: translateY(-50%);
+      text-align: right;
+      font-size: 1rem;
+      width: 100%;
 }
       
       .positive { color: #1c941c; }
@@ -220,41 +218,41 @@
         pointer-events: none; 
 }
 
-    .graph-box h3 {
-      font-family: 'Play', sans-serif;
-      font-size: 1.125rem;
-      font-weight: bold;
-      text-align: center;
-      margin-top: 0.25rem;
-      margin-bottom: -0.3125rem;
-      color: #999999;
+      .graph-box h3 {
+        font-family: 'Play', sans-serif;
+        font-size: 1.125rem;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 0.25rem;
+        margin-bottom: -0.3125rem;
+        color: #999999;
 }
-    .box.new {
-      height: 11rem;
-}
-    
-    .epoch-box {
-        background: #0f0f0f;
-        border-radius: 0.5rem;
-        min-width: 23.75rem;
-        max-width: 26.5625rem;
-        width: 100%;
-        height: 16rem;
-        position: relative;
-        align-items: center;
-        justify-content: center;
-        padding: 0rem;
+      .box.new {
+        height: 11rem;
 }
     
-    .epoch-box canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100% !important;
-        height: 8.5rem !important;
-        max-width: 100%;
-        max-height: 8.5rem;
-        pointer-events: none;
+      .epoch-box {
+          background: #0f0f0f;
+          border-radius: 0.5rem;
+          min-width: 23.75rem;
+          max-width: 26.5625rem;
+          width: 100%;
+          height: 16rem;
+          position: relative;
+          align-items: center;
+          justify-content: center;
+          padding: 0rem;
+}
+    
+      .epoch-box canvas {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100% !important;
+          height: 8.5rem !important;
+          max-width: 100%;
+          max-height: 8.5rem;
+          pointer-events: none;
 }
     #customLegendContainer,
     #customRewardsLegendContainer,
@@ -306,33 +304,33 @@
       color: #acafb0;
       margin-top: 0.5rem
 }
-  .epoch-box h3 {
-      font-family: 'Play', sans-serif;
-      font-size: 1.125rem;
-      font-weight: bold;
-      text-align: left;
-      margin-top: 0.7rem;
-      margin-bottom: -0.3125rem;
-      margin-left: 35%;
-      color: #999999;
+    .epoch-box h3 {
+        font-family: 'Play', sans-serif;
+        font-size: 1.125rem;
+        font-weight: bold;
+        text-align: left;
+        margin-top: 0.7rem;
+        margin-bottom: -0.3125rem;
+        margin-left: 35%;
+        color: #999999;
 }
 
-  .epoch-box:nth-of-type(2) {
-      height: 26.7rem;
+    .epoch-box:nth-of-type(2) {
+        height: 26.7rem;
 }
-
-  .epoch-box:nth-of-type(3) {
-      height: 10.3rem;
+  
+    .epoch-box:nth-of-type(3) {
+        height: 10.3rem;
 }
-  .date-value {
- position: absolute;
-      right: 0;
-      top: 96%;
-      transform: translateY(-50%);
-      text-align: right;
-      font-size: 1rem;
-      width: 100%;
-    color: #656666;
+    .date-value {
+   position: absolute;
+        right: 0;
+        top: 96%;
+        transform: translateY(-50%);
+        text-align: right;
+        font-size: 1rem;
+        width: 100%;
+      color: #656666;
 }
 </style>
   <!-- Google Analytics Tag -->
@@ -350,9 +348,7 @@
 <img src="https://raw.githubusercontent.com/McCaff0/dkgstats/main/title-image.png" alt="DKGStats.io" class="title-image">
 <h1>DKGStats.io - Real-Time OriginTrail DKG Statistics</h1>
 <div class="main-container">
-  <!-- First Sub-container -->
   <div class="sub-container">
-    <!-- First container with stats-boxes -->
     <div class="container">
       <div class="box">
         <h3>Current</h3>
@@ -437,7 +433,6 @@
           </span>
         </p>
       </div>
-
       <div class="box">
         <p>
           <span>Total KA'S</span>
@@ -469,8 +464,6 @@
         </p>
       </div>
     </div>
-
-    <!-- Second container with graph-boxes -->
     <div class="container new">
       <div class="graph-box">
         <h3>TRAC Price (90D)</h3>
@@ -486,15 +479,10 @@
       </div>
     </div>
   </div>
-
-  <!-- Second Sub-container -->
   <div class="sub-container">
-<!-- Second container with graph-boxes -->
 <div class="container new">
-  <!-- First stats-box for Records -->
   <div class="box new">
     <h3>RECORDS</h3>
-
     <p>
       <span>Daily Publishes</span>
       <span class="value-container">
@@ -502,7 +490,6 @@
         <span id="publishRecordDate" class="date-value"></span>
       </span>
     </p>
-
     <p>
       <span>Daily Spend (TRAC)</span>
       <span class="value-container">
@@ -510,7 +497,6 @@
         <span id="tracSpendRecordDate" class="date-value"></span>
       </span>
     </p>
-
     <p>
       <span>Daily Spend (USD)</span>
       <span class="value-container">
@@ -519,26 +505,21 @@
       </span>
     </p>
   </div>
-
-  <!-- Second epoch-box for 3 pie charts -->
   <div class="epoch-box">
     <h2>CURRENT EPOCH</h2>
     <h3>Total Publishes</h3>
     <canvas id="publishesPieChart"></canvas>
     <div id="customLegendContainer"></div>
     <span class="pie-space"></span>
-
     <h3>Estimated Rewards</h3>
     <canvas id="rewardsPieChart"></canvas>
     <div id="customRewardsLegendContainer"></div>
     <span class="pie-space"></span>
-
     <h3>Staked on Active Nodes</h3>
     <canvas id="stakedPieChart"></canvas>
     <div id="customStakedLegendContainer"></div>
     <span class="pie-space"></span>
   </div>
-
   <div class="epoch-box">
   <h2>EPOCH AVERAGES</h2>
 </div>
@@ -561,6 +542,7 @@ let isFirstDataLoad = false, isFirstSpendLoad = false, isFirstPublishesLoad = fa
 
 let tickFontSize, labelFontSize, chartPadding;
 let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
+    
 let stableHeight = null;
 let resizeTimeout;
 
@@ -701,14 +683,12 @@ function renderChart({
 
     const ctx = canvas.getContext('2d');
 
-    // Destroy the existing chart instance if it exists
     if (window[`${canvasId}Instance`]) {
         console.log(`Destroying chart instance for ${canvasId}`);
         window[`${canvasId}Instance`].destroy();
         window[`${canvasId}Instance`] = null;
     }
 
-    // Create a new chart instance, and do not set any animation options for the first load
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -790,8 +770,6 @@ function renderPieChart({
 }) {
     const ctx = document.getElementById(canvasId).getContext("2d");
     const total = data.reduce((sum, value) => sum + value, 0);
-
-    // Combine labels, data, and colors into an array of objects for sorting
     const combinedData = ["Neuroweb", "Base", "Gnosis"].map((label, i) => ({
         label: label,
         value: data[i],
@@ -799,10 +777,8 @@ function renderPieChart({
         color: ["#262626", "#1f62a1", "#076940"][i]
     }));
 
-    // Sort by percentage in descending order
     combinedData.sort((a, b) => b.percentage - a.percentage);
 
-    // Render custom legend
     const legendContainer = document.getElementById(legendContainerId);
     if (legendContainer) {
         legendContainer.innerHTML = combinedData.map(item => `
@@ -821,7 +797,6 @@ function renderPieChart({
         `).join("");
     }
 
-    // Update or create the chart
     if (isFirstLoad) {
         window[`${canvasId}Instance`] = new Chart(ctx, {
             type: "doughnut",
@@ -841,7 +816,7 @@ function renderPieChart({
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false // Disable default legend
+                        display: false
                     }
                 }
             }
@@ -872,7 +847,6 @@ function updateFontSizesAndPadding() {
 
 function updatePieChartFontSizesAndPadding() {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-
     pieChartFontSize = rootFontSize * 1.05;
     pieChartLayoutPadding = rootFontSize * 1
     pieChartLegendPadding = rootFontSize * 0.7;
@@ -978,16 +952,13 @@ function fetchChartData() {
                     endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value
                 );
 
-                const isFirstLoad = window[endpoint.isFirstLoadFlag]; // Check if it's the first real data load for this chart
-
-                // Destroy the existing chart instance if it exists
+                const isFirstLoad = window[endpoint.isFirstLoadFlag];
                 if (window[`${endpoint.chartId}Instance`]) {
                     console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
                     window[`${endpoint.chartId}Instance`].destroy();
                     window[`${endpoint.chartId}Instance`] = null;
                 }
 
-                // Call renderChart without the animate property for first data load
                 window[`${endpoint.chartId}Instance`] = renderChart({
                     canvasId: endpoint.chartId,
                     labels: labels,
@@ -995,12 +966,11 @@ function fetchChartData() {
                     datasetLabel: endpoint.datasetLabel,
                     yAxisTitle: endpoint.yAxisTitle,
                     yAxisFormatter: endpoint.yAxisFormatter,
-                    isFirstLoad: isFirstLoad // The first data load triggers the default animation
+                    isFirstLoad: isFirstLoad
                 });
 
                 console.log(`Created new chart instance for ${endpoint.chartId}`);
 
-                // After the first load, set the flag to false so animation doesn't occur next time
                 window[endpoint.isFirstLoadFlag] = false;
             })
             .catch(error => {
@@ -1018,7 +988,7 @@ function updateChartData(chartInstance, newLabels, newValues) {
     if (chartInstance) {
         chartInstance.data.labels = newLabels;
         chartInstance.data.datasets[0].data = newValues;
-        chartInstance.update({ duration: 0 }); // No animation for updates
+        chartInstance.update({ duration: 0 });
     }
 }
     
@@ -1087,11 +1057,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let isFirstLoadRewards = true;
     let isFirstLoadStaked = true;
 
-    adjustFontSize(); // Adjust font sizes before rendering charts
+    adjustFontSize();
 
     console.log('Initializing empty charts...');
-
-    // Initialize line charts with empty data and store them on `window`
     window.PriceChartInstance = renderChart({
         canvasId: 'PriceChart',
         labels: [],
@@ -1121,7 +1089,6 @@ document.addEventListener('DOMContentLoaded', function () {
         animate: false,
     });
 
-    // Initialize pie charts with empty data
     renderPieChart({
         canvasId: 'publishesPieChart',
         legendContainerId: 'customLegendContainer',
@@ -1158,7 +1125,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error in fetchData:', error);
         });
 });
-
 
 window.addEventListener('load', function () {
     console.log('Page fully loaded');
