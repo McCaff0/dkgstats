@@ -544,6 +544,8 @@ let tickFontSize, labelFontSize, chartPadding;
 let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
     
 let stableHeight = null;
+let resizeTimeout;
+let recheckTimeout;
 
 function formatNumber(value, decimals = 0, isCurrency = false) {
     if (value == null || value === '') return 'Loading...';
@@ -921,14 +923,20 @@ function resizeCharts() {
 }
 
 function handleResize() {
-    if (!resizing) {
-        resizing = true;
-        requestAnimationFrame(() => {
-            resizeCharts();
-            resizing = false;
-        });
-    }
+    clearTimeout(resizeTimeout);
+    clearTimeout(recheckTimeout);  // Clear any previous recheck timeout
+
+    resizeTimeout = setTimeout(() => {
+        adjustFontSize();  // Adjust font size on resize
+        resizeCharts();    // Adjust chart size on resize
+    }, 100); // 100ms debounce time for resizing
+
+    recheckTimeout = setTimeout(() => {
+        adjustFontSize();  // Ensure font size is correctly adjusted after resizing
+        resizeCharts();    // Ensure charts are correctly resized after the initial resizing
+    }, 200); // Recheck after another 200ms (you can adjust this as needed)
 }
+
 
     
 function fetchChartData() {
