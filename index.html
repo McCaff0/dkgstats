@@ -544,8 +544,7 @@ let tickFontSize, labelFontSize, chartPadding;
 let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
     
 let stableHeight = null;
-let resizeTimeout;
-let recheckTimeout;
+let resizing = false;
 
 function formatNumber(value, decimals = 0, isCurrency = false) {
     if (value == null || value === '') return 'Loading...';
@@ -894,6 +893,8 @@ function adjustFontSize() {
     });
 }
 
+let resizing = false;
+
 function resizeCharts() {
     updateFontSizesAndPadding();
     updatePieChartFontSizesAndPadding();
@@ -921,18 +922,15 @@ function resizeCharts() {
 }
 
 function handleResize() {
-    clearTimeout(resizeTimeout);
-    clearTimeout(recheckTimeout);
-    resizeTimeout = setTimeout(() => {
-        adjustFontSize();
-        resizeCharts();
-    }, 100);
-
-    recheckTimeout = setTimeout(() => {
-        adjustFontSize();
-        resizeCharts();
-    }, 300);
+    if (!resizing) {
+        resizing = true;
+        requestAnimationFrame(() => {
+            resizeCharts();
+            resizing = false;
+        });
+    }
 }
+
     
 function fetchChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
