@@ -545,6 +545,7 @@ let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBord
     
 let stableHeight = null;
 let resizeTimeout;
+let recheckTimeout;
 
 function formatNumber(value, decimals = 0, isCurrency = false) {
     if (value == null || value === '') return 'Loading...';
@@ -921,10 +922,16 @@ function resizeCharts() {
 
 function handleResize() {
     clearTimeout(resizeTimeout);
+    clearTimeout(recheckTimeout);
     resizeTimeout = setTimeout(() => {
         adjustFontSize();
         resizeCharts();
-    }, 200);
+    }, 100);
+
+    recheckTimeout = setTimeout(() => {
+        adjustFontSize();
+        resizeCharts();
+    }, 300);
 }
     
 function fetchChartData() {
