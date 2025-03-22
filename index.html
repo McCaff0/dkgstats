@@ -924,20 +924,24 @@ function resizeCharts() {
     });
 }
 
-let resizing = false;
+let throttleTimeout;
+let lastResizeTime = 0;
+const throttleInterval = 100;
 
 function handleResize() {
-    if (resizing) return; // Prevent multiple animations during resize
+    const now = Date.now();
 
-    resizing = true;
+    if (now - lastResizeTime >= throttleInterval) {
+        lastResizeTime = now;
+        adjustFontSize();
+        resizeCharts();
+    }
 
-    // Request the next frame to update the scaling
-    requestAnimationFrame(() => {
-        adjustFontSize();  // Adjust font size on resize
-        resizeCharts();    // Adjust chart size on resize
-
-        resizing = false; // Reset resizing flag when the animation frame has completed
-    });
+    clearTimeout(recheckTimeout);
+    recheckTimeout = setTimeout(() => {
+        adjustFontSize();
+        resizeCharts();
+    }, 200);
 }
 
     
@@ -1141,9 +1145,12 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 window.addEventListener('load', function () {
-    console.log('Page fully loaded');
-    reapplyScaling();
-    setTimeout(reapplyScaling, 1500);
+    console.log('Page fully loaded, applying resizing after 500ms delay...');
+    
+    setTimeout(() => {
+        adjustFontSize();
+        resizeCharts();
+    }, 500);
 });
 
 window.addEventListener('orientationchange', () => {
