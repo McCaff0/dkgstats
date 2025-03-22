@@ -906,8 +906,6 @@ function adjustFontSize() {
     });
 }
 
-let resizing = false;
-
 function resizeCharts() {
     updateFontSizesAndPadding();
     updatePieChartFontSizesAndPadding();
@@ -934,25 +932,29 @@ function resizeCharts() {
     });
 }
 
-let throttleTimeout;
+let resizing = false;
 let lastResizeTime = 0;
 let recheckTimeout;
-const throttleInterval = 100;
+const throttleInterval = 100;  // Throttle interval for resizes (ms)
 
 function handleResize() {
+    if (resizing) return;  // Prevent execution if resizing is already happening
+
     const now = Date.now();
 
     if (now - lastResizeTime >= throttleInterval) {
         lastResizeTime = now;
-        adjustFontSize();
-        resizeCharts();
+        adjustFontSize();   // Adjust font size immediately on resize
+        resizeCharts();     // Resize charts immediately
     }
 
+    // Set a timeout to recheck after a small delay (debounce mechanism)
     clearTimeout(recheckTimeout);
     recheckTimeout = setTimeout(() => {
-        adjustFontSize();
-        resizeCharts();
-    }, 200);
+        adjustFontSize();  // Reapply font size adjustments
+        resizeCharts();    // Reapply resizing
+        resizing = false;  // Reset resizing flag after the action is completed
+    }, 200);  // Delay before performing the recheck
 }
 
     
@@ -1141,13 +1143,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.body.style.transition = 'font-size 0.5s ease';
     document.body.classList.add('show-content');
-  
-    console.log('Resizing empty charts...');
-    resizeCharts();
-    console.log('Fetching data...');
-    fetchChartData();
+        console.log('Fetching data...');
 
-    fetchPieChartData();
+    fetchChartData().then(() => {
+        console.log('Chart data fetched');
+        resizeCharts();
+    });
+
+    fetchPieChartData().then(() => {
+        console.log('Pie chart data fetched');
+        resizeCharts();
+    });
 
     fetchData()
         .then(() => {
