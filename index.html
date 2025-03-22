@@ -942,27 +942,30 @@ function resizeCharts() {
     });
 }
 
-let isResizing = false;
+let resizing = false;
 let lastResizeTime = 0;
 let recheckTimeout;
 const throttleInterval = 100;
 
 function handleResize() {
-    const now = Date.now();
-    if (isResizing) return;
+    if (resizing) return;
 
-    adjustFontSize();
-    isResizing = true;
+    const now = Date.now();
+
     if (now - lastResizeTime >= throttleInterval) {
         lastResizeTime = now;
-        resizeCharts(); 
+        adjustFontSize();
+        resizeCharts();
     }
 
     clearTimeout(recheckTimeout);
     recheckTimeout = setTimeout(() => {
-        isResizing = false;
-    }, throttleInterval);
+        adjustFontSize();
+        resizeCharts();
+        resizing = false;
+    }, 200);
 }
+
 
     
 function fetchChartData() {
@@ -1147,7 +1150,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstLoadStaked
     });
 
-document.body.style.transition = 'font-size 1.0s ease';
+document.body.style.transition = 'font-size 0.1s ease';
 document.body.classList.add('show-content');
 console.log('Fetching data...');
 fetchChartData();
