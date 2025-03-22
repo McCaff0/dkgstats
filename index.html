@@ -966,8 +966,8 @@ function handleResize() {
     }, 300);
 }
 
+const isPageLoaded = () => document.readyState === 'complete';
 
-    
 function fetchChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
 
@@ -993,26 +993,34 @@ function fetchChartData() {
                     endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value
                 );
 
-                const isFirstLoad = window[endpoint.isFirstLoadFlag];
-                if (window[`${endpoint.chartId}Instance`]) {
-                    console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
-                    window[`${endpoint.chartId}Instance`].destroy();
-                    window[`${endpoint.chartId}Instance`] = null;
+                const renderChartWhenReady = () => {
+                    console.log(`Rendering chart for ${endpoint.chartId} (Page loaded: ${isPageLoaded()})`);
+                    
+                    if (window[`${endpoint.chartId}Instance`]) {
+                        console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
+                        window[`${endpoint.chartId}Instance`].destroy();
+                        window[`${endpoint.chartId}Instance`] = null;
+                    }
+
+                    window[`${endpoint.chartId}Instance`] = renderChart({
+                        canvasId: endpoint.chartId,
+                        labels: labels,
+                        values: values,
+                        datasetLabel: endpoint.datasetLabel,
+                        yAxisTitle: endpoint.yAxisTitle,
+                        yAxisFormatter: endpoint.yAxisFormatter,
+                        isFirstLoad: window[endpoint.isFirstLoadFlag]
+                    });
+
+                    console.log(`Created new chart instance for ${endpoint.chartId}`);
+                    window[endpoint.isFirstLoadFlag] = false;
+                };
+
+                if (isPageLoaded()) {
+                    renderChartWhenReady();
+                } else {
+                    window.addEventListener('load', renderChartWhenReady, { once: true });
                 }
-
-                window[`${endpoint.chartId}Instance`] = renderChart({
-                    canvasId: endpoint.chartId,
-                    labels: labels,
-                    values: values,
-                    datasetLabel: endpoint.datasetLabel,
-                    yAxisTitle: endpoint.yAxisTitle,
-                    yAxisFormatter: endpoint.yAxisFormatter,
-                    isFirstLoad: isFirstLoad
-                });
-
-                console.log(`Created new chart instance for ${endpoint.chartId}`);
-
-                window[endpoint.isFirstLoadFlag] = false;
             })
             .catch(error => {
                 console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data:`, error);
@@ -1023,6 +1031,7 @@ function fetchChartData() {
         console.log("All charts initialized.");
     });
 }
+
 
 function updateChartData(chartInstance, newLabels, newValues) {
     if (chartInstance) {
@@ -1044,46 +1053,55 @@ function fetchPieChartData() {
                 return;
             }
 
-            const chartsConfig = [
-                {
-                    canvasId: 'publishesPieChart',
-                    legendContainerId: 'customLegendContainer',
-                    field: 'epochPublishes',
-                    instanceKey: 'publishesPieChartInstance'
-                },
-                {
-                    canvasId: 'rewardsPieChart',
-                    legendContainerId: 'customRewardsLegendContainer',
-                    field: 'epochRewards',
-                    instanceKey: 'rewardsPieChartInstance'
-                },
-                {
-                    canvasId: 'stakedPieChart',
-                    legendContainerId: 'customStakedLegendContainer',
-                    field: 'stakedAmount',
-                    instanceKey: 'stakedPieChartInstance'
-                }
-            ];
-
-            chartsConfig.forEach(chart => {
-                const values = [
-                    data.neuroweb?.[chart.field] || 0,
-                    data.base?.[chart.field] || 0,
-                    data.gnosis?.[chart.field] || 0
+            function renderWhenReady() {
+                const chartsConfig = [
+                    {
+                        canvasId: 'publishesPieChart',
+                        legendContainerId: 'customLegendContainer',
+                        field: 'epochPublishes',
+                        instanceKey: 'publishesPieChartInstance'
+                    },
+                    {
+                        canvasId: 'rewardsPieChart',
+                        legendContainerId: 'customRewardsLegendContainer',
+                        field: 'epochRewards',
+                        instanceKey: 'rewardsPieChartInstance'
+                    },
+                    {
+                        canvasId: 'stakedPieChart',
+                        legendContainerId: 'customStakedLegendContainer',
+                        field: 'stakedAmount',
+                        instanceKey: 'stakedPieChartInstance'
+                    }
                 ];
-                renderPieChart({
-                    canvasId: chart.canvasId,
-                    legendContainerId: chart.legendContainerId,
-                    data: values,
-                    chartInstance: window[chart.instanceKey],
-                    isFirstLoad: false
+
+                chartsConfig.forEach(chart => {
+                    const values = [
+                        data.neuroweb?.[chart.field] || 0,
+                        data.base?.[chart.field] || 0,
+                        data.gnosis?.[chart.field] || 0
+                    ];
+                    renderPieChart({
+                        canvasId: chart.canvasId,
+                        legendContainerId: chart.legendContainerId,
+                        data: values,
+                        chartInstance: window[chart.instanceKey],
+                        isFirstLoad: false
+                    });
                 });
-            });
+            }
+
+            if (isPageLoaded()) {
+                renderWhenReady(); // If page is already loaded, render immediately
+            } else {
+                window.addEventListener('load', renderWhenReady, { once: true }); // Otherwise, wait for full load
+            }
         })
         .catch(error => {
             console.error("Error fetching chains data:", error);
         });
 }
+
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded and parsed');
@@ -1149,24 +1167,23 @@ document.addEventListener('DOMContentLoaded', function () {
         data: [],
         isFirstLoad: isFirstLoadStaked
     });
-
-});
-
-window.addEventListener('load', function () {
-  document.body.style.transition = 'font-size 0.3s ease';
-  document.body.classList.add('show-content');
-  console.log('Fetching data...');
-fetchChartData();
-fetchPieChartData();
-fetchData()
+    console.log('Fetching data...');
+      fetchChartData();
+      fetchPieChartData();
+      fetchData()
     .then(() => {
         console.log('fetchData completed successfully');
     })
     .catch((error) => {
         console.error('Error in fetchData:', error);
     });
-    console.log('Page fully loaded, applying resizing after 500ms delay...');
-    
+
+});
+
+window.addEventListener('load', function () {
+  document.body.style.transition = 'font-size 0.3s ease';
+  document.body.classList.add('show-content');
+  
     setTimeout(() => {
         adjustFontSize();
         resizeCharts();
