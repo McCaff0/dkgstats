@@ -945,7 +945,7 @@ function resizeCharts() {
 let resizing = false;
 let lastResizeTime = 0;
 let recheckTimeout;
-const throttleInterval = 100;
+const throttleInterval = 300;
 
 function handleResize() {
     if (resizing) return;
@@ -963,7 +963,7 @@ function handleResize() {
         adjustFontSize();
         resizeCharts();
         resizing = false;
-    }, 200);
+    }, 300);
 }
 
 
@@ -1150,7 +1150,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstLoadStaked
     });
 
-document.body.style.transition = 'font-size 0.1s ease';
+document.body.style.transition = 'font-size 0.3s ease';
 document.body.classList.add('show-content');
 console.log('Fetching data...');
 fetchChartData();
@@ -1170,13 +1170,13 @@ window.addEventListener('load', function () {
     setTimeout(() => {
         adjustFontSize();
         resizeCharts();
-    }, 500);
+    }, 1000);
 });
 
 window.addEventListener('orientationchange', () => {
     stableHeight = null;
     clearTimeout(resizeTimeout);
-    setTimeout(handleResize, 200);
+    setTimeout(handleResize, 300);
 });
 
 window.addEventListener('resize', handleResize);
