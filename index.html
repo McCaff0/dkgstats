@@ -867,12 +867,6 @@ function updatePieChartFontSizesAndPadding() {
     pieChartBorderWidth = Math.max(1, targetFontSize * 0.125);
 }
 
-function reapplyScaling() {
-    console.log('Reapplying scaling...');
-    adjustFontSize();
-    resizeCharts();
-}
-
 function isPWA() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 }
@@ -882,9 +876,11 @@ function hasTrueWindowResizing() {
 }
 
 function adjustFontSize() {
-    const referenceHeight = hasTrueWindowResizing() 
-        ? Math.min(window.innerHeight, window.screen.height) 
-        : (stableHeight ?? (stableHeight = Math.min(window.innerHeight, window.screen.height)));
+    const referenceHeight = hasTrueWindowResizing()
+        ? Math.min(window.innerHeight, window.screen.height) // Unlocked scaling
+        : (stableHeight ?? (isPageLoaded() 
+            ? (setTimeout(() => { stableHeight = Math.min(window.innerHeight, window.screen.height); }, 300), Math.min(window.innerHeight, window.screen.height)) 
+            : Math.min(window.innerHeight, window.screen.height))); // Lock scaling after 300ms if page is loaded
 
     const baseFontSize = 16;
     const scalingFactor = referenceHeight / 973;
