@@ -764,6 +764,7 @@ function renderChart({
     });
 
     console.log(`Created new chart instance for ${canvasId}`);
+    resizeCharts();
     return window[`${canvasId}Instance`]; // Ensure correct reference
 }
  
@@ -1010,8 +1011,7 @@ function fetchChartData() {
     );
 
     Promise.all(fetchPromises).then(() => {
-        console.log("All charts initialized. Calling resizeCharts...");
-        resizeCharts();
+        console.log("All charts initialized.");
     });
 }
 
@@ -1141,27 +1141,18 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstLoadStaked
     });
 
-    document.body.style.transition = 'font-size 0.5s ease';
-    document.body.classList.add('show-content');
-        console.log('Fetching data...');
-
-    fetchChartData().then(() => {
-        console.log('Chart data fetched');
-        resizeCharts();
+document.body.style.transition = 'font-size 0.5s ease';
+document.body.classList.add('show-content');
+console.log('Fetching data...');
+fetchChartData();
+fetchPieChartData();
+fetchData()
+    .then(() => {
+        console.log('fetchData completed successfully');
+    })
+    .catch((error) => {
+        console.error('Error in fetchData:', error);
     });
-
-    fetchPieChartData().then(() => {
-        console.log('Pie chart data fetched');
-        resizeCharts();
-    });
-
-    fetchData()
-        .then(() => {
-            console.log('fetchData completed successfully');
-        })
-        .catch((error) => {
-            console.error('Error in fetchData:', error);
-        });
 });
 
 window.addEventListener('load', function () {
