@@ -1150,8 +1150,6 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstLoadStaked
     });
 
-document.body.style.transition = 'font-size 0.3s ease';
-document.body.classList.add('show-content');
 console.log('Fetching data...');
 fetchChartData();
 fetchPieChartData();
@@ -1165,6 +1163,8 @@ fetchData()
 });
 
 window.addEventListener('load', function () {
+  document.body.style.transition = 'font-size 0.3s ease';
+  document.body.classList.add('show-content');
     console.log('Page fully loaded, applying resizing after 500ms delay...');
     
     setTimeout(() => {
