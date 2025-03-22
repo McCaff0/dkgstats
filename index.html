@@ -1075,7 +1075,8 @@ function fetchPieChartData() {
             console.error("Error fetching chains data:", error);
         });
 }
-
+adjustFontSize();
+resizeCharts();
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded and parsed');
 
