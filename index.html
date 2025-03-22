@@ -942,29 +942,26 @@ function resizeCharts() {
     });
 }
 
-let resizing = false;
+let isResizing = false;
 let lastResizeTime = 0;
 let recheckTimeout;
-const throttleInterval = 100;  // Throttle interval for resizes (ms)
+const throttleInterval = 100;
 
 function handleResize() {
-    if (resizing) return;  // Prevent execution if resizing is already happening
-
     const now = Date.now();
+    if (isResizing) return;
 
+    adjustFontSize();
+    isResizing = true;
     if (now - lastResizeTime >= throttleInterval) {
         lastResizeTime = now;
-        adjustFontSize();   // Adjust font size immediately on resize
-        resizeCharts();     // Resize charts immediately
+        resizeCharts(); 
     }
 
-    // Set a timeout to recheck after a small delay (debounce mechanism)
     clearTimeout(recheckTimeout);
     recheckTimeout = setTimeout(() => {
-        adjustFontSize();  // Reapply font size adjustments
-        resizeCharts();    // Reapply resizing
-        resizing = false;  // Reset resizing flag after the action is completed
-    }, 200);  // Delay before performing the recheck
+        isResizing = false;
+    }, throttleInterval);
 }
 
     
