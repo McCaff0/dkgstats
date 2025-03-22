@@ -908,6 +908,7 @@ function adjustFontSize() {
 }
 
 function resizeCharts() {
+    adjustFontSize();
     updateFontSizesAndPadding();
     updatePieChartFontSizesAndPadding();
 
@@ -1075,8 +1076,7 @@ function fetchPieChartData() {
             console.error("Error fetching chains data:", error);
         });
 }
-adjustFontSize();
-resizeCharts();
+
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded and parsed');
 
@@ -1144,7 +1144,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.body.style.transition = 'font-size 0.5s ease';
 document.body.classList.add('show-content');
-resizeCharts();
 console.log('Fetching data...');
 fetchChartData();
 fetchPieChartData();
