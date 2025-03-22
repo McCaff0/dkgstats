@@ -544,8 +544,6 @@ let tickFontSize, labelFontSize, chartPadding;
 let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
     
 let stableHeight = null;
-let resizeTimeout;
-let recheckTimeout;
 
 function formatNumber(value, decimals = 0, isCurrency = false) {
     if (value == null || value === '') return 'Loading...';
@@ -860,8 +858,12 @@ function reapplyScaling() {
     resizeCharts();
 }
 
+function isPWA() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+}
+
 function hasTrueWindowResizing() {
-    return !('ontouchstart' in window) || window.matchMedia("(min-width: 1024px)").matches;
+    return !('ontouchstart' in window) || window.matchMedia("(min-width: 1024px)").matches || isPWA();
 }
 
 function adjustFontSize() {
@@ -922,19 +924,24 @@ function resizeCharts() {
     });
 }
 
+let throttleTimeout;
+let lastResizeTime = 0;
+const throttleInterval = 75;
+
 function handleResize() {
-    clearTimeout(resizeTimeout);
-    clearTimeout(recheckTimeout);  // Clear any previous recheck timeout
+    const now = Date.now();
 
-    resizeTimeout = setTimeout(() => {
-        adjustFontSize();  // Adjust font size on resize
-        resizeCharts();    // Adjust chart size on resize
-    }, 100); // 100ms debounce time for resizing
+    if (now - lastResizeTime >= throttleInterval) {
+        lastResizeTime = now;
+        adjustFontSize();
+        resizeCharts();
+    }
 
+    clearTimeout(recheckTimeout);
     recheckTimeout = setTimeout(() => {
-        adjustFontSize();  // Ensure font size is correctly adjusted after resizing
-        resizeCharts();    // Ensure charts are correctly resized after the initial resizing
-    }, 200); // Recheck after another 200ms (you can adjust this as needed)
+        adjustFontSize();
+        resizeCharts();
+    }, 300);
 }
 
 
@@ -1141,7 +1148,7 @@ document.addEventListener('DOMContentLoaded', function () {
 window.addEventListener('load', function () {
     console.log('Page fully loaded');
     reapplyScaling();
-    setTimeout(reapplyScaling, 1000);
+    setTimeout(reapplyScaling, 1500);
 });
 
 window.addEventListener('orientationchange', () => {
