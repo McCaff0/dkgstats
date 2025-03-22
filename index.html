@@ -924,26 +924,21 @@ function resizeCharts() {
     });
 }
 
-let throttleTimeout;
-let lastResizeTime = 0;
-const throttleInterval = 40;
+let resizing = false;
 
 function handleResize() {
-    const now = Date.now();
+    if (resizing) return; // Prevent multiple animations during resize
 
-    if (now - lastResizeTime >= throttleInterval) {
-        lastResizeTime = now;
-        adjustFontSize();
-        resizeCharts();
-    }
+    resizing = true;
 
-    clearTimeout(recheckTimeout);
-    recheckTimeout = setTimeout(() => {
-        adjustFontSize();
-        resizeCharts();
-    }, 300);
+    // Request the next frame to update the scaling
+    requestAnimationFrame(() => {
+        adjustFontSize();  // Adjust font size on resize
+        resizeCharts();    // Adjust chart size on resize
+
+        resizing = false; // Reset resizing flag when the animation frame has completed
+    });
 }
-
 
     
 function fetchChartData() {
