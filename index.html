@@ -1151,6 +1151,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 console.log('Fetching data...');
+document.body.style.transition = 'font-size 0.3s ease';
+document.body.classList.add('show-content');
 fetchChartData();
 fetchPieChartData();
 fetchData()
