@@ -878,7 +878,7 @@ function isPWA() {
 }
 
 function hasTrueWindowResizing() {
-    return !('ontouchstart' in window) || window.matchMedia("(min-width: 1024px)").matches || isPWA();
+    return !('ontouchstart' in window) || isPWA();
 }
 
 function adjustFontSize() {
