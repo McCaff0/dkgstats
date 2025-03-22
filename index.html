@@ -843,24 +843,28 @@ function renderPieChart({
 }
 
 function updateFontSizesAndPadding() {
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    tickFontSize = rootFontSize * 0.75;
-    labelFontSize = rootFontSize * 0.875;
+    // Get the target font size from adjustFontSize
+    const targetFontSize = adjustFontSize(); // Using the target font size
+
+    tickFontSize = targetFontSize * 0.75;
+    labelFontSize = targetFontSize * 0.875;
 
     chartPadding = {
-        left: rootFontSize * 0.625,
-        right: rootFontSize * 1.5625,
-        top: rootFontSize * 1.8,
-        bottom: rootFontSize * 0
+        left: targetFontSize * 0.625,
+        right: targetFontSize * 1.5625,
+        top: targetFontSize * 1.8,
+        bottom: targetFontSize * 0
     };
 }
 
 function updatePieChartFontSizesAndPadding() {
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    pieChartFontSize = rootFontSize * 1.05;
-    pieChartLayoutPadding = rootFontSize * 1
-    pieChartLegendPadding = rootFontSize * 0.7;
-    pieChartBorderWidth = Math.max(1, rootFontSize * 0.125);
+    // Get the target font size from adjustFontSize
+    const targetFontSize = adjustFontSize(); // Using the target font size
+
+    pieChartFontSize = targetFontSize * 1.05;
+    pieChartLayoutPadding = targetFontSize * 1;
+    pieChartLegendPadding = targetFontSize * 0.7;
+    pieChartBorderWidth = Math.max(1, targetFontSize * 0.125);
 }
 
 function reapplyScaling() {
@@ -891,7 +895,7 @@ function adjustFontSize() {
     newFontSize = Math.max(newFontSize, minFontSize);
 
     const container = document.querySelector('.container');
-    if (!container) return;
+    if (!container) return newFontSize; // If no container is found, return the calculated font size directly
 
     requestAnimationFrame(() => {
         const containerWidth = container.offsetWidth;
@@ -903,8 +907,12 @@ function adjustFontSize() {
             newFontSize *= widthRatio;
         }
 
+        // Apply the calculated font size to the document
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
     });
+
+    // Return the calculated font size
+    return newFontSize;
 }
 
 function resizeCharts() {
