@@ -876,12 +876,7 @@ function hasTrueWindowResizing() {
 }
 
 function adjustFontSize() {
-    const referenceHeight = hasTrueWindowResizing()
-        ? Math.min(window.innerHeight, window.screen.height) // Unlocked scaling
-        : (stableHeight ?? (isPageLoaded() 
-            ? (setTimeout(() => { stableHeight = Math.min(window.innerHeight, window.screen.height); }, 300), Math.min(window.innerHeight, window.screen.height)) 
-            : Math.min(window.innerHeight, window.screen.height))); // Lock scaling after 300ms if page is loaded
-
+    const referenceHeight = document.documentElement.clientHeight || window.innerHeight;
     const baseFontSize = 16;
     const scalingFactor = referenceHeight / 973;
     let newFontSize = baseFontSize * scalingFactor * 1.07;
@@ -891,7 +886,7 @@ function adjustFontSize() {
     newFontSize = Math.max(newFontSize, minFontSize);
 
     const container = document.querySelector('.container');
-    if (!container) return newFontSize; // If no container is found, return the calculated font size directly
+    if (!container) return newFontSize;
 
     requestAnimationFrame(() => {
         const containerWidth = container.offsetWidth;
@@ -903,14 +898,12 @@ function adjustFontSize() {
             newFontSize *= widthRatio;
         }
 
-        // Apply the calculated font size to the document
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
     });
 
-    // Return the calculated font size
     return newFontSize;
 }
-
+    
 function resizeCharts() {
     adjustFontSize();
     updateFontSizesAndPadding();
