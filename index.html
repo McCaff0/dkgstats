@@ -953,7 +953,6 @@ function handleResize() {
 
 const isPageLoaded = () => document.readyState === 'complete';
 
-// Store time range for each chart (default is '90D')
 let chartTimeRanges = {
     price: '90D',
     spend: '90D',
@@ -962,25 +961,29 @@ let chartTimeRanges = {
 
 // Function to set time range for a chart
 function setChartTimeRange(chartId, timeRange) {
+    // Update the time range for the specific chart
     chartTimeRanges[chartId] = timeRange;
     fetchChartData(chartId, timeRange);  // Fetch data for that chart with the selected time range
 }
 
-// Function to fetch chart data for specific chart and time range
-function fetchChartData(chartId, timeRange) {
+// Function to fetch chart data for a specific chart and time range
+function fetchChartData(chartId, timeRange = '90D') {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
 
+    // Define endpoints for each chart type
     const endpoints = {
         price: { path: '/price/', chartId: 'PriceChart', datasetLabel: 'Price', yAxisTitle: 'Price (USD)', yAxisFormatter: null },
         spend: { path: '/spend/', chartId: 'SpendChart', datasetLabel: 'Spend', yAxisTitle: 'Spend (USD)', yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value },
         publishes: { path: '/publishes/', chartId: 'PublishesChart', datasetLabel: 'Publishes', yAxisTitle: 'Publishes', yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value }
     };
 
+    // Get the endpoint object for the chartId
     const endpoint = endpoints[chartId];
-    
-    // Modify the path to include the correct time range (1Y or 90D)
+
+    // Modify the path to include the correct time range (e.g., '/price/90D.json')
     const timeRangePath = `${endpoint.path}${timeRange}.json`;
 
+    // Fetch the data for the specified time range and chart
     fetch(CHART_DATA_BASE_URL + timeRangePath)
         .then(response => response.json())
         .then(data => {
@@ -991,6 +994,7 @@ function fetchChartData(chartId, timeRange) {
                 return;
             }
 
+            // Prepare labels and values for the chart
             const labels = data.map(item => item.date);
             const values = data.map(item =>
                 endpoint.path === '/price/' ? parseFloat(item.value.toFixed(2)) : item.value
@@ -1020,7 +1024,6 @@ function fetchChartData(chartId, timeRange) {
             console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data for ${timeRange}:`, error);
         });
 }
-
 
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
