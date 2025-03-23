@@ -959,7 +959,7 @@ function handleResize() {
 
 const isPageLoaded = () => document.readyState === 'complete';
 
-function fetchChartData() {
+const fetchChartData = () => {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
 
     const endpoints = [
@@ -984,19 +984,23 @@ function fetchChartData() {
                     endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value
                 );
 
-                const isFirstLoad = window[endpoint.isFirstLoadFlag];
+                // Change `const` to `let` for `isFirstLoad`
+                let isFirstLoad = window[endpoint.isFirstLoadFlag];
 
+                // Centralized chart instance destruction before creating a new chart
                 if (window[`${endpoint.chartId}Instance`]) {
                     console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
                     window[`${endpoint.chartId}Instance`].destroy();
                     window[`${endpoint.chartId}Instance`] = null;
                 }
 
+                // After the first populated chart, set animation to false
                 if (data.length > 0 && !window[`${endpoint.chartId}HasBeenPopulated`]) {
                     window[`${endpoint.chartId}HasBeenPopulated`] = true;
                     isFirstLoad = false; // Set to false after the first populated chart
                 }
 
+                // Render the chart (chart instance is now passed directly)
                 window[`${endpoint.chartId}Instance`] = renderChart({
                     canvasId: endpoint.chartId,
                     labels: labels,
@@ -1019,9 +1023,7 @@ function fetchChartData() {
     Promise.all(fetchPromises).then(() => {
         console.log("All charts initialized.");
     });
-}
-
-
+};
 
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
