@@ -688,11 +688,8 @@ function renderChart({
 
     // Check if chart already exists
     if (window[`${canvasId}Instance`]) {
-        if (isFirstLoad) {
-            console.log(`Destroying chart instance for ${canvasId} on first load`);
-            window[`${canvasId}Instance`].destroy();
-            window[`${canvasId}Instance`] = null;
-        } else {
+        // Update data if not the first load
+        if (!isFirstLoad) {
             console.log(`Updating existing chart instance for ${canvasId} without animation`);
             const chart = window[`${canvasId}Instance`];
 
@@ -704,6 +701,10 @@ function renderChart({
             chart.update({ animation: false });
 
             return chart;
+        } else {
+            console.log(`Destroying chart instance for ${canvasId} on first load`);
+            window[`${canvasId}Instance`].destroy();
+            window[`${canvasId}Instance`] = null;
         }
     }
 
@@ -995,14 +996,14 @@ function fetchChartData() {
 
                     const isFirstLoad = window[endpoint.isFirstLoadFlag];
 
-                    // Handle chart destruction and first load logic
+                    // Destroy empty chart if data is available and it's the first load
                     if (isFirstLoad && window[`${endpoint.chartId}Instance`]) {
                         console.log(`Destroying existing chart instance for ${endpoint.chartId} (First Load)`);
                         window[`${endpoint.chartId}Instance`].destroy();
                         window[`${endpoint.chartId}Instance`] = null;
                     }
 
-                    // Create new chart or update existing one
+                    // Create or update chart
                     window[`${endpoint.chartId}Instance`] = renderChart({
                         canvasId: endpoint.chartId,
                         labels: labels,
