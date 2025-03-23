@@ -1011,7 +1011,9 @@ function fetchChartData() {
                     });
 
                     console.log(`Created new chart instance for ${endpoint.chartId}`);
-                    window[endpoint.isFirstLoadFlag] = false;
+                    if (isFirstLoad) {
+                        window[endpoint.isFirstLoadFlag] = false;
+                    }
                 };
 
                 if (isPageLoaded()) {
@@ -1029,6 +1031,7 @@ function fetchChartData() {
         console.log("All charts initialized.");
     });
 }
+
 
     
 function fetchPieChartData() {
