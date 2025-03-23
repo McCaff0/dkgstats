@@ -953,74 +953,72 @@ function handleResize() {
 
 const isPageLoaded = () => document.readyState === 'complete';
 
-function fetchChartData() {
+// Store time range for each chart (default is '90D')
+let chartTimeRanges = {
+    price: '90D',
+    spend: '90D',
+    publishes: '90D',
+};
+
+// Function to set time range for a chart
+function setChartTimeRange(chartId, timeRange) {
+    chartTimeRanges[chartId] = timeRange;
+    fetchChartData(chartId, timeRange);  // Fetch data for that chart with the selected time range
+}
+
+// Function to fetch chart data for specific chart and time range
+function fetchChartData(chartId, timeRange) {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
 
-    const endpoints = [
-        { path: '/price.json', chartId: 'PriceChart', datasetLabel: 'Price', yAxisTitle: 'Price (USD)', yAxisFormatter: null },
-        { path: '/spend.json', chartId: 'SpendChart', datasetLabel: 'Spend', yAxisTitle: 'Spend (USD)', yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value },
-        { path: '/publishes.json', chartId: 'PublishesChart', datasetLabel: 'Publishes', yAxisTitle: 'Publishes', yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value },
-        { path: '/rewards.json', chartId: 'RewardsChart', datasetLabel: 'Rewards', yAxisTitle: 'Rewards (USD)', yAxisFormatter: null },
-        { path: '/staked.json', chartId: 'StakedChart', datasetLabel: 'Staked', yAxisTitle: 'Staked (USD)', yAxisFormatter: null }
-    ];
+    const endpoints = {
+        price: { path: '/price/', chartId: 'PriceChart', datasetLabel: 'Price', yAxisTitle: 'Price (USD)', yAxisFormatter: null },
+        spend: { path: '/spend/', chartId: 'SpendChart', datasetLabel: 'Spend', yAxisTitle: 'Spend (USD)', yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value },
+        publishes: { path: '/publishes/', chartId: 'PublishesChart', datasetLabel: 'Publishes', yAxisTitle: 'Publishes', yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value }
+    };
 
-    const fetchPromises = endpoints.map(endpoint =>
-        fetch(CHART_DATA_BASE_URL + endpoint.path)
-            .then(response => response.json())
-            .then(data => {
-                console.log(`${endpoint.datasetLabel} Data:`, data);
+    const endpoint = endpoints[chartId];
+    
+    // Modify the path to include the correct time range (1Y or 90D)
+    const timeRangePath = `${endpoint.path}${timeRange}.json`;
 
-                if (!Array.isArray(data) || data.length === 0) {
-                    console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
-                    return;
-                }
+    fetch(CHART_DATA_BASE_URL + timeRangePath)
+        .then(response => response.json())
+        .then(data => {
+            console.log(`${endpoint.datasetLabel} Data for ${timeRange}:`, data);
 
-                const labels = data.map(item => item.date);
-                const values = data.map(item =>
-                    endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value
-                );
+            if (!Array.isArray(data) || data.length === 0) {
+                console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data for ${timeRange} received.`);
+                return;
+            }
 
-                // Flag to track if this is the first time real data is being loaded for this chart
-                const isFirstPopulatedLoadFlag = `${endpoint.chartId}FirstPopulatedLoadFlag`;
+            const labels = data.map(item => item.date);
+            const values = data.map(item =>
+                endpoint.path === '/price/' ? parseFloat(item.value.toFixed(2)) : item.value
+            );
 
-                // Initialize the flag if it doesn't exist (for first real data load)
-                if (window[isFirstPopulatedLoadFlag] === undefined) {
-                    window[isFirstPopulatedLoadFlag] = true;
-                }
+            // Handle destruction of previous chart instance if any
+            if (window[`${endpoint.chartId}Instance`]) {
+                console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
+                window[`${endpoint.chartId}Instance`].destroy();
+                window[`${endpoint.chartId}Instance`] = null;
+            }
 
-                // Handle destruction of previous chart instance if any
-                if (window[`${endpoint.chartId}Instance`]) {
-                    console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
-                    window[`${endpoint.chartId}Instance`].destroy();
-                    window[`${endpoint.chartId}Instance`] = null;
-                }
+            // Render the chart with the correct animation logic
+            window[`${endpoint.chartId}Instance`] = renderChart({
+                canvasId: endpoint.chartId,
+                labels: labels,
+                values: values,
+                datasetLabel: endpoint.datasetLabel,
+                yAxisTitle: endpoint.yAxisTitle,
+                yAxisFormatter: endpoint.yAxisFormatter,
+                isFirstLoad: true, // You can adjust this if you need specific behavior for first loads
+            });
 
-                // Render the chart with the correct animation logic
-                window[`${endpoint.chartId}Instance`] = renderChart({
-                    canvasId: endpoint.chartId,
-                    labels: labels,
-                    values: values,
-                    datasetLabel: endpoint.datasetLabel,
-                    yAxisTitle: endpoint.yAxisTitle,
-                    yAxisFormatter: endpoint.yAxisFormatter,
-                    isFirstLoad: window[isFirstPopulatedLoadFlag]
-                });
-
-                console.log(`Created new chart instance for ${endpoint.chartId}`);
-
-                // After the first populated data load, set the flag to false to prevent animation in future updates
-                if (window[isFirstPopulatedLoadFlag]) {
-                    window[isFirstPopulatedLoadFlag] = false;
-                }
-            })
-            .catch(error => {
-                console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data:`, error);
-            })
-    );
-
-    Promise.all(fetchPromises).then(() => {
-        console.log("All charts initialized.");
-    });
+            console.log(`Created new chart instance for ${endpoint.chartId}`);
+        })
+        .catch(error => {
+            console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data for ${timeRange}:`, error);
+        });
 }
 
 
@@ -1151,7 +1149,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isFirstLoad: isFirstLoadStaked
     });
     console.log('Fetching data...');
-      fetchChartData('90D');
+      fetchChartData();
       fetchPieChartData();
       fetchData()
     .then(() => {
