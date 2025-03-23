@@ -686,30 +686,12 @@ function renderChart({
 
     const ctx = canvas.getContext('2d');
 
-    // If the chart already exists, check if it's empty and destroy it if so
     if (window[`${canvasId}Instance`]) {
-        const chart = window[`${canvasId}Instance`];
-
-        // If it's the first load and the chart is empty, destroy it
-        if (isFirstLoad && (chart.data.labels.length === 0 || chart.data.datasets[0].data.length === 0)) {
-            console.log(`Destroying empty chart instance for ${canvasId} on first load`);
-            chart.destroy();  // Destroy the empty chart
-            window[`${canvasId}Instance`] = null;
-        } else {
-            console.log(`Updating existing chart instance for ${canvasId} without animation`);
-
-            // Update the chart's data without animation (skip animation on updates)
-            chart.data.labels = labels;
-            chart.data.datasets[0].data = values;
-
-            // Update chart without animation
-            chart.update({ duration: 0 });
-            return chart;
-        }
+        console.log(`Destroying chart instance for ${canvasId}`);
+        window[`${canvasId}Instance`].destroy();
+        window[`${canvasId}Instance`] = null;
     }
 
-    // Create new chart instance (first time render or empty chart)
-    console.log(`Creating new chart instance for ${canvasId}`);
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -731,7 +713,9 @@ function renderChart({
             maintainAspectRatio: false,
             scales: {
                 x: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)'
+                    },
                     type: 'time',
                     time: {
                         parser: 'yyyy-MM-dd',
@@ -742,7 +726,7 @@ function renderChart({
                     ticks: {
                         autoSkip: true,
                         maxTicksLimit: 10,
-                        callback: (value) => {
+                        callback: function(value) {
                             const date = new Date(value);
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         },
@@ -760,7 +744,9 @@ function renderChart({
                     ticks: {
                         beginAtZero: false,
                         font: { size: tickFontSize, family: 'Play, sans-serif' },
-                        callback: yAxisFormatter || ((value) => parseFloat(value).toFixed(1))
+                        callback: yAxisFormatter || function (value) {
+                            return parseFloat(value).toFixed(1);
+                        }
                     }
                 }
             },
@@ -768,14 +754,20 @@ function renderChart({
                 legend: { display: false },
                 title: { display: false }
             },
-            layout: { padding: chartPadding }
+            layout: {
+                padding: chartPadding
+            },
+            animation: {
+                duration: 600,
+            }            
         }
     });
 
     console.log(`Created new chart instance for ${canvasId}`);
     resizeCharts();
-    return window[`${canvasId}Instance`];
+    return window[`${canvasId}Instance`]; // Ensure correct reference
 }
+
 
  
 function renderPieChart({
@@ -991,9 +983,8 @@ function fetchChartData() {
                 );
 
                 const isFirstLoad = window[endpoint.isFirstLoadFlag];
-
-                if (isFirstLoad && window[`${endpoint.chartId}Instance`]) {
-                    console.log(`Destroying empty chart instance for ${endpoint.chartId} (First Load)`);
+                if (window[`${endpoint.chartId}Instance`]) {
+                    console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
                     window[`${endpoint.chartId}Instance`].destroy();
                     window[`${endpoint.chartId}Instance`] = null;
                 }
