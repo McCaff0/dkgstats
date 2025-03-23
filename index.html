@@ -686,20 +686,29 @@ function renderChart({
 
     const ctx = canvas.getContext('2d');
 
+    // Check if chart already exists
     if (window[`${canvasId}Instance`]) {
         if (isFirstLoad) {
             console.log(`Destroying chart instance for ${canvasId} on first load`);
             window[`${canvasId}Instance`].destroy();
             window[`${canvasId}Instance`] = null;
         } else {
-            console.log(`Updating existing chart instance for ${canvasId}`);
-            window[`${canvasId}Instance`].data.labels = labels;
-            window[`${canvasId}Instance`].data.datasets[0].data = values;
-            window[`${canvasId}Instance`].update();
-            return window[`${canvasId}Instance`];
+            console.log(`Updating existing chart instance for ${canvasId} without animation`);
+            const chart = window[`${canvasId}Instance`];
+
+            // Disable animation for updates
+            chart.options.animation = false;
+
+            // Update data
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = values;
+            
+            chart.update();
+            return chart;
         }
     }
 
+    // Create new chart instance if not already created or if first load
     console.log(`Creating new chart instance for ${canvasId}`);
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
@@ -760,7 +769,7 @@ function renderChart({
                 title: { display: false }
             },
             layout: { padding: chartPadding },
-            animation: { duration: 600 }
+            animation: { duration: 600 } // Default animation for first render only
         }
     });
 
@@ -768,6 +777,7 @@ function renderChart({
     resizeCharts();
     return window[`${canvasId}Instance`];
 }
+
 
  
 function renderPieChart({
