@@ -686,8 +686,7 @@ function renderChart({
 
     const ctx = canvas.getContext('2d');
 
-    // No need to handle destruction here, as it's managed in fetchChartData
-
+    // Handle chart creation with default animation settings
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -754,15 +753,23 @@ function renderChart({
                 padding: chartPadding
             },
             animation: {
-                duration: 600,
-            }            
+                duration: isFirstLoad ? 600 : 0, // Set the animation duration based on whether it's the first load
+            }
         }
     });
 
     console.log(`Created new chart instance for ${canvasId}`);
     resizeCharts();
+
+    // Set animation to false after the first populated chart has been rendered
+    if (window[`${canvasId}HasBeenPopulated`]) {
+        window[`${canvasId}Instance`].options.animation.duration = 0; // Disable animation after first render
+        window[`${canvasId}Instance`].update(); // Ensure the chart re-renders with the new animation setting
+    }
+
     return window[`${canvasId}Instance`]; // Ensure correct reference
 }
+
 
  
 function renderPieChart({
@@ -985,6 +992,11 @@ function fetchChartData() {
                     window[`${endpoint.chartId}Instance`] = null;
                 }
 
+                if (data.length > 0 && !window[`${endpoint.chartId}HasBeenPopulated`]) {
+                    window[`${endpoint.chartId}HasBeenPopulated`] = true;
+                    isFirstLoad = false; // Set to false after the first populated chart
+                }
+
                 window[`${endpoint.chartId}Instance`] = renderChart({
                     canvasId: endpoint.chartId,
                     labels: labels,
@@ -1008,6 +1020,7 @@ function fetchChartData() {
         console.log("All charts initialized.");
     });
 }
+
 
 
 function fetchPieChartData() {
