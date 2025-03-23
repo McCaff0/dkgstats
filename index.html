@@ -788,6 +788,12 @@ function renderPieChart({
 
     const legendContainer = document.getElementById(legendContainerId);
     if (legendContainer) {
+        const h3Title = legendContainer.previousElementSibling;
+        if (h3Title && h3Title.tagName === "H3") {
+            const titleText = h3Title.textContent.split(" - ")[0];
+            h3Title.textContent = `${titleText} - ${formatValueInMillions(total)}`;
+        }
+
         legendContainer.innerHTML = combinedData.map(item => `
             <div style="display: flex; align-items: center; margin-bottom: 0.5rem; font-family: 'Play', sans-serif;">
                 <div style="
