@@ -686,14 +686,14 @@ function renderChart({
 
     const ctx = canvas.getContext('2d');
 
-    // Check if the chart already exists
+    // If the chart already exists, check if it's empty and destroy it if so
     if (window[`${canvasId}Instance`]) {
         const chart = window[`${canvasId}Instance`];
 
-        // On the first data load, destroy the empty chart (if it exists)
+        // If it's the first load and the chart is empty, destroy it
         if (isFirstLoad && (chart.data.labels.length === 0 || chart.data.datasets[0].data.length === 0)) {
             console.log(`Destroying empty chart instance for ${canvasId} on first load`);
-            chart.destroy();  // Destroy the empty chart on first data load
+            chart.destroy();  // Destroy the empty chart
             window[`${canvasId}Instance`] = null;
         } else {
             console.log(`Updating existing chart instance for ${canvasId} without animation`);
@@ -708,7 +708,7 @@ function renderChart({
         }
     }
 
-    // Create new chart instance if it's the first load or no chart exists
+    // Create new chart instance (first time render or empty chart)
     console.log(`Creating new chart instance for ${canvasId}`);
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
@@ -769,7 +769,9 @@ function renderChart({
                 title: { display: false }
             },
             layout: { padding: chartPadding },
-            animation: { duration: 600 }  // Keep the default duration on the first render
+            animation: {
+                duration: 600  // Keep the default duration of 600ms for the first render
+            }
         }
     });
 
@@ -777,6 +779,7 @@ function renderChart({
     resizeCharts();
     return window[`${canvasId}Instance`];
 }
+
  
 function renderPieChart({
     canvasId,
