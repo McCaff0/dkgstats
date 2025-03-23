@@ -867,14 +867,6 @@ function updatePieChartFontSizesAndPadding() {
     pieChartBorderWidth = Math.max(1, targetFontSize * 0.125);
 }
 
-function isPWA() {
-    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-}
-
-function hasTrueWindowResizing() {
-    return !('ontouchstart' in window) || isPWA();
-}
-
 function adjustFontSize() {
     const referenceHeight = document.documentElement.clientHeight || window.innerHeight;
     const baseFontSize = 16;
