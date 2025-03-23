@@ -686,30 +686,28 @@ function renderChart({
 
     const ctx = canvas.getContext('2d');
 
-    // Check if chart already exists
-    if (window[`${canvasId}Instance`]) {
-        // If it's not the first load (after data is ready)
-        if (!isFirstLoad) {
-            console.log(`Updating existing chart instance for ${canvasId} without animation`);
-            const chart = window[`${canvasId}Instance`];
+    // Check if chart already exists and it's not the first load
+    if (window[`${canvasId}Instance`] && !isFirstLoad) {
+        console.log(`Updating existing chart instance for ${canvasId} without animation`);
 
-            // Update data
-            chart.data.labels = labels;
-            chart.data.datasets[0].data = values;
+        // Update data without destroying the chart
+        const chart = window[`${canvasId}Instance`];
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = values;
 
-            // Force update without animation
-            chart.update({ animation: false });
-
-            return chart;
-        } else {
-            // Destroy the empty chart on first data load (only after first real data)
-            console.log(`Destroying chart instance for ${canvasId} on first load`);
-            window[`${canvasId}Instance`].destroy();
-            window[`${canvasId}Instance`] = null;
-        }
+        // Update without animation
+        chart.update({ duration: 0 });
+        return chart;
     }
 
-    // Create new chart instance if not already created or if it's the first load with actual data
+    // Destroy the previous chart instance if it's the first load with actual data
+    if (window[`${canvasId}Instance`] && isFirstLoad) {
+        console.log(`Destroying previous chart instance for ${canvasId} on first data load`);
+        window[`${canvasId}Instance`].destroy();
+        window[`${canvasId}Instance`] = null;
+    }
+
+    // Create a new chart instance for the first data load or when no chart exists
     console.log(`Creating new chart instance for ${canvasId}`);
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
@@ -770,8 +768,8 @@ function renderChart({
                 title: { display: false }
             },
             layout: { padding: chartPadding },
-            // Set animation only after the first real data load
-            animation: isFirstLoad ? { duration: 600 } : false // Default animation for first data load only
+            // Set animation only on the first load
+            animation: isFirstLoad ? { duration: 600 } : { duration: 0 }
         }
     });
 
@@ -779,7 +777,6 @@ function renderChart({
     resizeCharts();
     return window[`${canvasId}Instance`];
 }
-
 
  
 function renderPieChart({
@@ -994,40 +991,20 @@ function fetchChartData() {
                     endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value
                 );
 
-                const renderChartWhenReady = () => {
-                    console.log(`Rendering chart for ${endpoint.chartId} (Page loaded: ${isPageLoaded()})`);
+                const isFirstLoad = window[endpoint.isFirstLoadFlag];
 
-                    const isFirstLoad = window[endpoint.isFirstLoadFlag];
+                // If it's the first load (and the chart isn't already created), render the chart
+                window[`${endpoint.chartId}Instance`] = renderChart({
+                    canvasId: endpoint.chartId,
+                    labels: labels,
+                    values: values,
+                    datasetLabel: endpoint.datasetLabel,
+                    yAxisTitle: endpoint.yAxisTitle,
+                    yAxisFormatter: endpoint.yAxisFormatter,
+                    isFirstLoad: isFirstLoad
+                });
 
-                    // Destroy empty chart if data is available and it's the first load
-                    if (isFirstLoad && window[`${endpoint.chartId}Instance`]) {
-                        console.log(`Destroying existing chart instance for ${endpoint.chartId} (First Load)`);
-                        window[`${endpoint.chartId}Instance`].destroy();
-                        window[`${endpoint.chartId}Instance`] = null;
-                    }
-
-                    // Create or update chart
-                    window[`${endpoint.chartId}Instance`] = renderChart({
-                        canvasId: endpoint.chartId,
-                        labels: labels,
-                        values: values,
-                        datasetLabel: endpoint.datasetLabel,
-                        yAxisTitle: endpoint.yAxisTitle,
-                        yAxisFormatter: endpoint.yAxisFormatter,
-                        isFirstLoad: isFirstLoad
-                    });
-
-                    console.log(`Created new chart instance for ${endpoint.chartId}`);
-                    if (isFirstLoad) {
-                        window[endpoint.isFirstLoadFlag] = false; // Mark the first load as completed
-                    }
-                };
-
-                if (isPageLoaded()) {
-                    renderChartWhenReady();
-                } else {
-                    window.addEventListener('load', renderChartWhenReady, { once: true });
-                }
+                window[endpoint.isFirstLoadFlag] = false;
             })
             .catch(error => {
                 console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data:`, error);
@@ -1038,6 +1015,7 @@ function fetchChartData() {
         console.log("All charts initialized.");
     });
 }
+
     
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
