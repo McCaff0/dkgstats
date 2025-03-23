@@ -686,29 +686,65 @@ function renderChart({
 
     const ctx = canvas.getContext('2d');
 
-    // Check if chart already exists and it's not the first load
-    if (window[`${canvasId}Instance`] && !isFirstLoad) {
-        console.log(`Updating existing chart instance for ${canvasId} without animation`);
-
-        // Update data without destroying the chart
-        const chart = window[`${canvasId}Instance`];
-        chart.data.labels = labels;
-        chart.data.datasets[0].data = values;
-
-        // Update without animation
-        chart.update({ duration: 0 });
-        return chart;
-    }
-
-    // Destroy the previous chart instance if it's the first load with actual data
-    if (window[`${canvasId}Instance`] && isFirstLoad) {
-        console.log(`Destroying previous chart instance for ${canvasId} on first data load`);
+    // Destroy any existing chart instance to avoid memory leaks
+    if (window[`${canvasId}Instance`]) {
+        console.log(`Destroying chart instance for ${canvasId}`);
         window[`${canvasId}Instance`].destroy();
         window[`${canvasId}Instance`] = null;
     }
 
-    // Create a new chart instance for the first data load or when no chart exists
-    console.log(`Creating new chart instance for ${canvasId}`);
+    // Default chart options without any animation settings
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                type: 'time',
+                time: {
+                    parser: 'yyyy-MM-dd',
+                    unit: 'day',
+                    tooltipFormat: 'PP',
+                    displayFormats: { day: 'MMM d' }
+                },
+                ticks: {
+                    autoSkip: true,
+                    maxTicksLimit: 10,
+                    callback: function (value) {
+                        const date = new Date(value);
+                        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    },
+                    font: { size: tickFontSize, family: 'Play, sans-serif' },
+                    padding: 0
+                }
+            },
+            y: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                title: {
+                    display: true,
+                    text: yAxisTitle,
+                    font: { size: labelFontSize, family: 'Play, sans-serif' }
+                },
+                ticks: {
+                    beginAtZero: false,
+                    font: { size: tickFontSize, family: 'Play, sans-serif' },
+                    callback: yAxisFormatter || function (value) {
+                        return parseFloat(value).toFixed(1);
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: { display: false },
+            title: { display: false }
+        },
+        layout: {
+            padding: chartPadding
+        },
+        // No animation settings set here
+    };
+
+    // Create the chart with no animation settings at this point
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -725,52 +761,7 @@ function renderChart({
                 borderWidth: tickFontSize / 6
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    type: 'time',
-                    time: {
-                        parser: 'yyyy-MM-dd',
-                        unit: 'day',
-                        tooltipFormat: 'PP',
-                        displayFormats: { day: 'MMM d' }
-                    },
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10,
-                        callback: (value) => {
-                            const date = new Date(value);
-                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                        },
-                        font: { size: tickFontSize, family: 'Play, sans-serif' },
-                        padding: 0
-                    }
-                },
-                y: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    title: {
-                        display: true,
-                        text: yAxisTitle,
-                        font: { size: labelFontSize, family: 'Play, sans-serif' }
-                    },
-                    ticks: {
-                        beginAtZero: false,
-                        font: { size: tickFontSize, family: 'Play, sans-serif' },
-                        callback: yAxisFormatter || ((value) => parseFloat(value).toFixed(1))
-                    }
-                }
-            },
-            plugins: {
-                legend: { display: false },
-                title: { display: false }
-            },
-            layout: { padding: chartPadding },
-            // Set animation only on the first load
-            animation: isFirstLoad ? { duration: 600 } : { duration: 0 }
-        }
+        options: chartOptions
     });
 
     console.log(`Created new chart instance for ${canvasId}`);
@@ -993,7 +984,14 @@ function fetchChartData() {
 
                 const isFirstLoad = window[endpoint.isFirstLoadFlag];
 
-                // If it's the first load (and the chart isn't already created), render the chart
+                // Check if the chart already exists and needs to be destroyed
+                if (window[`${endpoint.chartId}Instance`]) {
+                    console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
+                    window[`${endpoint.chartId}Instance`].destroy();
+                    window[`${endpoint.chartId}Instance`] = null;
+                }
+
+                // Create a new chart with the current data
                 window[`${endpoint.chartId}Instance`] = renderChart({
                     canvasId: endpoint.chartId,
                     labels: labels,
@@ -1004,6 +1002,18 @@ function fetchChartData() {
                     isFirstLoad: isFirstLoad
                 });
 
+                console.log(`Created new chart instance for ${endpoint.chartId}`);
+
+                if (!isFirstLoad) {
+                    const chartInstance = window[`${endpoint.chartId}Instance`];
+                    if (chartInstance) {
+                        chartInstance.update({
+                            duration: 0, // Explicitly set duration to 0 to disable animation
+                        });
+                    }
+                }
+
+                // Set the first load flag to false after the first data load
                 window[endpoint.isFirstLoadFlag] = false;
             })
             .catch(error => {
