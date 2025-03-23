@@ -688,7 +688,7 @@ function renderChart({
 
     // Check if chart already exists
     if (window[`${canvasId}Instance`]) {
-        // Update data if not the first load
+        // If it's not the first load (after data is ready)
         if (!isFirstLoad) {
             console.log(`Updating existing chart instance for ${canvasId} without animation`);
             const chart = window[`${canvasId}Instance`];
@@ -702,6 +702,7 @@ function renderChart({
 
             return chart;
         } else {
+            // Destroy the empty chart on first data load (only after first real data)
             console.log(`Destroying chart instance for ${canvasId} on first load`);
             window[`${canvasId}Instance`].destroy();
             window[`${canvasId}Instance`] = null;
@@ -769,6 +770,7 @@ function renderChart({
                 title: { display: false }
             },
             layout: { padding: chartPadding },
+            // Set animation only after the first real data load
             animation: isFirstLoad ? { duration: 600 } : false // Default animation for first data load only
         }
     });
@@ -777,6 +779,7 @@ function renderChart({
     resizeCharts();
     return window[`${canvasId}Instance`];
 }
+
 
  
 function renderPieChart({
@@ -1035,7 +1038,6 @@ function fetchChartData() {
         console.log("All charts initialized.");
     });
 }
-
     
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
