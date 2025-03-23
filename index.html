@@ -686,11 +686,7 @@ function renderChart({
 
     const ctx = canvas.getContext('2d');
 
-    if (window[`${canvasId}Instance`]) {
-        console.log(`Destroying chart instance for ${canvasId}`);
-        window[`${canvasId}Instance`].destroy();
-        window[`${canvasId}Instance`] = null;
-    }
+    // No need to handle destruction here, as it's managed in fetchChartData
 
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
@@ -767,7 +763,6 @@ function renderChart({
     resizeCharts();
     return window[`${canvasId}Instance`]; // Ensure correct reference
 }
-
 
  
 function renderPieChart({
@@ -983,6 +978,7 @@ function fetchChartData() {
                 );
 
                 const isFirstLoad = window[endpoint.isFirstLoadFlag];
+
                 if (window[`${endpoint.chartId}Instance`]) {
                     console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
                     window[`${endpoint.chartId}Instance`].destroy();
@@ -1012,6 +1008,7 @@ function fetchChartData() {
         console.log("All charts initialized.");
     });
 }
+
 
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
