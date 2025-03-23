@@ -843,7 +843,6 @@ function renderPieChart({
 }
 
 function updateFontSizesAndPadding() {
-    // Get the target font size from adjustFontSize
     const targetFontSize = adjustFontSize(); // Using the target font size
 
     tickFontSize = targetFontSize * 0.75;
@@ -858,7 +857,6 @@ function updateFontSizesAndPadding() {
 }
 
 function updatePieChartFontSizesAndPadding() {
-    // Get the target font size from adjustFontSize
     const targetFontSize = adjustFontSize(); // Using the target font size
 
     pieChartFontSize = targetFontSize * 1.05;
@@ -883,7 +881,7 @@ function adjustFontSize() {
     requestAnimationFrame(() => {
         const containerWidth = container.offsetWidth;
         const viewportWidth = window.innerWidth;
-        const maxWidth = 0.98 * viewportWidth;
+        const maxWidth = 0.96 * viewportWidth;
 
         if (containerWidth > maxWidth) {
             const widthRatio = maxWidth / containerWidth;
@@ -1169,12 +1167,6 @@ window.addEventListener('load', function () {
         adjustFontSize();
         resizeCharts();
     }, 1000);
-});
-
-window.addEventListener('orientationchange', () => {
-    stableHeight = null;
-    clearTimeout(resizeTimeout);
-    setTimeout(handleResize, 300);
 });
 
 window.addEventListener('resize', handleResize);
