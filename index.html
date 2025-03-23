@@ -687,11 +687,20 @@ function renderChart({
     const ctx = canvas.getContext('2d');
 
     if (window[`${canvasId}Instance`]) {
-        console.log(`Destroying chart instance for ${canvasId}`);
-        window[`${canvasId}Instance`].destroy();
-        window[`${canvasId}Instance`] = null;
+        if (isFirstLoad) {
+            console.log(`Destroying chart instance for ${canvasId} on first load`);
+            window[`${canvasId}Instance`].destroy();
+            window[`${canvasId}Instance`] = null;
+        } else {
+            console.log(`Updating existing chart instance for ${canvasId}`);
+            window[`${canvasId}Instance`].data.labels = labels;
+            window[`${canvasId}Instance`].data.datasets[0].data = values;
+            window[`${canvasId}Instance`].update();
+            return window[`${canvasId}Instance`];
+        }
     }
 
+    console.log(`Creating new chart instance for ${canvasId}`);
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -713,9 +722,7 @@ function renderChart({
             maintainAspectRatio: false,
             scales: {
                 x: {
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.05)'
-                    },
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     type: 'time',
                     time: {
                         parser: 'yyyy-MM-dd',
@@ -726,7 +733,7 @@ function renderChart({
                     ticks: {
                         autoSkip: true,
                         maxTicksLimit: 10,
-                        callback: function(value) {
+                        callback: (value) => {
                             const date = new Date(value);
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         },
@@ -744,9 +751,7 @@ function renderChart({
                     ticks: {
                         beginAtZero: false,
                         font: { size: tickFontSize, family: 'Play, sans-serif' },
-                        callback: yAxisFormatter || function (value) {
-                            return parseFloat(value).toFixed(1);
-                        }
+                        callback: yAxisFormatter || ((value) => parseFloat(value).toFixed(1))
                     }
                 }
             },
@@ -754,19 +759,16 @@ function renderChart({
                 legend: { display: false },
                 title: { display: false }
             },
-            layout: {
-                padding: chartPadding
-            },
-            animation: {
-                duration: 600,
-            }            
+            layout: { padding: chartPadding },
+            animation: { duration: 600 }
         }
     });
 
     console.log(`Created new chart instance for ${canvasId}`);
     resizeCharts();
-    return window[`${canvasId}Instance`]; // Ensure correct reference
+    return window[`${canvasId}Instance`];
 }
+
  
 function renderPieChart({
     canvasId,
@@ -1018,15 +1020,6 @@ function fetchChartData() {
         console.log("All charts initialized.");
     });
 }
-
-
-function updateChartData(chartInstance, newLabels, newValues) {
-    if (chartInstance) {
-        chartInstance.data.labels = newLabels;
-        chartInstance.data.datasets[0].data = newValues;
-        chartInstance.update({ duration: 0 });
-    }
-}
     
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
@@ -1187,7 +1180,7 @@ function startIntervals() {
     clearInterval(piechartInterval);
 
     dataInterval = setInterval(fetchData, 10000);
-    chartInterval = setInterval(updateChartData, 60000);
+    chartInterval = setInterval(fetchChartData, 60000);
     piechartInterval = setInterval(fetchPieChartData, 60000);
 }
 
