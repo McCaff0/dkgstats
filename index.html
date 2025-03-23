@@ -953,6 +953,7 @@ function handleResize() {
 
 const isPageLoaded = () => document.readyState === 'complete';
 
+// Store time range for each chart (default is '90D')
 let chartTimeRanges = {
     price: '90D',
     spend: '90D',
@@ -961,9 +962,13 @@ let chartTimeRanges = {
 
 // Function to set time range for a chart
 function setChartTimeRange(chartId, timeRange) {
-    // Update the time range for the specific chart
+    if (!chartTimeRanges.hasOwnProperty(chartId)) {
+        console.error(`Invalid chartId: ${chartId}`);
+        return;
+    }
+
     chartTimeRanges[chartId] = timeRange;
-    fetchChartData(chartId, timeRange);  // Fetch data for that chart with the selected time range
+    fetchChartData(chartId, timeRange); // Fetch data for that chart with the selected time range
 }
 
 // Function to fetch chart data for a specific chart and time range
@@ -977,13 +982,19 @@ function fetchChartData(chartId, timeRange = '90D') {
         publishes: { path: '/publishes/', chartId: 'PublishesChart', datasetLabel: 'Publishes', yAxisTitle: 'Publishes', yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value }
     };
 
-    // Get the endpoint object for the chartId
+    // Validate chartId
+    if (!endpoints.hasOwnProperty(chartId)) {
+        console.error(`fetchChartData Error: Invalid chartId "${chartId}"`);
+        return;
+    }
+
     const endpoint = endpoints[chartId];
 
-    // Modify the path to include the correct time range (e.g., '/price/90D.json')
+    // Construct the path to fetch data
     const timeRangePath = `${endpoint.path}${timeRange}.json`;
 
-    // Fetch the data for the specified time range and chart
+    console.log(`Fetching ${endpoint.datasetLabel} data from: ${CHART_DATA_BASE_URL + timeRangePath}`);
+
     fetch(CHART_DATA_BASE_URL + timeRangePath)
         .then(response => response.json())
         .then(data => {
@@ -1015,7 +1026,7 @@ function fetchChartData(chartId, timeRange = '90D') {
                 datasetLabel: endpoint.datasetLabel,
                 yAxisTitle: endpoint.yAxisTitle,
                 yAxisFormatter: endpoint.yAxisFormatter,
-                isFirstLoad: true, // You can adjust this if you need specific behavior for first loads
+                isFirstLoad: true,
             });
 
             console.log(`Created new chart instance for ${endpoint.chartId}`);
