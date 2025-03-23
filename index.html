@@ -788,7 +788,9 @@ function renderPieChart({
 
     const legendContainer = document.getElementById(legendContainerId);
     if (legendContainer) {
-        const h3Title = legendContainer.previousElementSibling;
+        const canvasElement = legendContainer.previousElementSibling;
+        const h3Title = canvasElement ? canvasElement.previousElementSibling : null;
+
         if (h3Title && h3Title.tagName === "H3") {
             const titleText = h3Title.textContent.split(" - ")[0];
             h3Title.textContent = `${titleText} - ${formatValueInMillions(total)}`;
