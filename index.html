@@ -942,7 +942,7 @@ function handleResize() {
         adjustFontSize();
         resizeCharts();
         resizing = false;
-    }, 300);
+    }, 100);
 }
 
 const isPageLoaded = () => document.readyState === 'complete';
@@ -1160,7 +1160,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 window.addEventListener('load', function () {
-  document.body.style.transition = 'font-size 0.3s ease';
+  document.body.style.transition = 'font-size 0.1s ease';
   document.body.classList.add('show-content');
   
     setTimeout(() => {
