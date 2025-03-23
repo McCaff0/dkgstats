@@ -952,22 +952,25 @@ function handleResize() {
 }
 
 const isPageLoaded = () => document.readyState === 'complete';
-
-function fetchChartData(timeRange = '90D', specificChart = null) {
+const chartConfigurations = {
+    PriceChart: { timeRange: '90D' },
+    SpendChart: { timeRange: '90D' },
+    PublishesChart: { timeRange: '90D' }
+};
+function fetchChartData(chartId = null) {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
 
     const endpoints = [
         { path: '/price.json', chartId: 'PriceChart', datasetLabel: 'Price', yAxisTitle: 'Price (USD)', yAxisFormatter: null },
         { path: '/spend.json', chartId: 'SpendChart', datasetLabel: 'Spend', yAxisTitle: 'Spend (USD)', yAxisFormatter: (value) => value >= 1000 ? (value / 1000) + 'K' : value },
-        { path: '/publishes.json', chartId: 'PublishesChart', datasetLabel: 'Publishes', yAxisTitle: 'Publishes', yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value },
-        { path: '/rewards.json', chartId: 'RewardsChart', datasetLabel: 'Rewards', yAxisTitle: 'Rewards (USD)', yAxisFormatter: null },
-        { path: '/staked.json', chartId: 'StakedChart', datasetLabel: 'Staked', yAxisTitle: 'Staked (USD)', yAxisFormatter: null }
+        { path: '/publishes.json', chartId: 'PublishesChart', datasetLabel: 'Publishes', yAxisTitle: 'Publishes', yAxisFormatter: (value) => value >= 1000000 ? (value / 1000000) + 'M' : value }
     ];
 
     // Filter endpoints if a specific chart is requested
-    const filteredEndpoints = specificChart ? endpoints.filter(endpoint => endpoint.chartId === specificChart) : endpoints;
+    const filteredEndpoints = chartId ? endpoints.filter(endpoint => endpoint.chartId === chartId) : endpoints;
 
     const fetchPromises = filteredEndpoints.map(endpoint => {
+        const timeRange = chartConfigurations[endpoint.chartId].timeRange; // Get the current time range for the chart
         const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
 
         return fetch(url)
@@ -1026,6 +1029,14 @@ function fetchChartData(timeRange = '90D', specificChart = null) {
     Promise.all(fetchPromises).then(() => {
         console.log("All charts initialized.");
     });
+}
+function updateChartTimeRange(chartId, timeRange) {
+    if (chartConfigurations[chartId]) {
+        chartConfigurations[chartId].timeRange = timeRange;
+        fetchChartData(chartId); // Immediately update the chart with the new time range
+    } else {
+        console.error(`Invalid chart ID: ${chartId}`);
+    }
 }
 
 function fetchPieChartData() {
@@ -1187,11 +1198,16 @@ function startIntervals() {
     clearInterval(piechartInterval);
 
     dataInterval = setInterval(fetchData, 10000);
-    chartInterval = setInterval(fetchChartData, 60000);
+    chartInterval = setInterval(() => {
+        // Update each chart with its current configuration
+        Object.keys(chartConfigurations).forEach(chartId => {
+            fetchChartData(chartId);
+        });
+    }, 60000);
     piechartInterval = setInterval(fetchPieChartData, 60000);
 }
-
 startIntervals();
+    
   </script>
   
 </body>
