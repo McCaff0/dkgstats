@@ -690,14 +690,15 @@ function renderChart({
     if (window[`${canvasId}Instance`]) {
         const chart = window[`${canvasId}Instance`];
 
-        if (isFirstLoad) {
+        // On the first data load, destroy the empty chart (if it exists)
+        if (isFirstLoad && (chart.data.labels.length === 0 || chart.data.datasets[0].data.length === 0)) {
             console.log(`Destroying empty chart instance for ${canvasId} on first load`);
             chart.destroy();  // Destroy the empty chart on first data load
             window[`${canvasId}Instance`] = null;
         } else {
             console.log(`Updating existing chart instance for ${canvasId} without animation`);
 
-            // Update the chart's data without animation
+            // Update the chart's data without animation (skip animation on updates)
             chart.data.labels = labels;
             chart.data.datasets[0].data = values;
 
@@ -768,7 +769,7 @@ function renderChart({
                 title: { display: false }
             },
             layout: { padding: chartPadding },
-            animation: { duration: 600 }  // Default animation duration for first render
+            animation: { duration: 600 }  // Keep the default duration on the first render
         }
     });
 
@@ -776,7 +777,6 @@ function renderChart({
     resizeCharts();
     return window[`${canvasId}Instance`];
 }
-
  
 function renderPieChart({
     canvasId,
@@ -992,7 +992,6 @@ function fetchChartData() {
 
                 const isFirstLoad = window[endpoint.isFirstLoadFlag];
 
-                // Don't destroy the chart if it's already rendered
                 if (isFirstLoad && window[`${endpoint.chartId}Instance`]) {
                     console.log(`Destroying empty chart instance for ${endpoint.chartId} (First Load)`);
                     window[`${endpoint.chartId}Instance`].destroy();
@@ -1011,7 +1010,6 @@ function fetchChartData() {
 
                 console.log(`Created new chart instance for ${endpoint.chartId}`);
 
-                // Update the flag after the first load
                 window[endpoint.isFirstLoadFlag] = false;
             })
             .catch(error => {
@@ -1024,7 +1022,6 @@ function fetchChartData() {
     });
 }
 
-    
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
 
