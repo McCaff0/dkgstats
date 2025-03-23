@@ -696,14 +696,13 @@ function renderChart({
             console.log(`Updating existing chart instance for ${canvasId} without animation`);
             const chart = window[`${canvasId}Instance`];
 
-            // Disable animation for updates
-            chart.options.animation = false;
-
             // Update data
             chart.data.labels = labels;
             chart.data.datasets[0].data = values;
             
-            chart.update();
+            // Force update without animation
+            chart.update({ animation: false });
+
             return chart;
         }
     }
@@ -777,8 +776,6 @@ function renderChart({
     resizeCharts();
     return window[`${canvasId}Instance`];
 }
-
-
  
 function renderPieChart({
     canvasId,
