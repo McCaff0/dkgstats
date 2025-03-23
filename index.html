@@ -957,6 +957,7 @@ const chartConfigurations = {
     SpendChart: { timeRange: '90D' },
     PublishesChart: { timeRange: '90D' }
 };
+
 function fetchChartData(chartId = null) {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
 
@@ -968,7 +969,6 @@ function fetchChartData(chartId = null) {
 
     // Filter endpoints if a specific chart is requested
     const filteredEndpoints = chartId ? endpoints.filter(endpoint => endpoint.chartId === chartId) : endpoints;
-
     const fetchPromises = filteredEndpoints.map(endpoint => {
         const timeRange = chartConfigurations[endpoint.chartId].timeRange; // Get the current time range for the chart
         const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
@@ -988,37 +988,48 @@ function fetchChartData(chartId = null) {
                     endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value
                 );
 
-                // Flag to track if this is the first time real data is being loaded for this chart
-                const isFirstPopulatedLoadFlag = `${endpoint.chartId}FirstPopulatedLoadFlag`;
+                // Function to render the chart
+                const renderChartData = () => {
+                    // Flag to track if this is the first time real data is being loaded for this chart
+                    const isFirstPopulatedLoadFlag = `${endpoint.chartId}FirstPopulatedLoadFlag`;
 
-                // Initialize the flag if it doesn't exist (for first real data load)
-                if (window[isFirstPopulatedLoadFlag] === undefined) {
-                    window[isFirstPopulatedLoadFlag] = true;
-                }
+                    // Initialize the flag if it doesn't exist (for first real data load)
+                    if (window[isFirstPopulatedLoadFlag] === undefined) {
+                        window[isFirstPopulatedLoadFlag] = true;
+                    }
 
-                // Handle destruction of previous chart instance if any
-                if (window[`${endpoint.chartId}Instance`]) {
-                    console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
-                    window[`${endpoint.chartId}Instance`].destroy();
-                    window[`${endpoint.chartId}Instance`] = null;
-                }
+                    // Handle destruction of previous chart instance if any
+                    if (window[`${endpoint.chartId}Instance`]) {
+                        console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
+                        window[`${endpoint.chartId}Instance`].destroy();
+                        window[`${endpoint.chartId}Instance`] = null;
+                    }
 
-                // Render the chart with the correct animation logic
-                window[`${endpoint.chartId}Instance`] = renderChart({
-                    canvasId: endpoint.chartId,
-                    labels: labels,
-                    values: values,
-                    datasetLabel: endpoint.datasetLabel,
-                    yAxisTitle: endpoint.yAxisTitle,
-                    yAxisFormatter: endpoint.yAxisFormatter,
-                    isFirstLoad: window[isFirstPopulatedLoadFlag]
-                });
+                    // Render the chart with the correct animation logic
+                    window[`${endpoint.chartId}Instance`] = renderChart({
+                        canvasId: endpoint.chartId,
+                        labels: labels,
+                        values: values,
+                        datasetLabel: endpoint.datasetLabel,
+                        yAxisTitle: endpoint.yAxisTitle,
+                        yAxisFormatter: endpoint.yAxisFormatter,
+                        isFirstLoad: window[isFirstPopulatedLoadFlag]
+                    });
 
-                console.log(`Created new chart instance for ${endpoint.chartId}`);
+                    console.log(`Created new chart instance for ${endpoint.chartId}`);
 
-                // After the first populated data load, set the flag to false to prevent animation in future updates
-                if (window[isFirstPopulatedLoadFlag]) {
-                    window[isFirstPopulatedLoadFlag] = false;
+                    // After the first populated data load, set the flag to false to prevent animation in future updates
+                    if (window[isFirstPopulatedLoadFlag]) {
+                        window[isFirstPopulatedLoadFlag] = false;
+                    }
+                };
+
+                // Render immediately if the page is already loaded
+                if (isPageLoaded()) {
+                    renderChartData();
+                } else {
+                    // Otherwise, wait for the page to load before rendering
+                    window.addEventListener('load', renderChartData, { once: true });
                 }
             })
             .catch(error => {
