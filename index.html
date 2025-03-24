@@ -928,11 +928,9 @@ function updatePieChartFontSizesAndPadding() {
 }
 
 function adjustFontSize() {
-    const actualViewportWidth = window.innerWidth / window.devicePixelRatio;
-    const actualViewportHeight = window.innerHeight / window.devicePixelRatio;
-
+    const referenceHeight = document.documentElement.clientHeight || window.innerHeight;
     const baseFontSize = 16;
-    const scalingFactor = actualViewportHeight / 973;
+    const scalingFactor = referenceHeight / 973;
     let newFontSize = baseFontSize * scalingFactor * 1.07;
 
     const minScaleFactor = 0.6;
@@ -944,7 +942,8 @@ function adjustFontSize() {
 
     requestAnimationFrame(() => {
         const containerWidth = container.offsetWidth;
-        const maxWidth = 0.96 * actualViewportWidth;
+        const viewportWidth = window.innerWidth;
+        const maxWidth = 0.96 * viewportWidth;
 
         if (containerWidth > maxWidth) {
             const widthRatio = maxWidth / containerWidth;
