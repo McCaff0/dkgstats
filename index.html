@@ -441,7 +441,7 @@
           <span>Annual Spend (USD)</span>
           <span class="value-container">
             <span id="annualspend" class="number-value">Loading...</span>
-            <span class="percentage-change"></span>
+            <span id="annualspendchange1d" class="percentage-change"></span>
           </span>
         </p>
         <p>
@@ -455,7 +455,7 @@
           <span>Daily Publishes</span>
           <span class="value-container">
             <span id="dailypublishes" class="number-value">Loading...</span>
-            <span class="percentage-change"></span>
+            <span id="dailypublisheschange1d" class="percentage-change"></span>
           </span>
         </p>
         <span class="half-line"></span>
@@ -705,8 +705,8 @@ function handleData(sheetData, records) {
     updateText('paranets', formatNumber(sheetData.paranets, 0));
 
     updateHTML('pricechange1d', formatPercentage(sheetData.pricechange1d, '24H'));
-    updateHTML('dailypublisheschange30d', formatPercentage(sheetData.dailypublisheschange30d, '30D'));
-    updateHTML('annualspendchange30d', formatPercentage(sheetData.annualspendchange30d, '30D'));
+    updateHTML('dailypublisheschange1d', formatPercentage(sheetData.dailypublisheschange1d, '24H'));
+    updateHTML('annualspendchange1d', formatPercentage(sheetData.annualspendchange1d, '24H'));
     updateHTML('kas24h', formatNumberChange(sheetData.kas24h, '(24H)'));
     updateHTML('spend24h', formatNumberChange(sheetData.spend24h, '(24H)'));
 
