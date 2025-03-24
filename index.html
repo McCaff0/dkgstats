@@ -441,7 +441,7 @@
           <span>Annual Spend (USD)</span>
           <span class="value-container">
             <span id="annualspend" class="number-value">Loading...</span>
-            <span id="annualspendchange30d" class="percentage-change"></span>
+            <span class="percentage-change"></span>
           </span>
         </p>
         <p>
@@ -455,7 +455,7 @@
           <span>Daily Publishes</span>
           <span class="value-container">
             <span id="dailypublishes" class="number-value">Loading...</span>
-            <span id="dailypublisheschange30d" class="percentage-change"></span>
+            <span class="percentage-change"></span>
           </span>
         </p>
         <span class="half-line"></span>
@@ -602,8 +602,6 @@ let isFirstDataLoad = false, isFirstSpendLoad = false, isFirstPublishesLoad = fa
 
 let tickFontSize, labelFontSize, chartPadding;
 let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
-    
-let stableHeight = null;
 
 function formatNumber(value, decimals = 0, isCurrency = false) {
     if (value == null || value === '') return 'Loading...';
@@ -902,12 +900,9 @@ function renderPieChart({
     }
 }
 
-function updateFontSizesAndPadding() {
-    const targetFontSize = adjustFontSize(); // Using the target font size
-
+function updateFontSizesAndPadding(targetFontSize) {
     tickFontSize = targetFontSize * 0.75;
     labelFontSize = targetFontSize * 0.875;
-
     chartPadding = {
         left: targetFontSize * 0.4,
         right: targetFontSize * 1.5625,
@@ -916,12 +911,9 @@ function updateFontSizesAndPadding() {
     };
 }
 
-function updatePieChartFontSizesAndPadding() {
-    const targetFontSize = adjustFontSize(); // Using the target font size
-
+function updatePieChartFontSizesAndPadding(targetFontSize) {
     pieChartFontSize = targetFontSize * 1.05;
     pieChartLayoutPadding = targetFontSize * 1;
-    pieChartLegendPadding = targetFontSize * 0.7;
     pieChartBorderWidth = Math.max(1, targetFontSize * 0.125);
 }
 
@@ -936,29 +928,24 @@ function adjustFontSize() {
     newFontSize = Math.max(newFontSize, minFontSize);
 
     const container = document.querySelector('.container');
-    if (!container) return newFontSize;
-
-    requestAnimationFrame(() => {
+    if (container) {
         const containerWidth = container.offsetWidth;
         const viewportWidth = window.innerWidth;
         const maxWidth = 0.97 * viewportWidth;
-
         if (containerWidth > maxWidth) {
-            const widthRatio = maxWidth / containerWidth;
-            newFontSize *= widthRatio;
+            newFontSize *= maxWidth / containerWidth;
         }
-
-        document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
-    });
-
+    }
+    document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
     return newFontSize;
 }
     
 function resizeCharts() {
-    adjustFontSize();
-    updateFontSizesAndPadding();
-    updatePieChartFontSizesAndPadding();
+    const targetFontSize = adjustFontSize(); // Call ONCE
+    updateFontSizesAndPadding(targetFontSize);
+    updatePieChartFontSizesAndPadding(targetFontSize);
 
+    // Update all charts
     const chartInstances = [window.PublishesChartInstance, window.PriceChartInstance, window.SpendChartInstance];
     const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
 
@@ -980,41 +967,45 @@ function resizeCharts() {
         }
     });
 }
-
-let resizing = false;
-let lastResizeTime = 0;
-let recheckTimeout;
-const throttleInterval = 150;
-const resizeThreshold = 50;
+let isThrottled = false;
+let finalCheckTimeout = null;
 let lastWidth = window.innerWidth;
 let lastHeight = window.innerHeight;
+const throttleDelay = 150; // milliseconds
+const resizeThreshold = 50; // pixels
+const finalCheckDelay = 300; // milliseconds after last resize
 
 function handleResize() {
-    if (resizing) return;
-
     const currentWidth = window.innerWidth;
     const currentHeight = window.innerHeight;
+
     if (Math.abs(currentWidth - lastWidth) < resizeThreshold && 
-        Math.abs(currentHeight - lastHeight) < resizeThreshold) {
-        return; // Exit if the resize is too small
+       Math.abs(currentHeight - lastHeight) < resizeThreshold) {
+        return;
     }
 
-    const now = Date.now();
+    lastWidth = currentWidth;
+    lastHeight = currentHeight;
 
-    if (now - lastResizeTime >= throttleInterval) {
-        lastResizeTime = now;
-        resizeCharts();
-        lastWidth = currentWidth; // Update lastWidth after adjustments
-        lastHeight = currentHeight; // Update lastHeight after adjustments
+    if (finalCheckTimeout) {
+        clearTimeout(finalCheckTimeout);
+        finalCheckTimeout = null;
     }
 
-    clearTimeout(recheckTimeout);
-    recheckTimeout = setTimeout(() => {
+    if (!isThrottled) {
         resizeCharts();
-        resizing = false;
-        lastWidth = window.innerWidth; // Update lastWidth after adjustments
-        lastHeight = window.innerHeight; // Update lastHeight after adjustments
-    }, 300);
+        isThrottled = true;
+
+        setTimeout(() => {
+            isThrottled = false;
+        }, throttleDelay);
+    }
+    finalCheckTimeout = setTimeout(() => {
+        if (!isThrottled) {
+            resizeCharts();
+        }
+        finalCheckTimeout = null;
+    }, finalCheckDelay);
 }
 
 const isPageLoaded = () => document.readyState === 'complete';
