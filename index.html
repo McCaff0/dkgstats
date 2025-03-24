@@ -772,26 +772,21 @@ function renderChart({
                     },
                     type: 'time',
                     time: {
-                        parser: 'yyyy-MM-dd',
-                        tooltipFormat: 'PP',
-                        ddisplayFormats: {
-        day: 'MMM d',
-        month: 'MMM yy' // Two-digit year format
- 
-                      },
-                        source: 'data', // Use data points to generate ticks
-                        bounds: 'ticks' // Ensure the axis starts and ends at the first and last ticks
-                    },
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10, // Adjust as needed
-                        callback: function(value) {
-                            const date = new Date(value);
-                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                        },
-                        font: { size: tickFontSize, family: 'Play, sans-serif' },
-                        padding: 0
-                    }
+    parser: 'yyyy-MM-dd',
+    tooltipFormat: 'PP',
+    displayFormats: {
+        day: 'MMM d', // Format for day ticks (e.g., "Oct 10")
+        month: 'MMM yy' // Format for month ticks (e.g., "Oct 25")
+    },
+    source: 'data',
+    bounds: 'ticks'
+},
+ticks: {
+    autoSkip: true,
+    maxTicksLimit: 10, // Adjust as needed
+    font: { size: tickFontSize, family: 'Play, sans-serif' },
+    padding: 0
+}
                 },
                 y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
