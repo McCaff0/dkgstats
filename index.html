@@ -215,9 +215,9 @@
         position: absolute; 
         top: 0;
         left: 0;
-        width: 100% !important;
+        width: 99% !important;
         height: 100% !important;
-        max-width: 100%;
+        max-width: 99%;
         max-height: 100%;
         pointer-events: none; 
 }
@@ -774,10 +774,7 @@ function renderChart({
                     time: {
     parser: 'yyyy-MM-dd',
     tooltipFormat: 'PP',
-    displayFormats: {
-        day: 'MMM d', // Format for day ticks (e.g., "Oct 10")
-        month: 'MMM yy' // Format for month ticks (e.g., "Oct 25")
-    },
+    displayFormats: {day: 'MMM d'},
     source: 'data',
     bounds: 'ticks'
 },
