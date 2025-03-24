@@ -231,6 +231,48 @@
         margin-bottom: -0.3125rem;
         color: #999999;
 }
+
+.time-range-buttons {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  display: flex;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+.time-range-button {
+  border: none;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: #333;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.3s, color 0.3s;
+  height: 1rem;
+  line-height: 1rem;
+}
+
+.time-range-button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.time-range-button:hover {
+  background-color: #ddd;
+}
+
+.time-range-button:first-child {
+  border-top-left-radius: 1.25rem;
+  border-bottom-left-radius: 1.25rem;
+}
+
+.time-range-button:last-child {
+  border-top-right-radius: 1.25rem;
+  border-bottom-right-radius: 1.25rem;
+}
       .box.new {
         height: 11rem;
 }
@@ -469,20 +511,32 @@
       </div>
     </div>
     <div class="container new">
-      <div class="graph-box">
-        <h3>TRAC Price (90D)</h3>
-        <canvas id="PriceChart"></canvas>
-      </div>
-      <div class="graph-box">
-        <h3>Daily USD Spend (90D)</h3>
-        <canvas id="SpendChart"></canvas>
-      </div>
-      <div class="graph-box">
-        <h3>Daily Publishes (90D)</h3>
-        <canvas id="PublishesChart"></canvas>
-      </div>
+  <div class="graph-box">
+    <h3>TRAC Price</h3>
+    <canvas id="PriceChart"></canvas>
+    <div class="time-range-buttons">
+      <button class="time-range-button active" data-chart-id="PriceChart" data-time-range="90D">90D</button>
+      <button class="time-range-button" data-chart-id="PriceChart" data-time-range="1Y">1Y</button>
     </div>
   </div>
+  <div class="graph-box">
+    <h3>Daily USD Spend</h3>
+    <canvas id="SpendChart"></canvas>
+    <div class="time-range-buttons">
+      <button class="time-range-button active" data-chart-id="SpendChart" data-time-range="90D">90D</button>
+      <button class="time-range-button" data-chart-id="SpendChart" data-time-range="1Y">1Y</button>
+    </div>
+  </div>
+  <div class="graph-box">
+    <h3>Daily Publishes</h3>
+    <canvas id="PublishesChart"></canvas>
+    <div class="time-range-buttons">
+      <button class="time-range-button active" data-chart-id="PublishesChart" data-time-range="90D">90D</button>
+      <button class="time-range-button" data-chart-id="PublishesChart" data-time-range="1Y">1Y</button>
+    </div>
+  </div>
+</div>
+</div>
   <div class="sub-container">
 <div class="container new">
   <div class="box new">
@@ -1111,7 +1165,20 @@ function fetchPieChartData() {
         });
 }
 
+document.querySelectorAll('.time-range-button').forEach(button => {
+  button.addEventListener('click', () => {
+    const chartId = button.getAttribute('data-chart-id');
+    const timeRange = button.getAttribute('data-time-range');
 
+    button.parentElement.querySelectorAll('.time-range-button').forEach(btn => {
+      btn.classList.remove('active');
+    });
+
+    button.classList.add('active');
+    updateChartTimeRange(chartId, timeRange);
+  });
+});
+    
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM fully loaded and parsed');
 
