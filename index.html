@@ -773,13 +773,15 @@ function renderChart({
                     type: 'time',
                     time: {
                         parser: 'yyyy-MM-dd',
-                        unit: 'day',
                         tooltipFormat: 'PP',
-                        displayFormats: { day: 'MMM d' }
+                        displayFormats: { day: 'MMM d' },
+                        unit: 'day', // Let Chart.js decide the unit automatically
+                        source: 'data', // Use data points to generate ticks
+                        bounds: 'ticks' // Ensure the axis starts and ends at the first and last ticks
                     },
                     ticks: {
                         autoSkip: true,
-                        maxTicksLimit: 10,
+                        maxTicksLimit: 10, // Adjust as needed
                         callback: function(value) {
                             const date = new Date(value);
                             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
