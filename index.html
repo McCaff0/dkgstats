@@ -249,22 +249,25 @@
   color: #585858;
   cursor: pointer;
   font-size: 0.875rem;
-  font-family: 'Play', sans-serif; /* Set font to Play */
-  font-weight: bold; /* Set font weight to bold */
+  font-family: 'Play', sans-serif;
+  font-weight: bold;
   transition: background-color 0.3s, color 0.3s;
   height: 1.3rem;
-  line-height: 0.9rem;
+  line-height: 0.75rem;
   -webkit-tap-highlight-color: rgba(128, 128, 128, 0.5);
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
 }
 .time-range-button:active {
-  background-color: transparent;
-  color: #7c7c7c;
+  background-color: transparent !important;
+  color: #7c7c7c !important;
 }
 
 .time-range-button:focus {
-  background-color: transparent;
-  color: #7c7c7c;
-  outline: none;
+  background-color: transparent !important;
+  color: #7c7c7c !important;
+  outline: none !important;
 }
 
 .time-range-button.active {
