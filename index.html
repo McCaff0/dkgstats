@@ -943,7 +943,7 @@ function adjustFontSize() {
     requestAnimationFrame(() => {
         const containerWidth = container.offsetWidth;
         const viewportWidth = window.innerWidth;
-        const maxWidth = 0.8 * viewportWidth;
+        const maxWidth = 0.97 * viewportWidth;
 
         if (containerWidth > maxWidth) {
             const widthRatio = maxWidth / containerWidth;
@@ -986,7 +986,7 @@ function resizeCharts() {
 let resizing = false;
 let lastResizeTime = 0;
 let recheckTimeout;
-const throttleInterval = 100;
+const throttleInterval = 150;
 const resizeThreshold = 50;
 let lastWidth = window.innerWidth;
 let lastHeight = window.innerHeight;
@@ -1005,7 +1005,6 @@ function handleResize() {
 
     if (now - lastResizeTime >= throttleInterval) {
         lastResizeTime = now;
-        adjustFontSize();
         resizeCharts();
         lastWidth = currentWidth; // Update lastWidth after adjustments
         lastHeight = currentHeight; // Update lastHeight after adjustments
@@ -1013,7 +1012,6 @@ function handleResize() {
 
     clearTimeout(recheckTimeout);
     recheckTimeout = setTimeout(() => {
-        adjustFontSize();
         resizeCharts();
         resizing = false;
         lastWidth = window.innerWidth; // Update lastWidth after adjustments
