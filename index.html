@@ -987,9 +987,19 @@ let resizing = false;
 let lastResizeTime = 0;
 let recheckTimeout;
 const throttleInterval = 100;
+const resizeThreshold = 50;
+let lastWidth = window.innerWidth;
+let lastHeight = window.innerHeight;
 
 function handleResize() {
     if (resizing) return;
+
+    const currentWidth = window.innerWidth;
+    const currentHeight = window.innerHeight;
+    if (Math.abs(currentWidth - lastWidth) < resizeThreshold && 
+        Math.abs(currentHeight - lastHeight) < resizeThreshold) {
+        return; // Exit if the resize is too small
+    }
 
     const now = Date.now();
 
@@ -997,6 +1007,8 @@ function handleResize() {
         lastResizeTime = now;
         adjustFontSize();
         resizeCharts();
+        lastWidth = currentWidth; // Update lastWidth after adjustments
+        lastHeight = currentHeight; // Update lastHeight after adjustments
     }
 
     clearTimeout(recheckTimeout);
@@ -1004,6 +1016,8 @@ function handleResize() {
         adjustFontSize();
         resizeCharts();
         resizing = false;
+        lastWidth = window.innerWidth; // Update lastWidth after adjustments
+        lastHeight = window.innerHeight; // Update lastHeight after adjustments
     }, 300);
 }
 
