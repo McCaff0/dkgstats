@@ -774,8 +774,11 @@ function renderChart({
                     time: {
                         parser: 'yyyy-MM-dd',
                         tooltipFormat: 'PP',
-                        displayFormats: { day: 'MMM d' },
-                        unit: 'day', // Let Chart.js decide the unit automatically
+                        ddisplayFormats: {
+        day: 'MMM d',
+        month: 'MMM yy' // Two-digit year format
+ 
+                      },
                         source: 'data', // Use data points to generate ticks
                         bounds: 'ticks' // Ensure the axis starts and ends at the first and last ticks
                     },
