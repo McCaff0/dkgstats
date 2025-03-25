@@ -765,25 +765,25 @@ function renderChart({
             maintainAspectRatio: false,
             scales: {
                 x: {
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.05)'
-                    },
-                    type: 'time',
-                    time: {
-    parser: 'yyyy-MM-dd',
-    tooltipFormat: 'PP',
-                      unit: 'day',
-    displayFormats: {day: 'MMM d'},
-    source: 'data',
-    bounds: 'data'
-},
-min: labels[0], // First date
-max: labels[labels.length - 1], // Last date
-ticks: {
-    autoSkip: true,
-    maxTicksLimit: 10, // Adjust as needed
-    font: { size: tickFontSize, family: 'Play, sans-serif' },
-    padding: 0
+        type: 'time',
+        time: {
+            parser: 'yyyy-MM-dd',
+            tooltipFormat: 'PP',
+            unit: 'day',
+            displayFormats: { day: 'MMM d' },
+            source: 'data',
+            bounds: 'data'
+        },
+        **min: labels[0], // First date**
+        **max: labels[labels.length - 1], // Last date**
+        grid: {
+            color: 'rgba(255, 255, 255, 0.05)'
+        },
+        ticks: {
+            autoSkip: false,  // Ensures all labels have a chance to be shown
+            maxTicksLimit: labels.length, // Ensures first and last are included
+            font: { size: tickFontSize, family: 'Play, sans-serif' },
+            padding: 0
 }
                 },
                 y: {
