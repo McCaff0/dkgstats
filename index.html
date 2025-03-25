@@ -784,13 +784,18 @@ function renderChart({
     font: { size: tickFontSize, family: 'Play, sans-serif' },
     padding: 0,
     callback: function(value, index, values) {
+        // Convert timestamp to a readable date
+        const date = new Date(value);
+        const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
         // Force first and last tick to always appear
         if (index === 0 || index === values.length - 1) {
-            return value;  
+            return formattedDate;  
         }
+        
         // Distribute ticks evenly based on maxTicksLimit
         const step = Math.ceil(values.length / 10); // Dynamically determine step size
-        return index % step === 0 ? value : '';  
+        return index % step === 0 ? formattedDate : '';  
     }
 }
                 },
