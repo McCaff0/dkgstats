@@ -737,11 +737,6 @@ function renderChart({
         console.error(`${canvasId} canvas not found!`);
         return;
     }
-  const normalizedLabels = labels.map(date => {
-    const normalizedDate = new Date(date);
-    normalizedDate.setHours(0, 0, 0, 0); // Set to midnight to ignore time
-    return normalizedDate.toISOString(); // Return as ISO string in YYYY-MM-DD format
-});  
   canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = canvas.parentElement.offsetHeight;
     const ctx = canvas.getContext('2d');
@@ -750,7 +745,7 @@ function renderChart({
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: normalizedLabels || [],
+            labels: Labels || [],
             datasets: [{
                 label: datasetLabel,
                 data: values || [],
