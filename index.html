@@ -917,55 +917,63 @@ function updatePieChartFontSizesAndPadding(newFontSize) {
 }
 
 function adjustFontSize() {
-    const referenceHeight = document.documentElement.clientHeight || window.innerHeight;
-    const baseFontSize = 16;
-    const scalingFactor = referenceHeight / 973;
-    let newFontSize = baseFontSize * scalingFactor * 1.07;
+    return new Promise((resolve) => {
+        const referenceHeight = document.documentElement.clientHeight || window.innerHeight;
+        const baseFontSize = 16;
+        const scalingFactor = referenceHeight / 973;
+        let newFontSize = baseFontSize * scalingFactor * 1.07;
 
-    const minScaleFactor = 0.6;
-    const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
-    newFontSize = Math.max(newFontSize, minFontSize);
+        const minScaleFactor = 0.6;
+        const minFontSize = baseFontSize * (window.screen.height * minScaleFactor / 973) * 1.07;
+        newFontSize = Math.max(newFontSize, minFontSize);
 
-    const container = document.querySelector('.container');
-    if (container) {
-        const containerWidth = container.offsetWidth;
-        const viewportWidth = window.innerWidth;
-        const maxWidth = 0.97 * viewportWidth;
-        if (containerWidth > maxWidth) {
-            newFontSize *= maxWidth / containerWidth;
+        const container = document.querySelector('.container');
+        if (container) {
+            const containerWidth = container.offsetWidth;
+            const viewportWidth = window.innerWidth;
+            const maxWidth = 0.97 * viewportWidth;
+            if (containerWidth > maxWidth) {
+                newFontSize *= maxWidth / containerWidth;
+            }
         }
+
+        document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
+        resolve(newFontSize); // Resolve the promise with the new font size
+    });
+}
+
+async function resizeCharts() {
+    try {
+        const newFontSize = await adjustFontSize(); // Wait for adjustFontSize to complete and get the new font size
+        updateFontSizesAndPadding(newFontSize); // Update the padding and font sizes
+        updatePieChartFontSizesAndPadding(newFontSize); // Same for pie chart font sizes
+
+        // Update all charts after the font size and padding updates
+        const chartInstances = [window.PublishesChartInstance, window.PriceChartInstance, window.SpendChartInstance];
+        const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
+
+        chartInstances.forEach(chart => {
+            if (chart) {
+                chart.options.scales.x.ticks.font.size = tickFontSize;
+                chart.options.scales.y.ticks.font.size = tickFontSize;
+                chart.options.scales.y.title.font.size = labelFontSize;
+                chart.options.layout.padding = chartPadding;
+                chart.update();
+            }
+        });
+
+        pieChartInstances.forEach(chart => {
+            if (chart) {
+                chart.options.layout.padding = pieChartLayoutPadding;
+                chart.options.elements.arc.borderWidth = pieChartBorderWidth;
+                chart.update();
+            }
+        });
+    } catch (error) {
+        console.error("Error in resizeCharts:", error);
     }
-    document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
-    return newFontSize;
 }
-    
-function resizeCharts() {
-    const newFontSize = adjustFontSize(); // Call ONCE
-    updateFontSizesAndPadding(newFontSize);
-    updatePieChartFontSizesAndPadding(newFontSize);
 
-    // Update all charts
-    const chartInstances = [window.PublishesChartInstance, window.PriceChartInstance, window.SpendChartInstance];
-    const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
-
-    chartInstances.forEach(chart => {
-        if (chart) {
-            chart.options.scales.x.ticks.font.size = tickFontSize;
-            chart.options.scales.y.ticks.font.size = tickFontSize;
-            chart.options.scales.y.title.font.size = labelFontSize;
-            chart.options.layout.padding = chartPadding;
-            chart.update();
-        }
-    });
-
-    pieChartInstances.forEach(chart => {
-        if (chart) {
-            chart.options.layout.padding = pieChartLayoutPadding;
-            chart.options.elements.arc.borderWidth = pieChartBorderWidth;
-            chart.update();
-        }
-    });
-}
 let isThrottled = false;
 let finalCheckTimeout = null;
 let lastWidth = window.innerWidth;
