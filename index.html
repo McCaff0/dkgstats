@@ -742,7 +742,8 @@ function renderChart({
 
     // Determine the animation setting based on whether it’s the first populated chart render
     const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
-
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
     // Render the chart with the correct animation settings
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
@@ -765,39 +766,34 @@ function renderChart({
             maintainAspectRatio: false,
             scales: {
                 x: {
-        type: 'time',
-        time: {
-            parser: 'yyyy-MM-dd',
-            tooltipFormat: 'PP',
-            unit: 'day',
-            displayFormats: { day: 'MMM d' },
-            source: 'data',
-            bounds: 'ticks'
-        },
-        
-        grid: {
-            color: 'rgba(255, 255, 255, 0.05)'
-        },
-        ticks: {
-    autoSkip: false,  
-    maxTicksLimit: 10,  // Ensure there are at most 10 ticks
-    font: { size: tickFontSize, family: 'Play, sans-serif' },
-    padding: 0,
-    callback: function(value, index, values) {
-        // Convert timestamp to a readable date
-        const date = new Date(value);
-        const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-        // Force first and last tick to always appear
-        if (index === 0 || index === values.length - 1) {
-            return formattedDate;  
-        }
-        
-        // Distribute ticks evenly based on maxTicksLimit
-        const step = Math.ceil(values.length / 10); // Dynamically determine step size
-        return index % step === 0 ? formattedDate : '';  
-    }
-}
+                    type: 'time',
+                    time: {
+                        parser: 'yyyy-MM-dd',
+                        tooltipFormat: 'PP',
+                        unit: 'day',
+                        displayFormats: { day: 'MMM d' },
+                        source: 'data',
+                        bounds: 'ticks'
+                    },
+                    max: today, // Set max to today
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)'
+                    },
+                    ticks: {
+                        autoSkip: false,  
+                        maxTicksLimit: 10,  // Ensure there are at most 10 ticks
+                        font: { size: tickFontSize, family: 'Play, sans-serif' },
+                        padding: 0,
+                        callback: function(value, index, values) {
+                            const date = new Date(value);
+                            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            if (index === 0 || index === values.length - 1 || value === today) {
+                                return formattedDate;  
+                            }
+                            const step = Math.ceil(values.length / 10); // Dynamically determine step size
+                            return index % step === 0 ? formattedDate : '';  
+                        }
+                    }
                 },
                 y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
