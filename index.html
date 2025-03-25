@@ -618,7 +618,7 @@ function formatPercentage(value, period) {
     if (isNaN(number)) return value;
     const sign = number > 0 ? '+' : number < 0 ? '-' : '';
     const className = number > 0 ? 'positive' : number < 0 ? 'negative' : 'neutral';
-    const p = Math.abs(number) * 100;
+    const p = Math.abs(number);
     const formatted = p < 10 ? p.toFixed(2) : p < 100 ? p.toFixed(1) : p.toFixed(0);
     return `<span class="${className}">${sign}${formatted}% (${period})</span>`;
 }
@@ -692,13 +692,13 @@ function handleData(sheetData, records) {
     updateText('marketcap', formatNumber(sheetData.marketcap, 0, true));
     updateText('peratio', formatNumber(sheetData.peratio, 1));
     updateText('tracstaked', formatNumber(sheetData.tracstaked, 0, true));
-    updateText('stakingapy', formatNumber(sheetData.stakingapy * 100, 2) + '%');
+    updateText('stakingapy', formatNumber(sheetData.stakingapy, 2) + '%');
     updateText('annualspend', formatNumber(sheetData.annualspend, 0, true));
     updateText('dailyspend', formatNumber(sheetData.dailyspend, 0, true));
     updateText('dailypublishes', formatNumber(sheetData.dailypublishes, 0));
     updateText('publishpricetrac', formatNumber(sheetData.publishpricetrac, 6));
     updateText('publishpriceusd', formatNumber(sheetData.publishpriceusd, 6));
-    updateText('stakingfee', formatNumber(sheetData.stakingfee * 100, 2) + '%');
+    updateText('stakingfee', formatNumber(sheetData.stakingfee, 2) + '%');
     updateText('totalkas', formatNumber(sheetData.totalkas, 0));
     updateText('totaltracspent', formatNumber(sheetData.totaltracspent, 0));
     updateText('activenodes', formatNumber(sheetData.activenodes, 0));
