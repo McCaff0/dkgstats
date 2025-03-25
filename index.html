@@ -737,17 +737,20 @@ function renderChart({
         console.error(`${canvasId} canvas not found!`);
         return;
     }
-    canvas.width = canvas.parentElement.offsetWidth;
+  const normalizedLabels = labels.map(date => {
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0); // Set to midnight to ignore time
+    return normalizedDate.toISOString(); // Return as ISO string in YYYY-MM-DD format
+});  
+  canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = canvas.parentElement.offsetHeight;
     const ctx = canvas.getContext('2d');
-  
-
     // Determine the animation setting based on whether it’s the first populated chart render
     const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels || [],
+            labels: normalizedLabels || [],
             datasets: [{
                 label: datasetLabel,
                 data: values || [],
