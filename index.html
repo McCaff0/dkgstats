@@ -772,10 +772,10 @@ function renderChart({
             unit: 'day',
             displayFormats: { day: 'MMM d' },
             source: 'data',
-            bounds: 'data'
+            bounds: 'ticks'
         },
-        **min: labels[0], // First date**
-        **max: labels[labels.length - 1], // Last date**
+        min: labels[0], // First date**
+        max: labels[labels.length - 1], // Last date**
         grid: {
             color: 'rgba(255, 255, 255, 0.05)'
         },
