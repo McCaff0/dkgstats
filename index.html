@@ -976,23 +976,10 @@ async function resizeCharts() {
 
 let isThrottled = false;
 let finalCheckTimeout = null;
-let lastWidth = window.innerWidth;
-let lastHeight = window.innerHeight;
-const throttleDelay = 150; // milliseconds
-const resizeThreshold = 50; // pixels
-const finalCheckDelay = 300; // milliseconds after last resize
+const throttleDelay = 100; // milliseconds
+const finalCheckDelay = 500; // milliseconds after last resize
 
 function handleResize() {
-    const currentWidth = window.innerWidth;
-    const currentHeight = window.innerHeight;
-
-    if (Math.abs(currentWidth - lastWidth) < resizeThreshold && 
-       Math.abs(currentHeight - lastHeight) < resizeThreshold) {
-        return;
-    }
-
-    lastWidth = currentWidth;
-    lastHeight = currentHeight;
 
     if (finalCheckTimeout) {
         clearTimeout(finalCheckTimeout);
