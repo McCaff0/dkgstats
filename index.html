@@ -899,21 +899,21 @@ function renderPieChart({
     }
 }
 
-function updateFontSizesAndPadding(targetFontSize) {
-    tickFontSize = targetFontSize * 0.75;
-    labelFontSize = targetFontSize * 0.875;
+function updateFontSizesAndPadding(newFontSize) {
+    tickFontSize = newFontSize * 0.75;
+    labelFontSize = newFontSize * 0.875;
     chartPadding = {
-        left: targetFontSize * 0.4,
-        right: targetFontSize * 1.5625,
-        top: targetFontSize * 1.8,
-        bottom: targetFontSize * 0
+        left: newFontSize * 0.4,
+        right: newFontSize * 1.5625,
+        top: newFontSize * 1.8,
+        bottom: newFontSize * 0
     };
 }
 
-function updatePieChartFontSizesAndPadding(targetFontSize) {
-    pieChartFontSize = targetFontSize * 1.05;
-    pieChartLayoutPadding = targetFontSize * 1;
-    pieChartBorderWidth = Math.max(1, targetFontSize * 0.125);
+function updatePieChartFontSizesAndPadding(newFontSize) {
+    pieChartFontSize = newFontSize * 1.05;
+    pieChartLayoutPadding = newFontSize * 1;
+    pieChartBorderWidth = Math.max(1, newFontSize * 0.125);
 }
 
 function adjustFontSize() {
@@ -940,9 +940,9 @@ function adjustFontSize() {
 }
     
 function resizeCharts() {
-    const targetFontSize = adjustFontSize(); // Call ONCE
-    updateFontSizesAndPadding(targetFontSize);
-    updatePieChartFontSizesAndPadding(targetFontSize);
+    const newFontSize = adjustFontSize(); // Call ONCE
+    updateFontSizesAndPadding(newFontSize);
+    updatePieChartFontSizesAndPadding(newFontSize);
 
     // Update all charts
     const chartInstances = [window.PublishesChartInstance, window.PriceChartInstance, window.SpendChartInstance];
