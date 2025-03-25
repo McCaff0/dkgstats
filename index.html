@@ -774,16 +774,24 @@ function renderChart({
             source: 'data',
             bounds: 'ticks'
         },
-        min: labels[0], // First date**
-        max: labels[labels.length - 1], // Last date**
+        
         grid: {
             color: 'rgba(255, 255, 255, 0.05)'
         },
         ticks: {
-            autoSkip: false,  // Ensures all labels have a chance to be shown
-            maxTicksLimit: labels.length, // Ensures first and last are included
-            font: { size: tickFontSize, family: 'Play, sans-serif' },
-            padding: 0
+    autoSkip: false,  
+    maxTicksLimit: 10,  // Ensure there are at most 10 ticks
+    font: { size: tickFontSize, family: 'Play, sans-serif' },
+    padding: 0,
+    callback: function(value, index, values) {
+        // Force first and last tick to always appear
+        if (index === 0 || index === values.length - 1) {
+            return value;  
+        }
+        // Distribute ticks evenly based on maxTicksLimit
+        const step = Math.ceil(values.length / 10); // Dynamically determine step size
+        return index % step === 0 ? value : '';  
+    }
 }
                 },
                 y: {
