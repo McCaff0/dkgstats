@@ -742,9 +742,6 @@ function renderChart({
 
     // Determine the animation setting based on whether it’s the first populated chart render
     const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); 
-    // Render the chart with the correct animation settings
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
@@ -758,7 +755,7 @@ function renderChart({
                 tension: 0.1,
                 pointRadius: 0,
                 pointHoverRadius: 5,
-                borderWidth: tickFontSize / 6
+                borderWidth: tickFontSize / 3
             }]
         },
         options: {
@@ -774,7 +771,6 @@ function renderChart({
                         displayFormats: { day: 'MMM d' },
                         source: 'data',
                     },
-                    max: today, // Set max to today
                     grid: {
                         color: 'rgba(255, 255, 255, 0.05)'
                     },
@@ -783,15 +779,6 @@ function renderChart({
                         maxTicksLimit: 10,  // Ensure there are at most 10 ticks
                         font: { size: tickFontSize, family: 'Play, sans-serif' },
                         padding: 0,
-                        callback: function(value, index, values) {
-                            const date = new Date(value);
-                            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            if (index === 0 || index === values.length - 1 || value === today) {
-                                return formattedDate;  
-                            }
-                            const step = Math.ceil(values.length / 10); // Dynamically determine step size
-                            return index % step === 0 ? formattedDate : '';  
-                        }
                     }
                 },
                 y: {
