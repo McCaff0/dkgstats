@@ -745,7 +745,7 @@ function renderChart({
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: Labels || [],
+            labels: labels || [],
             datasets: [{
                 label: datasetLabel,
                 data: values || [],
