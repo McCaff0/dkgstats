@@ -763,24 +763,36 @@ function renderChart({
             maintainAspectRatio: false,
             scales: {
                 x: {
-                    type: 'time',
-                    time: {
-                        parser: 'yyyy-MM-dd',
-                        tooltipFormat: 'PP',
-                        unit: 'day',
-                        displayFormats: { day: 'MMM d' },
-                        source: 'data',
-                    },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.05)'
-                    },
-                    ticks: {
-                        autoSkip: false,  
-                        maxTicksLimit: 10,  // Ensure there are at most 10 ticks
-                        font: { size: tickFontSize, family: 'Play, sans-serif' },
-                    
-                    }
-                },
+                      type: 'time',
+                      time: {
+                          parser: 'yyyy-MM-dd',
+                          tooltipFormat: 'PP',
+                          unit: 'day',
+                          displayFormats: { day: 'MMM d' },
+                          source: 'data',
+                      },
+                      grid: {
+                          color: 'rgba(255, 255, 255, 0.05)',
+                      },
+                      ticks: {
+                          autoSkip: false,  
+                          maxTicksLimit: 10,  // Ensure there are at most 10 ticks
+                          font: { size: tickFontSize, family: 'Play, sans-serif' },
+                          // Ensure the last tick is today
+                          max: new Date(), // Force today's date as the last tick
+                          callback: function(value, index, ticks) {
+                              // Ensure all ticks are formatted and include today
+                              const date = new Date(value);
+                              const today = new Date();
+                              // Format the date and ensure today is always visible
+                              if (date.toDateString() === today.toDateString()) {
+                                  return 'Today';
+                              } else {
+                                  return date.toLocaleDateString(); // Format as needed
+                              }
+                          }
+                      }
+                  },
                 y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     title: {
