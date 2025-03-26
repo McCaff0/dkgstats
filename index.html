@@ -763,29 +763,25 @@ function renderChart({
             values = [];
         }
 
-        // Ensure labels and values have same length
-        const dataLength = Math.min(labels.length, values.length);
-        if (dataLength === 0) {
-            throw new Error('No data provided for chart');
-        }
-
-        // Process dates safely
+        // Process dates - handle both string and Date objects
         const dateLabels = [];
         const validValues = [];
         
-        for (let i = 0; i < dataLength; i++) {
+        for (let i = 0; i < Math.min(labels.length, values.length); i++) {
             try {
-                const label = labels[i];
-                if (typeof label !== 'string') {
-                    console.warn(`Invalid label at index ${i}:`, label);
+                let date;
+                if (labels[i] instanceof Date) {
+                    date = new Date(labels[i]);
+                } else if (typeof labels[i] === 'string') {
+                    const dateStr = labels[i].includes('T') ? labels[i].split('T')[0] : labels[i];
+                    date = new Date(dateStr);
+                } else {
+                    console.warn(`Invalid label type at index ${i}:`, labels[i]);
                     continue;
                 }
 
-                const dateStr = label.includes('T') ? label.split('T')[0] : label;
-                const date = new Date(dateStr);
-                
                 if (isNaN(date.getTime())) {
-                    console.warn(`Invalid date at index ${i}: ${label}`);
+                    console.warn(`Invalid date at index ${i}:`, labels[i]);
                     continue;
                 }
 
@@ -797,23 +793,28 @@ function renderChart({
         }
 
         if (dateLabels.length === 0) {
-            throw new Error('No valid dates found for chart');
+            // Create empty chart with today's date as fallback
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            dateLabels.push(today);
+            validValues.push(0);
+            console.warn(`No valid dates found - using fallback with today's date`);
         }
 
-        // Calculate 10 evenly spaced ticks
+        // Calculate ticks (same as before)
         const tickCount = 10;
         const tickIndices = [];
         for (let i = 0; i < tickCount; i++) {
             const index = Math.floor((dateLabels.length - 1) * (i / (tickCount - 1)));
             tickIndices.push(index);
         }
-        // Ensure last tick is exactly the last date
         tickIndices[tickCount - 1] = dateLabels.length - 1;
 
+        // Rest of your chart configuration...
         const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
 
-        // Create chart instance
         const chartInstance = new Chart(ctx, {
+            // ... keep all your existing chart options ...
             type: 'line',
             data: {
                 labels: dateLabels,
