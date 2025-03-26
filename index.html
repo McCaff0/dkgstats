@@ -737,18 +737,30 @@ function renderChart({
         console.error(`${canvasId} canvas not found!`);
         return;
     }
-  canvas.width = canvas.parentElement.offsetWidth;
+
+    // Set canvas dimensions
+    canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = canvas.parentElement.offsetHeight;
     const ctx = canvas.getContext('2d');
-    // Determine the animation setting based on whether it’s the first populated chart render
+
+    // Convert labels to Date objects for Chart.js time scale
+    const dateLabels = labels.map(label => {
+        // Handle both formats: "YYYY-MM-DD" and full ISO strings
+        const dateStr = label.includes('T') ? label.split('T')[0] : label;
+        return new Date(dateStr);
+    });
+
+    // Animation settings
     const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
+
+    // Create the chart instance
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels || [],
+            labels: dateLabels, // Use the converted Date objects
             datasets: [{
                 label: datasetLabel,
-                data: values || [],
+                data: values,
                 borderColor: 'rgba(146, 176, 174, 1)',
                 backgroundColor: 'rgba(146, 176, 174, 0.1)',
                 fill: true,
@@ -765,60 +777,89 @@ function renderChart({
                 x: {
                     type: 'time',
                     time: {
-                        parser: 'yyyy-MM-dd',  // This ensures the dates are parsed correctly
-                        tooltipFormat: 'PP',    // Format the tooltip when hovering over a point
-                        unit: 'day',            // Set unit to day for daily ticks
+                        parser: 'yyyy-MM-dd',
+                        tooltipFormat: 'MMM d, yyyy',
+                        unit: 'day',
                         displayFormats: {
-                            day: 'MMM d',       // Set the display format for days
-                        },
-                        source: 'data',        // Use data as the source for time values
+                            day: 'MMM d'
+                        }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.05)',  // Grid color customization
+                        color: 'rgba(255, 255, 255, 0.05)',
                     },
                     ticks: {
-                        autoSkip: false,                     // Don't skip ticks
-                        maxTicksLimit: 10,                    // Limit the number of ticks to 10
-                        font: { size: tickFontSize, family: 'Play, sans-serif' }, // Set font style and size
-                        max: new Date(),                      // Ensure the last tick is today's date
-                        callback: function(value, index, ticks) {
-                            const date = new Date(value);        // Convert tick value to date
-                            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            return formattedDate;  // Return formatted date (MMM d) for all ticks
+                        autoSkip: true,
+                        maxTicksLimit: 10,
+                        font: { 
+                            size: tickFontSize, 
+                            family: 'Play, sans-serif' 
+                        },
+                        maxRotation: 0,
+                        callback: function(value) {
+                            // Format ticks as "MMM d" (e.g., "Mar 15")
+                            return new Date(value).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric'
+                            });
                         }
                     }
                 },
-                  y: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                y: {
+                    grid: { 
+                        color: 'rgba(255, 255, 255, 0.05)' 
+                    },
                     title: {
                         display: true,
                         text: yAxisTitle,
-                        font: { size: labelFontSize, family: 'Play, sans-serif' }
+                        font: { 
+                            size: labelFontSize, 
+                            family: 'Play, sans-serif' 
+                        }
                     },
                     ticks: {
                         beginAtZero: false,
-                        font: { size: tickFontSize, family: 'Play, sans-serif' },
-                        callback: yAxisFormatter || function (value) {
-                            return parseFloat(value).toFixed(1);
+                        font: { 
+                            size: tickFontSize, 
+                            family: 'Play, sans-serif' 
+                        },
+                        callback: yAxisFormatter || function(value) {
+                            // Default formatting if no formatter provided
+                            return Number(value).toLocaleString();
                         }
                     }
                 }
             },
             plugins: {
                 legend: { display: false },
-                title: { display: false }
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            // Format tooltip title as "Month Day, Year"
+                            return new Date(context[0].parsed.x).toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric'
+                            });
+                        },
+                        label: function(context) {
+                            return `${datasetLabel}: ${yAxisFormatter 
+                                ? yAxisFormatter(context.parsed.y) 
+                                : context.parsed.y}`;
+                        }
+                    }
+                }
             },
             layout: {
                 padding: chartPadding
             },
-            animation: animationSetting, // Dynamically set animation based on isFirstLoad
+            animation: animationSetting
         }
     });
 
     console.log(`Created new chart instance for ${canvasId}`);
     resizeCharts();
 
-    return window[`${canvasId}Instance`]; // Ensure correct reference
+    return window[`${canvasId}Instance`];
 }
 
  
