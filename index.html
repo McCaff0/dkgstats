@@ -763,58 +763,33 @@ function renderChart({
             values = [];
         }
 
-        // Process dates - handle both string and Date objects
-        const dateLabels = [];
-        const validValues = [];
-        
-        for (let i = 0; i < Math.min(labels.length, values.length); i++) {
+        // Process dates - we know labels are already sorted and normalized
+        const dateLabels = labels.map(label => {
             try {
-                let date;
-                if (labels[i] instanceof Date) {
-                    date = new Date(labels[i]);
-                } else if (typeof labels[i] === 'string') {
-                    const dateStr = labels[i].includes('T') ? labels[i].split('T')[0] : labels[i];
-                    date = new Date(dateStr);
-                } else {
-                    console.warn(`Invalid label type at index ${i}:`, labels[i]);
-                    continue;
-                }
-
-                if (isNaN(date.getTime())) {
-                    console.warn(`Invalid date at index ${i}:`, labels[i]);
-                    continue;
-                }
-
-                dateLabels.push(date);
-                validValues.push(values[i]);
+                // Handle both Date objects and strings (from cache)
+                const date = label instanceof Date ? label : new Date(label);
+                return isNaN(date.getTime()) ? null : date;
             } catch (e) {
-                console.warn(`Error processing data point ${i}:`, e);
+                console.warn('Invalid date:', label, e);
+                return null;
             }
-        }
+        }).filter(date => date !== null);
+
+        // Filter corresponding values
+        const validValues = values.slice(0, dateLabels.length);
 
         if (dateLabels.length === 0) {
-            // Create empty chart with today's date as fallback
+            // Fallback with today's date
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             dateLabels.push(today);
             validValues.push(0);
-            console.warn(`No valid dates found - using fallback with today's date`);
+            console.warn('No valid dates - using fallback with today');
         }
 
-        // Calculate ticks (same as before)
-        const tickCount = 10;
-        const tickIndices = [];
-        for (let i = 0; i < tickCount; i++) {
-            const index = Math.floor((dateLabels.length - 1) * (i / (tickCount - 1)));
-            tickIndices.push(index);
-        }
-        tickIndices[tickCount - 1] = dateLabels.length - 1;
-
-        // Rest of your chart configuration...
         const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
 
         const chartInstance = new Chart(ctx, {
-            // ... keep all your existing chart options ...
             type: 'line',
             data: {
                 labels: dateLabels,
@@ -841,36 +816,25 @@ function renderChart({
                             tooltipFormat: 'MMM d, yyyy',
                             unit: 'day',
                             displayFormats: {
-                                day: 'MMM d'
+                                day: 'MMM d' // e.g. "Jan 1"
                             }
                         },
                         grid: {
                             color: 'rgba(255, 255, 255, 0.05)',
                         },
                         ticks: {
-                            autoSkip: false,
-                            maxTicksLimit: tickCount,
-                            source: 'labels',
+                            maxTicksLimit: 10, // Let Chart.js handle optimal distribution
                             font: { 
                                 size: tickFontSize, 
                                 family: 'Play, sans-serif' 
                             },
-                            callback: function(value, index, ticks) {
-                                if (tickIndices.includes(index)) {
-                                    return new Date(value).toLocaleDateString('en-US', {
-                                        month: 'short',
-                                        day: 'numeric'
-                                    });
-                                }
-                                return '';
+                            callback: function(value) {
+                                // Format all visible ticks
+                                return new Date(value).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
                             }
-                        },
-                        afterBuildTicks: function(scale) {
-                            scale.ticks = tickIndices.map(i => ({
-                                value: dateLabels[i],
-                                major: false
-                            }));
-                            return scale.ticks;
                         }
                     },
                     y: {
@@ -923,16 +887,15 @@ function renderChart({
             }
         });
 
-        // Store instance with destruction flag
         window[`${canvasId}Instance`] = chartInstance;
         chartInstance._destroyed = false;
 
-        console.log(`Created ${canvasId} chart with ${dateLabels.length} data points`);
+        console.log(`Rendered ${canvasId} with ${dateLabels.length} points`);
         return chartInstance;
 
     } catch (error) {
         console.error(`Error rendering ${canvasId} chart:`, error);
-        // Create empty chart as fallback
+        // Fallback empty chart
         const fallbackChart = new Chart(ctx, {
             type: 'line',
             data: { labels: [], datasets: [] },
