@@ -743,21 +743,39 @@ function renderChart({
     canvas.height = canvas.parentElement.offsetHeight;
     const ctx = canvas.getContext('2d');
 
-    // Convert labels to Date objects for Chart.js time scale
+    // Convert labels to Date objects and ensure today is included
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to start of day
     const dateLabels = labels.map(label => {
-        // Handle both formats: "YYYY-MM-DD" and full ISO strings
         const dateStr = label.includes('T') ? label.split('T')[0] : label;
         return new Date(dateStr);
     });
 
-    // Animation settings
+    // Ensure today is the last label if not already present
+    if (dateLabels.length > 0) {
+        const lastDate = dateLabels[dateLabels.length - 1];
+        if (lastDate.toISOString().split('T')[0] !== today.toISOString().split('T')[0]) {
+            dateLabels.push(new Date(today));
+            values.push(values[values.length - 1]); // Duplicate last value
+        }
+    }
+
+    // Calculate tick interval to get exactly 10 ticks
+    const tickInterval = Math.max(1, Math.floor(dateLabels.length / 9));
+    const tickIndices = [];
+    for (let i = 0; i < dateLabels.length; i += tickInterval) {
+        tickIndices.push(i);
+        if (tickIndices.length >= 10) break;
+    }
+    // Ensure last tick is today
+    tickIndices[tickIndices.length - 1] = dateLabels.length - 1;
+
     const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
 
-    // Create the chart instance
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: dateLabels, // Use the converted Date objects
+            labels: dateLabels,
             datasets: [{
                 label: datasetLabel,
                 data: values,
@@ -788,20 +806,31 @@ function renderChart({
                         color: 'rgba(255, 255, 255, 0.05)',
                     },
                     ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10,
+                        autoSkip: false, // Disable auto-skipping
+                        maxTicksLimit: 10, // Force exactly 10 ticks
+                        source: 'labels', // Use our calculated labels
                         font: { 
                             size: tickFontSize, 
                             family: 'Play, sans-serif' 
                         },
-                        maxRotation: 0,
-                        callback: function(value) {
-                            // Format ticks as "MMM d" (e.g., "Mar 15")
-                            return new Date(value).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric'
-                            });
+                        callback: function(value, index, ticks) {
+                            // Only show ticks at our calculated positions
+                            if (tickIndices.includes(index)) {
+                                return dateLabels[index].toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+                            }
+                            return '';
                         }
+                    },
+                    afterBuildTicks: function(scale) {
+                        // Force our selected ticks to be used
+                        scale.ticks = tickIndices.map(i => ({
+                            value: dateLabels[i],
+                            major: false
+                        }));
+                        return scale.ticks;
                     }
                 },
                 y: {
@@ -823,7 +852,6 @@ function renderChart({
                             family: 'Play, sans-serif' 
                         },
                         callback: yAxisFormatter || function(value) {
-                            // Default formatting if no formatter provided
                             return Number(value).toLocaleString();
                         }
                     }
@@ -834,7 +862,6 @@ function renderChart({
                 tooltip: {
                     callbacks: {
                         title: function(context) {
-                            // Format tooltip title as "Month Day, Year"
                             return new Date(context[0].parsed.x).toLocaleDateString('en-US', {
                                 month: 'long',
                                 day: 'numeric',
