@@ -1018,15 +1018,54 @@ const chartConfigurations = {
 const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
 const CACHE_EXPIRY_TIME = 180000; // 3 minutes
 const LOCAL_STORAGE_KEY = 'chartCache';
+    window.chartCache = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
 
-window.chartCache = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
+const isSameDate = (dateStr1, dateStr2) => {
+    return dateStr1 && dateStr2 && dateStr1.split('T')[0] === dateStr2.split('T')[0];
+};
+
+async function fetchLatestValue(endpoint) {
+    const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', '/latest.json')}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch latest value');
+    return response.json();
+}
+
+async function fetchFullDataset(endpoint, cacheKey, timestamp) {
+    const timeRange = chartConfigurations[endpoint.chartId].timeRange;
+    const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
+    
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch full dataset');
+    
+    const data = await response.json();
+    console.log(`${endpoint.datasetLabel} Data:`, data);
+
+    if (!Array.isArray(data) || data.length === 0) {
+        console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
+        return;
+    }
+
+    const labels = data.map(item => item.date);
+    const values = data.map(item => endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value);
+
+    const cachedData = {
+        timestamp,
+        data: { labels, values }
+    };
+    
+    updateCache(cacheKey, cachedData);
+    renderChartDataIfPageLoaded(endpoint, cachedData.data);
+}
+
+function updateCache(key, data) {
+    window.chartCache[key] = data;
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(window.chartCache));
+}
 
 async function fetchChartData(chartId = null) {
     const now = Date.now();
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDate = yesterday.toISOString().split('T')[0];
+    const today = new Date().toISOString();
 
     const endpoints = [
         { path: '/price.json', chartId: 'PriceChart', datasetLabel: 'Price', yAxisTitle: 'Price (USD)', yAxisFormatter: null },
@@ -1035,47 +1074,57 @@ async function fetchChartData(chartId = null) {
     ];
 
     const filteredEndpoints = chartId ? endpoints.filter(endpoint => endpoint.chartId === chartId) : endpoints;
-    const fetchPromises = filteredEndpoints.map(endpoint => {
+    
+    const fetchPromises = filteredEndpoints.map(async (endpoint) => {
         const timeRange = chartConfigurations[endpoint.chartId].timeRange;
         const cacheKey = `${endpoint.chartId}_${timeRange}`;
         let cachedData = window.chartCache[cacheKey] || { timestamp: 0, data: { labels: [], values: [] } };
 
-        let lastCachedDate = cachedData.data.labels[cachedData.data.labels.length - 1] || null;
-        let url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
+        const lastCachedDate = cachedData.data.labels[cachedData.data.labels.length - 1];
+        const isCacheFresh = now - cachedData.timestamp < CACHE_EXPIRY_TIME;
+        const isDataCurrent = isSameDate(lastCachedDate, today);
 
-        // If cached data exists and it's fresh (within 3 minutes), use it
-        if (now - cachedData.timestamp < CACHE_EXPIRY_TIME && lastCachedDate !== today) {
-            console.log(`Using cached data for ${cacheKey}`);
+        console.group(`Cache decision for ${cacheKey}`);
+        console.log(`Cache status: ${isCacheFresh ? 'FRESH' : 'STALE'}`);
+        console.log(`Data status: ${isDataCurrent ? 'CURRENT' : 'OUTDATED'}`);
+        console.log(`Last cached date: ${lastCachedDate || 'Never'}`);
+
+        // Case 1: Use cache if fresh and data is current
+        if (isCacheFresh && isDataCurrent) {
+            console.log('Decision: Using cached data (fresh and current)');
+            console.groupEnd();
             renderChartDataIfPageLoaded(endpoint, cachedData.data);
-            return Promise.resolve();
+            return;
         }
 
-        // Fetch data from the server if cache is expired or non-existent
-        return fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                console.log(`${endpoint.datasetLabel} Data:`, data);
-
-                if (!Array.isArray(data) || data.length === 0) {
-                    console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
-                    return;
+        // Case 2: If data is current but cache is stale, fetch only latest value
+        if (isDataCurrent) {
+            console.log('Decision: Fetching only latest value (cache stale but data current)');
+            try {
+                const latestData = await fetchLatestValue(endpoint);
+                if (latestData) {
+                    // Merge latest value with cached data
+                    cachedData.data.labels.push(latestData.date);
+                    cachedData.data.values.push(endpoint.path === '/price.json' 
+                        ? parseFloat(latestData.value.toFixed(2)) 
+                        : latestData.value);
+                    cachedData.timestamp = now;
+                    updateCache(cacheKey, cachedData);
+                    console.log('Successfully updated with latest value');
+                    renderChartDataIfPageLoaded(endpoint, cachedData.data);
                 }
+            } catch (error) {
+                console.warn('Failed to fetch latest value, falling back to full dataset', error);
+                await fetchFullDataset(endpoint, cacheKey, now);
+            }
+            console.groupEnd();
+            return;
+        }
 
-                const labels = data.map(item => item.date);
-                const values = data.map(item => endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value);
-
-                // Update the cache
-                cachedData.timestamp = now;
-                cachedData.data = { labels, values };
-                window.chartCache[cacheKey] = cachedData;
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(window.chartCache));
-
-                // Render chart with the new data
-                renderChartDataIfPageLoaded(endpoint, cachedData.data);
-            })
-            .catch(error => {
-                console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data:`, error);
-            });
+        // Case 3: Fetch full dataset
+        console.log('Decision: Fetching full dataset (data outdated)');
+        await fetchFullDataset(endpoint, cacheKey, now);
+        console.groupEnd();
     });
 
     await Promise.all(fetchPromises);
