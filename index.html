@@ -1099,16 +1099,18 @@ async function fetchChartData(chartId = null) {
 }
 
 function renderChartDataIfPageLoaded(chartId, data) {
-    const renderChartData = () => {
-        renderChartData(chartId, data);
+    const renderChart = () => {
+        renderChartData(chartId, data);  // Directly use the existing renderChartData function
     };
 
     if (isPageLoaded()) {
-        renderChartData();
+        renderChart();  // This now uses the correct reference to the existing function
     } else {
-        window.addEventListener('load', renderChartData, { once: true });
+        // Otherwise, wait for the page to load before rendering
+        window.addEventListener('load', renderChart, { once: true });
     }
 }
+
 
 function updateChartTimeRange(chartId, timeRange) {
     if (chartConfigurations[chartId]) {
