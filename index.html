@@ -1008,6 +1008,7 @@ function handleResize() {
 }
 
 const isPageLoaded = () => document.readyState === 'complete';
+
 const chartConfigurations = {
     PriceChart: { timeRange: '90D' },
     SpendChart: { timeRange: '90D' },
@@ -1034,68 +1035,51 @@ async function fetchChartData(chartId = null) {
     ];
 
     const filteredEndpoints = chartId ? endpoints.filter(endpoint => endpoint.chartId === chartId) : endpoints;
-
-    for (const endpoint of filteredEndpoints) {
+    const fetchPromises = filteredEndpoints.map(endpoint => {
         const timeRange = chartConfigurations[endpoint.chartId].timeRange;
         const cacheKey = `${endpoint.chartId}_${timeRange}`;
-
-        // Load cached data if available
         let cachedData = window.chartCache[cacheKey] || { timestamp: 0, data: { labels: [], values: [] } };
+
         let lastCachedDate = cachedData.data.labels[cachedData.data.labels.length - 1] || null;
+        let url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
 
         // If cached data exists and it's fresh (within 3 minutes), use it
-        if (now - cachedData.timestamp < CACHE_EXPIRY_TIME) {
-            if (lastCachedDate === today) {
-                console.log(`Using cached data for ${cacheKey}`);
-                renderChartDataIfPageLoaded(endpoint.chartId, cachedData.data);
-                continue;
-            }
-          
-            if (lastCachedDate === today) {
-                console.log(`Cache outdated but latest date is today. Fetching today's value.`);
-                const latestUrl = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${today}.json`)}`;
-                const latestResponse = await fetch(latestUrl);
-                const latestData = await latestResponse.json();
+        if (now - cachedData.timestamp < CACHE_EXPIRY_TIME && lastCachedDate !== today) {
+            console.log(`Using cached data for ${cacheKey}`);
+            renderChartDataIfPageLoaded(endpoint.chartId, cachedData.data);
+            return Promise.resolve();
+        }
 
-                cachedData.data.labels.pop(); // Remove the old entry for today
-                cachedData.data.values.pop(); // Remove the old value for today
-                cachedData.data.labels.push(today); // Add today's date
-                cachedData.data.values.push(latestData.value); // Add today's value
+        // Fetch data from the server if cache is expired or non-existent
+        return fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(`${endpoint.datasetLabel} Data:`, data);
 
+                if (!Array.isArray(data) || data.length === 0) {
+                    console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
+                    return;
+                }
+
+                const labels = data.map(item => item.date);
+                const values = data.map(item => endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value);
+
+                // Update the cache
                 cachedData.timestamp = now;
+                cachedData.data = { labels, values };
                 window.chartCache[cacheKey] = cachedData;
                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(window.chartCache));
 
+                // Render chart with the new data
                 renderChartDataIfPageLoaded(endpoint.chartId, cachedData.data);
-                continue;
-            }
-        }
+            })
+            .catch(error => {
+                console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data:`, error);
+            });
+    });
 
-        const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
-
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (!Array.isArray(data) || data.length === 0) {
-                console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
-                continue;
-            }
-
-            const labels = data.map(item => item.date);
-            const values = data.map(item => endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value);
-
-            cachedData.timestamp = now;
-            cachedData.data = { labels, values };
-            window.chartCache[cacheKey] = cachedData;
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(window.chartCache));
-
-            renderChartDataIfPageLoaded(endpoint.chartId, cachedData.data);
-
-        } catch (error) {
-            console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data:`, error);
-        }
-    }
+    await Promise.all(fetchPromises);
+    console.log("All charts updated.");
 }
 
 function renderChartDataIfPageLoaded(chartId, data) {
@@ -1112,7 +1096,6 @@ function renderChartDataIfPageLoaded(chartId, data) {
     }
 }
 
-
 function updateChartTimeRange(chartId, timeRange) {
     if (chartConfigurations[chartId]) {
         chartConfigurations[chartId].timeRange = timeRange;
@@ -1121,6 +1104,7 @@ function updateChartTimeRange(chartId, timeRange) {
         console.error(`Invalid chart ID: ${chartId}`);
     }
 }
+
 
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
