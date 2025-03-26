@@ -783,7 +783,7 @@ function renderChart({
                         max: new Date(),                      // Ensure the last tick is today's date
                         callback: function(value, index, ticks) {
                             const date = new Date(value);        // Convert tick value to date
-                            const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                             return formattedDate;  // Return formatted date (MMM d) for all ticks
                         }
                     }
