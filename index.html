@@ -855,8 +855,8 @@ function renderChart({
                     ticks: {
                         source: 'data',
                         autoSkip: false,
-                        maxRotation: 0,
-                        minRotation: 0,
+                        maxRotation: 45,
+                        minRotation: 45,
                         font: { 
                             size: tickFontSize, 
                             family: 'Play, sans-serif' 
@@ -1077,14 +1077,22 @@ async function resizeCharts() {
         updateFontSizesAndPadding(newFontSize);
         updatePieChartFontSizesAndPadding(newFontSize);
 
-        // Safely update all charts
-        const chartInstances = [
+        // Safely update all line charts
+        const lineChartInstances = [
             { name: 'PriceChartInstance', instance: window.PriceChartInstance },
             { name: 'SpendChartInstance', instance: window.SpendChartInstance },
             { name: 'PublishesChartInstance', instance: window.PublishesChartInstance }
         ];
 
-        chartInstances.forEach(({ name, instance }) => {
+        // Safely update all pie charts
+        const pieChartInstances = [
+            { name: 'publishesPieChartInstance', instance: window.publishesPieChartInstance },
+            { name: 'rewardsPieChartInstance', instance: window.rewardsPieChartInstance },
+            { name: 'stakedPieChartInstance', instance: window.stakedPieChartInstance }
+        ];
+
+        // Update line charts
+        lineChartInstances.forEach(({ name, instance }) => {
             try {
                 if (instance && !instance._destroyed && instance.options?.scales?.x) {
                     instance.options.scales.x.ticks.font.size = tickFontSize;
@@ -1094,9 +1102,35 @@ async function resizeCharts() {
                     instance.update('none');
                 }
             } catch (error) {
-                console.error(`Error updating ${name}:`, error);
+                console.error(`Error updating line chart ${name}:`, error);
             }
         });
+
+        // Update pie charts
+        pieChartInstances.forEach(({ name, instance }) => {
+            try {
+                if (instance && !instance._destroyed) {
+                    // Update font sizes for labels
+                    if (instance.options?.plugins?.legend) {
+                        instance.options.plugins.legend.labels.font.size = pieChartFontSize;
+                    }
+                    
+                    if (instance.options?.plugins?.datalabels) {
+                        instance.options.plugins.datalabels.font.size = pieChartFontSize;
+                    }
+
+                    instance.data.datasets.forEach(dataset => {
+                        dataset.borderWidth = pieChartBorderWidth;
+                    });
+                    
+                    instance.options.layout.padding = pieChartLayoutPadding;
+                    instance.update('none');
+                }
+            } catch (error) {
+                console.error(`Error updating pie chart ${name}:`, error);
+            }
+        });
+
     } catch (error) {
         console.error("Error in resizeCharts:", error);
     }
