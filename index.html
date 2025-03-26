@@ -1062,7 +1062,7 @@ async function fetchChartData(chartId = null) {
                 }
 
                 const labels = data.map(item => item.date);
-                const values = data.map(item => endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value;
+                const values = data.map(item => endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value);
 
                 // Update the cache
                 cachedData.timestamp = now;
