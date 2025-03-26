@@ -1099,6 +1099,9 @@ async function resizeCharts() {
                     instance.options.scales.y.ticks.font.size = tickFontSize;
                     instance.options.scales.y.title.font.size = labelFontSize;
                     instance.options.layout.padding = chartPadding;
+                    instance.data.datasets.forEach(dataset => {
+                        dataset.borderWidth = tickFontSize / 6;
+                    });
                     instance.update('none');
                 }
             } catch (error) {
