@@ -689,7 +689,8 @@ function handleData(sheetData, records) {
     };
 
     updateText('tracprice', formatNumber(sheetData.tracprice, 4));
-    updateText('marketcap', formatNumber(sheetData.marketcap, 0, true));
+    const marketCap = sheetData.tracprice * 500000000;
+    updateText('marketcap', formatNumber(marketCap, 0, true));
     updateText('peratio', formatNumber(sheetData.peratio, 1));
     updateText('tracstaked', formatNumber(sheetData.tracstaked, 0, true));
     updateText('stakingapy', formatNumber(sheetData.stakingapy, 2) + '%');
