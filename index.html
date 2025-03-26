@@ -1046,7 +1046,7 @@ async function fetchChartData(chartId = null) {
         // If cached data exists and it's fresh (within 3 minutes), use it
         if (now - cachedData.timestamp < CACHE_EXPIRY_TIME && lastCachedDate !== today) {
             console.log(`Using cached data for ${cacheKey}`);
-            renderChartDataIfPageLoaded(endpoint.chartId, cachedData.data);
+            renderChartDataIfPageLoaded(endpoint, cachedData.data);
             return Promise.resolve();
         }
 
@@ -1062,7 +1062,7 @@ async function fetchChartData(chartId = null) {
                 }
 
                 const labels = data.map(item => item.date);
-                const values = data.map(item => endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value);
+                const values = data.map(item => endpoint.path === '/price.json' ? parseFloat(item.value.toFixed(2)) : item.value;
 
                 // Update the cache
                 cachedData.timestamp = now;
@@ -1071,7 +1071,7 @@ async function fetchChartData(chartId = null) {
                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(window.chartCache));
 
                 // Render chart with the new data
-                renderChartDataIfPageLoaded(endpoint.chartId, cachedData.data);
+                renderChartDataIfPageLoaded(endpoint, cachedData.data);
             })
             .catch(error => {
                 console.error(`Error fetching ${endpoint.datasetLabel.toLowerCase()} data:`, error);
@@ -1082,14 +1082,45 @@ async function fetchChartData(chartId = null) {
     console.log("All charts updated.");
 }
 
-function renderChartDataIfPageLoaded(chartId, data) {
+function renderChartDataIfPageLoaded(endpoint, data) {
     const renderChartData = () => {
-        renderChart({ chartId, data });  // Now calling the correct renderChart function
+        // Flag to track if this is the first time real data is being loaded for this chart
+        const isFirstPopulatedLoadFlag = `${endpoint.chartId}FirstPopulatedLoadFlag`;
+
+        // Initialize the flag if it doesn't exist (for first real data load)
+        if (window[isFirstPopulatedLoadFlag] === undefined) {
+            window[isFirstPopulatedLoadFlag] = true;
+        }
+
+        // Handle destruction of previous chart instance if any
+        if (window[`${endpoint.chartId}Instance`]) {
+            console.log(`Destroying existing chart instance for ${endpoint.chartId}`);
+            window[`${endpoint.chartId}Instance`].destroy();
+            window[`${endpoint.chartId}Instance`] = null;
+        }
+
+        // Render the chart with the correct animation logic
+        window[`${endpoint.chartId}Instance`] = renderChart({
+            canvasId: endpoint.chartId,
+            labels: data.labels,
+            values: data.values,
+            datasetLabel: endpoint.datasetLabel,
+            yAxisTitle: endpoint.yAxisTitle,
+            yAxisFormatter: endpoint.yAxisFormatter,
+            isFirstLoad: window[isFirstPopulatedLoadFlag]
+        });
+
+        console.log(`Created new chart instance for ${endpoint.chartId}`);
+
+        // After the first populated data load, set the flag to false to prevent animation in future updates
+        if (window[isFirstPopulatedLoadFlag]) {
+            window[isFirstPopulatedLoadFlag] = false;
+        }
     };
 
     // Render immediately if the page is already loaded
     if (isPageLoaded()) {
-        renderChartData();  // This now calls renderChart, not itself
+        renderChartData();
     } else {
         // Otherwise, wait for the page to load before rendering
         window.addEventListener('load', renderChartData, { once: true });
@@ -1104,7 +1135,6 @@ function updateChartTimeRange(chartId, timeRange) {
         console.error(`Invalid chart ID: ${chartId}`);
     }
 }
-
 
 function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
