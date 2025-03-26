@@ -738,47 +738,38 @@ function renderChart({
         return;
     }
 
-    // Set canvas dimensions
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = canvas.parentElement.offsetHeight;
     const ctx = canvas.getContext('2d');
 
-    // Convert labels to Date objects and ensure today is included
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize to start of day
-    const dateLabels = labels.map(label => {
-        const dateStr = label.includes('T') ? label.split('T')[0] : label;
-        return new Date(dateStr);
-    });
+    // Convert labels to Date objects and sort chronologically (newest last)
+    const dateValues = labels.map((label, i) => ({
+        date: new Date(label.includes('T') ? label.split('T')[0] : label),
+        value: values[i]
+    })).sort((a, b) => a.date - b.date);
 
-    // Ensure today is the last label if not already present
-    if (dateLabels.length > 0) {
-        const lastDate = dateLabels[dateLabels.length - 1];
-        if (lastDate.toISOString().split('T')[0] !== today.toISOString().split('T')[0]) {
-            dateLabels.push(new Date(today));
-            values.push(values[values.length - 1]); // Duplicate last value
-        }
-    }
+    const sortedLabels = dateValues.map(item => item.date);
+    const sortedValues = dateValues.map(item => item.value);
 
-    // Calculate tick interval to get exactly 10 ticks
-    const tickInterval = Math.max(1, Math.floor(dateLabels.length / 9));
+    // Calculate 10 evenly spaced ticks (including newest date)
+    const tickCount = 10;
     const tickIndices = [];
-    for (let i = 0; i < dateLabels.length; i += tickInterval) {
-        tickIndices.push(i);
-        if (tickIndices.length >= 10) break;
+    for (let i = 0; i < tickCount; i++) {
+        const index = Math.floor((sortedLabels.length - 1) * (i / (tickCount - 1)));
+        tickIndices.push(index);
     }
-    // Ensure last tick is today
-    tickIndices[tickIndices.length - 1] = dateLabels.length - 1;
+    // Ensure last tick is exactly the last date
+    tickIndices[tickCount - 1] = sortedLabels.length - 1;
 
     const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
 
     window[`${canvasId}Instance`] = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: dateLabels,
+            labels: sortedLabels,
             datasets: [{
                 label: datasetLabel,
-                data: values,
+                data: sortedValues,
                 borderColor: 'rgba(146, 176, 174, 1)',
                 backgroundColor: 'rgba(146, 176, 174, 0.1)',
                 fill: true,
@@ -797,7 +788,6 @@ function renderChart({
                     time: {
                         parser: 'yyyy-MM-dd',
                         tooltipFormat: 'MMM d, yyyy',
-                        unit: 'day',
                         displayFormats: {
                             day: 'MMM d'
                         }
@@ -806,78 +796,35 @@ function renderChart({
                         color: 'rgba(255, 255, 255, 0.05)',
                     },
                     ticks: {
-                        autoSkip: false, // Disable auto-skipping
-                        maxTicksLimit: 10, // Force exactly 10 ticks
-                        source: 'labels', // Use our calculated labels
+                        autoSkip: false,
+                        maxTicksLimit: tickCount,
+                        source: 'labels',
                         font: { 
                             size: tickFontSize, 
                             family: 'Play, sans-serif' 
                         },
                         callback: function(value, index, ticks) {
-                            // Only show ticks at our calculated positions
-                            if (tickIndices.includes(index)) {
-                                return dateLabels[index].toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric'
-                                });
-                            }
-                            return '';
+                            const date = new Date(value);
+                            return date.toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric'
+                            });
                         }
                     },
                     afterBuildTicks: function(scale) {
-                        // Force our selected ticks to be used
                         scale.ticks = tickIndices.map(i => ({
-                            value: dateLabels[i],
+                            value: sortedLabels[i],
                             major: false
                         }));
                         return scale.ticks;
                     }
                 },
                 y: {
-                    grid: { 
-                        color: 'rgba(255, 255, 255, 0.05)' 
-                    },
-                    title: {
-                        display: true,
-                        text: yAxisTitle,
-                        font: { 
-                            size: labelFontSize, 
-                            family: 'Play, sans-serif' 
-                        }
-                    },
-                    ticks: {
-                        beginAtZero: false,
-                        font: { 
-                            size: tickFontSize, 
-                            family: 'Play, sans-serif' 
-                        },
-                        callback: yAxisFormatter || function(value) {
-                            return Number(value).toLocaleString();
-                        }
-                    }
+                    /* ... (keep your existing y-axis config) ... */
                 }
             },
             plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        title: function(context) {
-                            return new Date(context[0].parsed.x).toLocaleDateString('en-US', {
-                                month: 'long',
-                                day: 'numeric',
-                                year: 'numeric'
-                            });
-                        },
-                        label: function(context) {
-                            return `${datasetLabel}: ${yAxisFormatter 
-                                ? yAxisFormatter(context.parsed.y) 
-                                : context.parsed.y}`;
-                        }
-                    }
-                }
-            },
-            layout: {
-                padding: chartPadding
+                /* ... (keep your existing plugins config) ... */
             },
             animation: animationSetting
         }
@@ -885,10 +832,8 @@ function renderChart({
 
     console.log(`Created new chart instance for ${canvasId}`);
     resizeCharts();
-
     return window[`${canvasId}Instance`];
 }
-
  
 function renderPieChart({
     canvasId,
@@ -1096,7 +1041,7 @@ let chartCache = (() => {
         Object.keys(cached).forEach(key => {
             if (!cached[key]?.timestamp || 
                 !cached[key]?.data || 
-                !Array.isArray(cached[key].data.labels)) {  // Fixed line
+                !Array.isArray(cached[key].data.labels)) {
                 delete cached[key];
             }
         });
@@ -1121,22 +1066,15 @@ function updateCache(key, data) {
                 console.error('Cache write failed', e);
             }
             cacheWritePending = false;
-        }, 1000); // Batch writes every 1 second
+        }, 1000);
     }
 }
 
 // Improved date handling
 function normalizeDate(dateStr) {
     if (!dateStr) return null;
-    // If already in YYYY-MM-DD format
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-        return dateStr;
-    }
-    // If in ISO format (with time)
-    if (dateStr.includes('T')) {
-        return dateStr.split('T')[0];
-    }
-    // Try to parse as date
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    if (dateStr.includes('T')) return dateStr.split('T')[0];
     try {
         return new Date(dateStr).toISOString().split('T')[0];
     } catch (e) {
@@ -1151,25 +1089,27 @@ function isSameDate(dateStr1, dateStr2) {
     return d1 && d2 && d1 === d2;
 }
 
-// Fetch latest value with proper error handling
+// Fetch latest value with proper date handling
 async function fetchLatestValue(endpoint) {
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', '/latest.json')}`;
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        // Ensure date is properly formatted
-        if (data.date) {
-            data.date = normalizeDate(data.date) || data.date;
-        }
-        return data;
+        
+        return {
+            date: normalizeDate(data.date),
+            value: endpoint.path === '/price.json' 
+                ? parseFloat(data.value.toFixed(2)) 
+                : data.value
+        };
     } catch (error) {
         console.error('Failed to fetch latest value:', error);
         throw error;
     }
 }
 
-// Fetch full dataset with proper date handling
+// Fetch full dataset with proper sorting
 async function fetchFullDataset(endpoint, cacheKey) {
     const timeRange = chartConfigurations[endpoint.chartId].timeRange;
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
@@ -1183,31 +1123,27 @@ async function fetchFullDataset(endpoint, cacheKey) {
             throw new Error('Empty or invalid data received');
         }
 
-        // Process data with proper date formatting
-        const processedData = {
-            labels: [],
-            values: []
-        };
-
-        data.forEach(item => {
-            const date = normalizeDate(item.date);
-            if (!date) return; // Skip invalid dates
-            
-            processedData.labels.push(date);
-            processedData.values.push(
-                endpoint.path === '/price.json' 
+        // Process data with proper date formatting and sorting (oldest to newest)
+        const processedData = data
+            .map(item => ({
+                date: normalizeDate(item.date),
+                value: endpoint.path === '/price.json' 
                     ? parseFloat(item.value.toFixed(2)) 
                     : item.value
-            );
-        });
+            }))
+            .filter(item => item.date) // Remove invalid dates
+            .sort((a, b) => new Date(a.date) - new Date(b.date)); // Explicit sort
 
-        if (processedData.labels.length === 0) {
+        if (processedData.length === 0) {
             throw new Error('No valid data points after processing');
         }
 
         return {
             timestamp: Date.now(),
-            data: processedData
+            data: {
+                labels: processedData.map(item => item.date),
+                values: processedData.map(item => item.value)
+            }
         };
     } catch (error) {
         console.error(`Error fetching full dataset for ${endpoint.chartId}:`, error);
@@ -1215,7 +1151,7 @@ async function fetchFullDataset(endpoint, cacheKey) {
     }
 }
 
-// Core chart data fetching logic
+// Core chart data fetching with proper cache updates
 async function fetchChartData(chartId = null) {
     const now = Date.now();
     const today = normalizeDate(new Date().toISOString());
@@ -1228,7 +1164,6 @@ async function fetchChartData(chartId = null) {
 
     const filteredEndpoints = chartId ? endpoints.filter(endpoint => endpoint.chartId === chartId) : endpoints;
 
-    // Process sequentially to avoid memory pressure
     for (const endpoint of filteredEndpoints) {
         try {
             const timeRange = chartConfigurations[endpoint.chartId].timeRange;
@@ -1248,15 +1183,10 @@ async function fetchChartData(chartId = null) {
             const isCacheFresh = (now - cachedData.timestamp) < CACHE_EXPIRY_TIME;
             const isDataCurrent = isSameDate(lastCachedDate, today);
 
-            console.group(`Cache evaluation for ${cacheKey}`);
-            console.log(`Cache freshness: ${isCacheFresh ? 'FRESH (<3min)' : 'STALE (>3min)'}`);
-            console.log(`Data current: ${isDataCurrent ? 'YES (last date matches today)' : 'NO (needs update)'}`);
-
             // CASE 2: Cache is fresh and data is current - use cache
             if (isCacheFresh && isDataCurrent) {
                 console.log('Using cached data (fresh and current)');
                 renderChartDataIfPageLoaded(endpoint, cachedData.data);
-                console.groupEnd();
                 continue;
             }
 
@@ -1264,23 +1194,21 @@ async function fetchChartData(chartId = null) {
             if (isDataCurrent) {
                 console.log('Fetching latest value (cache stale but data current)');
                 try {
-                    const latestData = await fetchLatestValue(endpoint);
-                    if (latestData && !isSameDate(lastCachedDate, latestData.date)) {
-                        // Clone cached data to avoid mutation issues
+                    const latest = await fetchLatestValue(endpoint);
+                    
+                    // Only update if we got a newer date
+                    if (latest && new Date(latest.date) > new Date(lastCachedDate)) {
                         const updatedData = {
                             timestamp: now,
                             data: {
-                                labels: [...cachedData.data.labels, latestData.date],
-                                values: [...cachedData.data.values, 
-                                    endpoint.path === '/price.json' 
-                                        ? parseFloat(latestData.value.toFixed(2)) 
-                                        : latestData.value]
+                                labels: [...cachedData.data.labels, latest.date],
+                                values: [...cachedData.data.values, latest.value]
                             }
                         };
                         updateCache(cacheKey, updatedData);
                         renderChartDataIfPageLoaded(endpoint, updatedData.data);
                     } else {
-                        // Just update timestamp if no new data
+                        // Just refresh timestamp
                         updateCache(cacheKey, { ...cachedData, timestamp: now });
                         renderChartDataIfPageLoaded(endpoint, cachedData.data);
                     }
@@ -1288,7 +1216,6 @@ async function fetchChartData(chartId = null) {
                     console.warn('Failed to fetch latest value, using existing cache', error);
                     renderChartDataIfPageLoaded(endpoint, cachedData.data);
                 }
-                console.groupEnd();
                 continue;
             }
 
@@ -1302,7 +1229,6 @@ async function fetchChartData(chartId = null) {
                 console.error('Failed to fetch full dataset, using existing cache', error);
                 renderChartDataIfPageLoaded(endpoint, cachedData.data);
             }
-            console.groupEnd();
 
         } catch (error) {
             console.error(`Error processing ${endpoint.chartId}:`, error);
@@ -1310,11 +1236,11 @@ async function fetchChartData(chartId = null) {
     }
 }
 
-// Render function with proper cleanup
+// Render function with date validation
 function renderChartDataIfPageLoaded(endpoint, data) {
     const render = () => {
         try {
-            // Validate data
+            // Validate data structure
             if (!data || !data.labels || !data.values || data.labels.length !== data.values.length) {
                 console.error('Invalid data for rendering:', data);
                 return;
@@ -1335,10 +1261,13 @@ function renderChartDataIfPageLoaded(endpoint, data) {
                 window[firstLoadFlag] = true;
             }
 
+            // Convert labels to Date objects (already sorted oldest to newest)
+            const dateLabels = data.labels.map(label => new Date(label));
+
             // Render new chart
             window[`${endpoint.chartId}Instance`] = renderChart({
                 canvasId: endpoint.chartId,
-                labels: data.labels,
+                labels: dateLabels,
                 values: data.values,
                 datasetLabel: endpoint.datasetLabel,
                 yAxisTitle: endpoint.yAxisTitle,
