@@ -1009,6 +1009,7 @@ function handleResize() {
 
 const isPageLoaded = () => document.readyState === 'complete';
 
+// Chart configurations
 const chartConfigurations = {
     PriceChart: { timeRange: '90D' },
     SpendChart: { timeRange: '90D' },
@@ -1016,135 +1017,140 @@ const chartConfigurations = {
 };
 
 const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
-const CACHE_EXPIRY_TIME = 180000; // 3 minutes
+const CACHE_EXPIRY_TIME = 180000; // 3 minutes in ms
 const LOCAL_STORAGE_KEY = 'chartCache';
 
-// Initialize cache with proper date handling
+// Initialize cache with validation
 let chartCache = (() => {
     try {
         const cached = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
-        // Validate and clean cached data
+        // Validate cache structure
         Object.keys(cached).forEach(key => {
-            if (!cached[key]?.data?.labels || !Array.isArray(cached[key].data.labels)) {
+            if (!cached[key]?.timestamp || 
+                !cached[key]?.data || 
+                !Array.isArray(cached[key].data.labels) {
                 delete cached[key];
             }
         });
         return cached;
     } catch (e) {
-        console.warn('Failed to parse cache, resetting', e);
+        console.warn('Cache parse error, initializing fresh cache', e);
         return {};
     }
 })();
 
-// Throttle localStorage writes
+// Optimized cache update with batching
 let cacheWritePending = false;
-const pendingCacheUpdates = new Set();
-
 function updateCache(key, data) {
     chartCache[key] = data;
-    pendingCacheUpdates.add(key);
     
     if (!cacheWritePending) {
         cacheWritePending = true;
         setTimeout(() => {
             try {
-                // Only update the keys that changed
-                const currentCache = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
-                pendingCacheUpdates.forEach(key => {
-                    currentCache[key] = chartCache[key];
-                });
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(currentCache));
-                pendingCacheUpdates.clear();
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(chartCache));
             } catch (e) {
                 console.error('Cache write failed', e);
             }
             cacheWritePending = false;
-        }, 1000); // Batch writes every second
+        }, 1000); // Batch writes every 1 second
     }
 }
 
-// Improved date comparison with format normalization
-function isSameDate(dateStr1, dateStr2) {
-    if (!dateStr1 || !dateStr2) return false;
-    
-    // Normalize dates to YYYY-MM-DD format
-    const normalizeDate = (dateStr) => {
-        if (dateStr.includes('T')) return dateStr.split('T')[0];
-        return dateStr; // Assume already in YYYY-MM-DD format
-    };
-    
-    return normalizeDate(dateStr1) === normalizeDate(dateStr2);
+// Improved date handling
+function normalizeDate(dateStr) {
+    if (!dateStr) return null;
+    // If already in YYYY-MM-DD format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        return dateStr;
+    }
+    // If in ISO format (with time)
+    if (dateStr.includes('T')) {
+        return dateStr.split('T')[0];
+    }
+    // Try to parse as date
+    try {
+        return new Date(dateStr).toISOString().split('T')[0];
+    } catch (e) {
+        console.warn('Failed to normalize date:', dateStr);
+        return null;
+    }
 }
 
+function isSameDate(dateStr1, dateStr2) {
+    const d1 = normalizeDate(dateStr1);
+    const d2 = normalizeDate(dateStr2);
+    return d1 && d2 && d1 === d2;
+}
+
+// Fetch latest value with proper error handling
 async function fetchLatestValue(endpoint) {
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', '/latest.json')}`;
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch latest value');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        // Ensure date is in correct format
-        if (data.date && !data.date.includes('T')) {
-            data.date = new Date(data.date).toISOString();
+        // Ensure date is properly formatted
+        if (data.date) {
+            data.date = normalizeDate(data.date) || data.date;
         }
         return data;
     } catch (error) {
-        console.error('Error fetching latest value:', error);
+        console.error('Failed to fetch latest value:', error);
         throw error;
     }
 }
 
-async function fetchFullDataset(endpoint, cacheKey, timestamp) {
+// Fetch full dataset with proper date handling
+async function fetchFullDataset(endpoint, cacheKey) {
     const timeRange = chartConfigurations[endpoint.chartId].timeRange;
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
     
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch full dataset');
-        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        console.log(`${endpoint.datasetLabel} Data:`, data);
 
         if (!Array.isArray(data) || data.length === 0) {
-            console.warn(`No valid ${endpoint.datasetLabel.toLowerCase()} data received.`);
-            return;
+            throw new Error('Empty or invalid data received');
         }
 
         // Process data with proper date formatting
-        const labels = data.map(item => {
-            // Convert date to ISO string if not already
-            if (item.date && !item.date.includes('T')) {
-                return new Date(item.date).toISOString();
-            }
-            return item.date;
+        const processedData = {
+            labels: [],
+            values: []
+        };
+
+        data.forEach(item => {
+            const date = normalizeDate(item.date);
+            if (!date) return; // Skip invalid dates
+            
+            processedData.labels.push(date);
+            processedData.values.push(
+                endpoint.path === '/price.json' 
+                    ? parseFloat(item.value.toFixed(2)) 
+                    : item.value
+            );
         });
 
-        const values = data.map(item => {
-            return endpoint.path === '/price.json' 
-                ? parseFloat(item.value.toFixed(2)) 
-                : item.value;
-        });
-
-        // Validate data before caching
-        if (labels.length !== values.length) {
-            throw new Error('Labels and values length mismatch');
+        if (processedData.labels.length === 0) {
+            throw new Error('No valid data points after processing');
         }
 
-        const cachedData = {
-            timestamp,
-            data: { labels, values }
+        return {
+            timestamp: Date.now(),
+            data: processedData
         };
-        
-        updateCache(cacheKey, cachedData);
-        renderChartDataIfPageLoaded(endpoint, cachedData.data);
     } catch (error) {
         console.error(`Error fetching full dataset for ${endpoint.chartId}:`, error);
         throw error;
     }
 }
 
+// Core chart data fetching logic
 async function fetchChartData(chartId = null) {
     const now = Date.now();
-    const today = new Date().toISOString().split('T')[0]; // Just the date part
+    const today = normalizeDate(new Date().toISOString());
 
     const endpoints = [
         { path: '/price.json', chartId: 'PriceChart', datasetLabel: 'Price', yAxisTitle: 'Price (USD)', yAxisFormatter: null },
@@ -1153,93 +1159,115 @@ async function fetchChartData(chartId = null) {
     ];
 
     const filteredEndpoints = chartId ? endpoints.filter(endpoint => endpoint.chartId === chartId) : endpoints;
-    
-    // Process endpoints sequentially to reduce memory pressure
+
+    // Process sequentially to avoid memory pressure
     for (const endpoint of filteredEndpoints) {
         try {
             const timeRange = chartConfigurations[endpoint.chartId].timeRange;
             const cacheKey = `${endpoint.chartId}_${timeRange}`;
-            let cachedData = chartCache[cacheKey] || { timestamp: 0, data: { labels: [], values: [] } };
-
-            const lastCachedDate = cachedData.data.labels[cachedData.data.labels.length - 1];
-            const isCacheFresh = now - cachedData.timestamp < CACHE_EXPIRY_TIME;
-            const isDataCurrent = isSameDate(lastCachedDate, today);
-
-            console.group(`Cache decision for ${cacheKey}`);
-            console.log(`Cache status: ${isCacheFresh ? 'FRESH' : 'STALE'}`);
-            console.log(`Data status: ${isDataCurrent ? 'CURRENT' : 'OUTDATED'}`);
-            console.log(`Last cached date: ${lastCachedDate || 'Never'}`);
-
-            if (isCacheFresh && isDataCurrent) {
-                console.log('Decision: Using cached data (fresh and current)');
-                console.groupEnd();
-                renderChartDataIfPageLoaded(endpoint, cachedData.data);
+            const cachedData = chartCache[cacheKey];
+            
+            // CASE 1: No cached data - fetch full dataset
+            if (!cachedData) {
+                console.log(`No cache found for ${cacheKey}, fetching full dataset`);
+                const freshData = await fetchFullDataset(endpoint, cacheKey);
+                updateCache(cacheKey, freshData);
+                renderChartDataIfPageLoaded(endpoint, freshData.data);
                 continue;
             }
 
+            const lastCachedDate = cachedData.data.labels[cachedData.data.labels.length - 1];
+            const isCacheFresh = (now - cachedData.timestamp) < CACHE_EXPIRY_TIME;
+            const isDataCurrent = isSameDate(lastCachedDate, today);
+
+            console.group(`Cache evaluation for ${cacheKey}`);
+            console.log(`Cache freshness: ${isCacheFresh ? 'FRESH (<3min)' : 'STALE (>3min)'}`);
+            console.log(`Data current: ${isDataCurrent ? 'YES (last date matches today)' : 'NO (needs update)'}`);
+
+            // CASE 2: Cache is fresh and data is current - use cache
+            if (isCacheFresh && isDataCurrent) {
+                console.log('Using cached data (fresh and current)');
+                renderChartDataIfPageLoaded(endpoint, cachedData.data);
+                console.groupEnd();
+                continue;
+            }
+
+            // CASE 3: Cache is stale but data is current - fetch latest value only
             if (isDataCurrent) {
-                console.log('Decision: Fetching only latest value (cache stale but data current)');
+                console.log('Fetching latest value (cache stale but data current)');
                 try {
                     const latestData = await fetchLatestValue(endpoint);
-                    if (latestData) {
-                        // Ensure we don't duplicate the latest value
-                        if (!isSameDate(lastCachedDate, latestData.date)) {
-                            cachedData.data.labels.push(latestData.date);
-                            cachedData.data.values.push(
-                                endpoint.path === '/price.json' 
-                                    ? parseFloat(latestData.value.toFixed(2)) 
-                                    : latestData.value
-                            );
-                            cachedData.timestamp = now;
-                            updateCache(cacheKey, cachedData);
-                            console.log('Successfully updated with latest value');
-                        }
+                    if (latestData && !isSameDate(lastCachedDate, latestData.date)) {
+                        // Clone cached data to avoid mutation issues
+                        const updatedData = {
+                            timestamp: now,
+                            data: {
+                                labels: [...cachedData.data.labels, latestData.date],
+                                values: [...cachedData.data.values, 
+                                    endpoint.path === '/price.json' 
+                                        ? parseFloat(latestData.value.toFixed(2)) 
+                                        : latestData.value]
+                            }
+                        };
+                        updateCache(cacheKey, updatedData);
+                        renderChartDataIfPageLoaded(endpoint, updatedData.data);
+                    } else {
+                        // Just update timestamp if no new data
+                        updateCache(cacheKey, { ...cachedData, timestamp: now });
                         renderChartDataIfPageLoaded(endpoint, cachedData.data);
                     }
                 } catch (error) {
-                    console.warn('Failed to fetch latest value, falling back to full dataset', error);
-                    await fetchFullDataset(endpoint, cacheKey, now);
+                    console.warn('Failed to fetch latest value, using existing cache', error);
+                    renderChartDataIfPageLoaded(endpoint, cachedData.data);
                 }
                 console.groupEnd();
                 continue;
             }
 
-            console.log('Decision: Fetching full dataset (data outdated)');
-            await fetchFullDataset(endpoint, cacheKey, now);
+            // CASE 4: Data is outdated - fetch full dataset
+            console.log('Fetching full dataset (data outdated)');
+            try {
+                const freshData = await fetchFullDataset(endpoint, cacheKey);
+                updateCache(cacheKey, freshData);
+                renderChartDataIfPageLoaded(endpoint, freshData.data);
+            } catch (error) {
+                console.error('Failed to fetch full dataset, using existing cache', error);
+                renderChartDataIfPageLoaded(endpoint, cachedData.data);
+            }
             console.groupEnd();
+
         } catch (error) {
             console.error(`Error processing ${endpoint.chartId}:`, error);
         }
     }
-    console.log("All charts updated.");
 }
 
+// Render function with proper cleanup
 function renderChartDataIfPageLoaded(endpoint, data) {
-    const renderChartData = () => {
+    const render = () => {
         try {
-            const isFirstPopulatedLoadFlag = `${endpoint.chartId}FirstPopulatedLoadFlag`;
-            
-            // Clean up previous chart if exists
+            // Validate data
+            if (!data || !data.labels || !data.values || data.labels.length !== data.values.length) {
+                console.error('Invalid data for rendering:', data);
+                return;
+            }
+
+            // Clean up previous chart
             if (window[`${endpoint.chartId}Instance`]) {
                 try {
                     window[`${endpoint.chartId}Instance`].destroy();
                 } catch (e) {
                     console.warn('Error destroying chart:', e);
                 }
-                window[`${endpoint.chartId}Instance`] = null;
             }
 
-            // Initialize flag if not set
-            if (window[isFirstPopulatedLoadFlag] === undefined) {
-                window[isFirstPopulatedLoadFlag] = true;
+            // Initialize first load flag if needed
+            const firstLoadFlag = `${endpoint.chartId}FirstPopulatedLoadFlag`;
+            if (window[firstLoadFlag] === undefined) {
+                window[firstLoadFlag] = true;
             }
 
-            // Validate data before rendering
-            if (!data || !data.labels || !data.values || data.labels.length !== data.values.length) {
-                console.error('Invalid data format for rendering:', data);
-                return;
-            }
-
+            // Render new chart
             window[`${endpoint.chartId}Instance`] = renderChart({
                 canvasId: endpoint.chartId,
                 labels: data.labels,
@@ -1247,40 +1275,51 @@ function renderChartDataIfPageLoaded(endpoint, data) {
                 datasetLabel: endpoint.datasetLabel,
                 yAxisTitle: endpoint.yAxisTitle,
                 yAxisFormatter: endpoint.yAxisFormatter,
-                isFirstLoad: window[isFirstPopulatedLoadFlag]
+                isFirstLoad: window[firstLoadFlag]
             });
 
-            if (window[isFirstPopulatedLoadFlag]) {
-                window[isFirstPopulatedLoadFlag] = false;
+            // Update first load flag
+            if (window[firstLoadFlag]) {
+                window[firstLoadFlag] = false;
             }
+
         } catch (error) {
             console.error('Error rendering chart:', error);
         }
     };
 
     if (isPageLoaded()) {
-        requestAnimationFrame(renderChartData);
+        requestAnimationFrame(render);
     } else {
-        window.addEventListener('load', () => {
-            requestAnimationFrame(renderChartData);
-        }, { once: true });
+        window.addEventListener('load', () => requestAnimationFrame(render), { once: true });
     }
 }
 
+// Time range update with cache invalidation
 function updateChartTimeRange(chartId, timeRange) {
     if (chartConfigurations[chartId]) {
-        chartConfigurations[chartId].timeRange = timeRange;
-        // Clear cache for this chart's previous time range
+        // Clear cache for previous time range
         Object.keys(chartCache).forEach(key => {
             if (key.startsWith(chartId)) {
                 delete chartCache[key];
             }
         });
+        
+        chartConfigurations[chartId].timeRange = timeRange;
         fetchChartData(chartId);
-    } else {
-        console.error(`Invalid chart ID: ${chartId}`);
     }
 }
+
+// Debugging helper
+window.debugChartCache = () => {
+    console.group('Chart Cache Debug');
+    console.log('In-memory cache:', chartCache);
+    console.log('LocalStorage cache:', JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {});
+    ['PriceChart', 'SpendChart', 'PublishesChart'].forEach(chartId => {
+        console.log(`${chartId} instance exists:`, !!window[`${chartId}Instance`]);
+    });
+    console.groupEnd();
+};
 
 // Add a function to manually clear cache
 function clearChartCache(chartId = null) {
