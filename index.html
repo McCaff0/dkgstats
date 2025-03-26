@@ -688,7 +688,7 @@ function handleData(sheetData, records) {
         else console.warn(`Element #${id} not found in DOM.`);
     };
 
-    updateText('tracprice', formatNumber(sheetData.tracprice, 4));
+    updateText('tracprice', formatNumber(sheetData.tracprice * 100, 4));
     updateText('marketcap', formatNumber(sheetData.marketcap, 0, true));
     updateText('peratio', formatNumber(sheetData.peratio, 1));
     updateText('tracstaked', formatNumber(sheetData.tracstaked, 0, true));
