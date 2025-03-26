@@ -738,11 +738,12 @@ function renderChart({
         return;
     }
 
+    // Set canvas dimensions
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = canvas.parentElement.offsetHeight;
     const ctx = canvas.getContext('2d');
 
-    // Convert labels to Date objects and sort chronologically (newest last)
+    // Convert labels to Date objects and sort chronologically (oldest to newest)
     const dateValues = labels.map((label, i) => ({
         date: new Date(label.includes('T') ? label.split('T')[0] : label),
         value: values[i]
@@ -751,14 +752,23 @@ function renderChart({
     const sortedLabels = dateValues.map(item => item.date);
     const sortedValues = dateValues.map(item => item.value);
 
-    // Calculate 10 evenly spaced ticks (including newest date)
+    // Ensure today is included as the last label
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (sortedLabels.length === 0 || 
+        sortedLabels[sortedLabels.length - 1].toISOString().split('T')[0] !== today.toISOString().split('T')[0]) {
+        sortedLabels.push(new Date(today));
+        sortedValues.push(sortedValues.length > 0 ? sortedValues[sortedValues.length - 1] : 0);
+    }
+
+    // Calculate 10 evenly spaced ticks (including today)
     const tickCount = 10;
     const tickIndices = [];
     for (let i = 0; i < tickCount; i++) {
         const index = Math.floor((sortedLabels.length - 1) * (i / (tickCount - 1)));
         tickIndices.push(index);
     }
-    // Ensure last tick is exactly the last date
+    // Ensure last tick is exactly the last date (today)
     tickIndices[tickCount - 1] = sortedLabels.length - 1;
 
     const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
@@ -804,14 +814,18 @@ function renderChart({
                             family: 'Play, sans-serif' 
                         },
                         callback: function(value, index, ticks) {
-                            const date = new Date(value);
-                            return date.toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric'
-                            });
+                            // Only show ticks at our calculated positions
+                            if (tickIndices.includes(index)) {
+                                return new Date(value).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+                            }
+                            return '';
                         }
                     },
                     afterBuildTicks: function(scale) {
+                        // Force our selected ticks to be used
                         scale.ticks = tickIndices.map(i => ({
                             value: sortedLabels[i],
                             major: false
@@ -820,11 +834,50 @@ function renderChart({
                     }
                 },
                 y: {
-                    /* ... (keep your existing y-axis config) ... */
+                    grid: { 
+                        color: 'rgba(255, 255, 255, 0.05)' 
+                    },
+                    title: {
+                        display: true,
+                        text: yAxisTitle,
+                        font: { 
+                            size: labelFontSize, 
+                            family: 'Play, sans-serif' 
+                        }
+                    },
+                    ticks: {
+                        beginAtZero: false,
+                        font: { 
+                            size: tickFontSize, 
+                            family: 'Play, sans-serif' 
+                        },
+                        callback: yAxisFormatter || function(value) {
+                            return Number(value).toLocaleString();
+                        }
+                    }
                 }
             },
             plugins: {
-                /* ... (keep your existing plugins config) ... */
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return new Date(context[0].parsed.x).toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric'
+                            });
+                        },
+                        label: function(context) {
+                            return `${datasetLabel}: ${yAxisFormatter 
+                                ? yAxisFormatter(context.parsed.y) 
+                                : context.parsed.y}`;
+                        }
+                    }
+                }
+            },
+            layout: {
+                padding: chartPadding
             },
             animation: animationSetting
         }
@@ -832,6 +885,7 @@ function renderChart({
 
     console.log(`Created new chart instance for ${canvasId}`);
     resizeCharts();
+
     return window[`${canvasId}Instance`];
 }
  
