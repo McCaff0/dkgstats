@@ -753,21 +753,49 @@ function renderChart({
     const ctx = canvas.getContext('2d');
 
     try {
-        // Convert labels to Date objects (already sorted oldest to newest from fetch)
-        const dateLabels = labels.map(label => {
-            const dateStr = label.includes('T') ? label.split('T')[0] : label;
-            const date = new Date(dateStr);
-            if (isNaN(date.getTime())) {
-                console.warn(`Invalid date: ${label}`);
-                return null;
+        // Validate inputs
+        if (!Array.isArray(labels) {
+            console.error('Labels must be an array');
+            labels = [];
+        }
+        if (!Array.isArray(values)) {
+            console.error('Values must be an array');
+            values = [];
+        }
+
+        // Ensure labels and values have same length
+        const dataLength = Math.min(labels.length, values.length);
+        if (dataLength === 0) {
+            throw new Error('No data provided for chart');
+        }
+
+        // Process dates safely
+        const dateLabels = [];
+        const validValues = [];
+        
+        for (let i = 0; i < dataLength; i++) {
+            try {
+                const label = labels[i];
+                if (typeof label !== 'string') {
+                    console.warn(`Invalid label at index ${i}:`, label);
+                    continue;
+                }
+
+                const dateStr = label.includes('T') ? label.split('T')[0] : label;
+                const date = new Date(dateStr);
+                
+                if (isNaN(date.getTime())) {
+                    console.warn(`Invalid date at index ${i}: ${label}`);
+                    continue;
+                }
+
+                dateLabels.push(date);
+                validValues.push(values[i]);
+            } catch (e) {
+                console.warn(`Error processing data point ${i}:`, e);
             }
-            return date;
-        }).filter(date => date !== null); // Remove invalid dates
+        }
 
-        // Filter corresponding values
-        const validValues = values.slice(0, dateLabels.length);
-
-        // Ensure we have data points
         if (dateLabels.length === 0) {
             throw new Error('No valid dates found for chart');
         }
@@ -828,7 +856,7 @@ function renderChart({
                             },
                             callback: function(value, index, ticks) {
                                 if (tickIndices.includes(index)) {
-                                    return dateLabels[index].toLocaleDateString('en-US', {
+                                    return new Date(value).toLocaleDateString('en-US', {
                                         month: 'short',
                                         day: 'numeric'
                                     });
@@ -899,7 +927,6 @@ function renderChart({
         chartInstance._destroyed = false;
 
         console.log(`Created ${canvasId} chart with ${dateLabels.length} data points`);
-        resizeCharts();
         return chartInstance;
 
     } catch (error) {
@@ -1042,29 +1069,28 @@ function adjustFontSize() {
 
 async function resizeCharts() {
     try {
-        const newFontSize = await adjustFontSize(); // Wait for adjustFontSize to complete and get the new font size
-        updateFontSizesAndPadding(newFontSize); // Update the padding and font sizes
-        updatePieChartFontSizesAndPadding(newFontSize); // Same for pie chart font sizes
+        const newFontSize = await adjustFontSize();
+        updateFontSizesAndPadding(newFontSize);
+        updatePieChartFontSizesAndPadding(newFontSize);
 
-        // Update all charts after the font size and padding updates
-        const chartInstances = [window.PublishesChartInstance, window.PriceChartInstance, window.SpendChartInstance];
-        const pieChartInstances = [window.publishesPieChartInstance, window.rewardsPieChartInstance, window.stakedPieChartInstance];
+        // Safely update all charts
+        const chartInstances = [
+            { name: 'PriceChartInstance', instance: window.PriceChartInstance },
+            { name: 'SpendChartInstance', instance: window.SpendChartInstance },
+            { name: 'PublishesChartInstance', instance: window.PublishesChartInstance }
+        ];
 
-        chartInstances.forEach(chart => {
-            if (chart) {
-                chart.options.scales.x.ticks.font.size = tickFontSize;
-                chart.options.scales.y.ticks.font.size = tickFontSize;
-                chart.options.scales.y.title.font.size = labelFontSize;
-                chart.options.layout.padding = chartPadding;
-                chart.update();
-            }
-        });
-
-        pieChartInstances.forEach(chart => {
-            if (chart) {
-                chart.options.layout.padding = pieChartLayoutPadding;
-                chart.options.elements.arc.borderWidth = pieChartBorderWidth;
-                chart.update();
+        chartInstances.forEach(({ name, instance }) => {
+            try {
+                if (instance && !instance._destroyed && instance.options?.scales?.x) {
+                    instance.options.scales.x.ticks.font.size = tickFontSize;
+                    instance.options.scales.y.ticks.font.size = tickFontSize;
+                    instance.options.scales.y.title.font.size = labelFontSize;
+                    instance.options.layout.padding = chartPadding;
+                    instance.update('none');
+                }
+            } catch (error) {
+                console.error(`Error updating ${name}:`, error);
             }
         });
     } catch (error) {
