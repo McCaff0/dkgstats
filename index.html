@@ -763,37 +763,32 @@ function renderChart({
             maintainAspectRatio: false,
             scales: {
                 x: {
-                      type: 'time',
-                      time: {
-                          parser: 'yyyy-MM-dd',
-                          tooltipFormat: 'PP',
-                          unit: 'day',
-                          displayFormats: { day: 'MMM d' },
-                          source: 'data',
-                      },
-                      grid: {
-                          color: 'rgba(255, 255, 255, 0.05)',
-                      },
-                      ticks: {
-                          autoSkip: false,  
-                          maxTicksLimit: 10,  // Ensure there are at most 10 ticks
-                          font: { size: tickFontSize, family: 'Play, sans-serif' },
-                          // Ensure the last tick is today
-                          max: new Date(), // Force today's date as the last tick
-                          callback: function(value, index, ticks) {
-                              // Ensure all ticks are formatted and include today
-                              const date = new Date(value);
-                              const today = new Date();
-                              // Format the date and ensure today is always visible
-                              if (date.toDateString() === today.toDateString()) {
-                                  return 'Today';
-                              } else {
-                                  return date.toLocaleDateString(); // Format as needed
-                              }
-                          }
-                      }
-                  },
-                y: {
+                    type: 'time',
+                    time: {
+                        parser: 'yyyy-MM-dd',  // This ensures the dates are parsed correctly
+                        tooltipFormat: 'PP',    // Format the tooltip when hovering over a point
+                        unit: 'day',            // Set unit to day for daily ticks
+                        displayFormats: {
+                            day: 'MMM d',       // Set the display format for days
+                        },
+                        source: 'data',        // Use data as the source for time values
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',  // Grid color customization
+                    },
+                    ticks: {
+                        autoSkip: false,                     // Don't skip ticks
+                        maxTicksLimit: 10,                    // Limit the number of ticks to 10
+                        font: { size: tickFontSize, family: 'Play, sans-serif' }, // Set font style and size
+                        max: new Date(),                      // Ensure the last tick is today's date
+                        callback: function(value, index, ticks) {
+                            const date = new Date(value);        // Convert tick value to date
+                            const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                            return formattedDate;  // Return formatted date (MMM d) for all ticks
+                        }
+                    }
+                },
+                  y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     title: {
                         display: true,
