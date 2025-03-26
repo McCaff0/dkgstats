@@ -1277,14 +1277,14 @@ function startIntervals() {
     clearInterval(chartInterval);
     clearInterval(piechartInterval);
 
-    dataInterval = setInterval(fetchData, 10000);
+    dataInterval = setInterval(fetchData, 30000);
     chartInterval = setInterval(() => {
         // Update each chart with its current configuration
         Object.keys(chartConfigurations).forEach(chartId => {
             fetchChartData(chartId);
         });
-    }, 60000);
-    piechartInterval = setInterval(fetchPieChartData, 60000);
+    }, 300000);
+    piechartInterval = setInterval(fetchPieChartData, 300000);
 }
 startIntervals();
     
