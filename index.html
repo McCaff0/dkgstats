@@ -601,7 +601,7 @@ let isFirstLoadPublishes = true, isFirstLoadRewards = true, isFirstLoadStaked = 
 let isFirstDataLoad = false, isFirstSpendLoad = false, isFirstPublishesLoad = false;
 
 let tickFontSize, labelFontSize, chartPadding;
-let pieChartFontSize, pieChartLayoutPadding, pieChartLegendPadding, pieChartBorderWidth;
+let pieChartBorderWidth;
 
 function formatNumber(value, decimals = 0, isCurrency = false) {
     if (value == null || value === '') return 'Loading...';
@@ -1091,7 +1091,7 @@ async function resizeCharts() {
             { name: 'stakedPieChartInstance', instance: window.stakedPieChartInstance }
         ];
 
-        // Update line charts
+        // Update line charts (unchanged)
         lineChartInstances.forEach(({ name, instance }) => {
             try {
                 if (instance && !instance._destroyed && instance.options?.scales?.x) {
@@ -1106,24 +1106,13 @@ async function resizeCharts() {
             }
         });
 
-        // Update pie charts
+        // Simplified pie chart updates
         pieChartInstances.forEach(({ name, instance }) => {
             try {
                 if (instance && !instance._destroyed) {
-                    // Update font sizes for labels
-                    if (instance.options?.plugins?.legend) {
-                        instance.options.plugins.legend.labels.font.size = pieChartFontSize;
-                    }
-                    
-                    if (instance.options?.plugins?.datalabels) {
-                        instance.options.plugins.datalabels.font.size = pieChartFontSize;
-                    }
-
                     instance.data.datasets.forEach(dataset => {
                         dataset.borderWidth = pieChartBorderWidth;
                     });
-                    
-                    instance.options.layout.padding = pieChartLayoutPadding;
                     instance.update('none');
                 }
             } catch (error) {
