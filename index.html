@@ -1028,7 +1028,7 @@ let chartCache = (() => {
         Object.keys(cached).forEach(key => {
             if (!cached[key]?.timestamp || 
                 !cached[key]?.data || 
-                !Array.isArray(cached[key].data.labels) {
+                !Array.isArray(cached[key].data.labels)) {  // Fixed line
                 delete cached[key];
             }
         });
