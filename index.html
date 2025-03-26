@@ -330,17 +330,17 @@
 }
   
     #publishesPieChart {
-    margin-top: 2.6rem;
+    margin-top: 2.7rem;
       left: -33%;
 }
     
     #rewardsPieChart {
-        margin-top: 10.7rem;
+        margin-top: 10.8rem;
         left: -33%;
 }
     
     #stakedPieChart {
-        margin-top: 18.8rem;
+        margin-top: 18.9rem;
         left: -33%;
 }
     .epoch-box h2 {
@@ -1186,17 +1186,44 @@ let chartCache = (() => {
 })();
 
 // Optimized cache update with batching
+const MAX_CACHE_ITEMS = 10; // Add this with your other constants at the top
+
 let cacheWritePending = false;
 function updateCache(key, data) {
-    chartCache[key] = data;
+    // 1. Update the cache entry
+    chartCache[key] = {
+        ...data,
+        timestamp: Date.now() // Ensure every update gets fresh timestamp
+    };
     
+    // 2. Enforce cache size limit
+    const cacheKeys = Object.keys(chartCache);
+    if (cacheKeys.length > MAX_CACHE_ITEMS) {
+        // Sort keys by timestamp (oldest first)
+        cacheKeys.sort((a, b) => chartCache[a].timestamp - chartCache[b].timestamp);
+        
+        // Delete oldest entries beyond the limit
+        cacheKeys.slice(0, cacheKeys.length - MAX_CACHE_ITEMS).forEach(key => {
+            console.log(`Evicting old cache entry: ${key}`);
+            delete chartCache[key];
+        });
+    }
+    
+    // 3. Batch write to localStorage (existing logic)
     if (!cacheWritePending) {
         cacheWritePending = true;
         setTimeout(() => {
             try {
                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(chartCache));
+                console.debug(`Cache updated. Current items: ${Object.keys(chartCache).length}/${MAX_CACHE_ITEMS}`);
             } catch (e) {
                 console.error('Cache write failed', e);
+                // If write fails, attempt to clear some space
+                if (e.name === 'QuotaExceededError') {
+                    console.warn('Storage full, clearing cache');
+                    chartCache = {};
+                    localStorage.removeItem(LOCAL_STORAGE_KEY);
+                }
             }
             cacheWritePending = false;
         }, 1000);
@@ -1428,13 +1455,7 @@ function renderChartDataIfPageLoaded(endpoint, data) {
 // Time range update with cache invalidation
 function updateChartTimeRange(chartId, timeRange) {
     if (chartConfigurations[chartId]) {
-        // Clear cache for previous time range
-        Object.keys(chartCache).forEach(key => {
-            if (key.startsWith(chartId)) {
-                delete chartCache[key];
-            }
-        });
-        
+
         chartConfigurations[chartId].timeRange = timeRange;
         fetchChartData(chartId);
     }
