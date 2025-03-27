@@ -651,23 +651,26 @@ function formatValueInMillions(value) {
 }
 
 function fetchData() {
-    const FIREBASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data.json';
+    const SHEETDATA_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/sheetData.json';
+    const RECORDS_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/records.json';
 
-    return fetch(FIREBASE_URL)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Fetched Data:", data);
-            if (data.sheetData) {
-                handleData(data.sheetData, data.records);
-            } else {
-                console.error("Error: sheetData not found");
-            }
-            return data;
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            throw error;
-        });
+    return Promise.all([
+        fetch(SHEETDATA_URL).then(r => r.json()),
+        fetch(RECORDS_URL).then(r => r.json())
+    ])
+    .then(([sheetData, records]) => {
+        console.log("Fetched Data:", {sheetData, records});
+        if (sheetData) {
+            handleData(sheetData, records);
+        } else {
+            console.error("Error: sheetData not found");
+        }
+        return {sheetData, records};
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+        throw error;
+    });
 }
     
 function handleData(sheetData, records) {
