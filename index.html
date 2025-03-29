@@ -774,166 +774,161 @@ function renderChart({
             values = [];
         }
 
-           const dateLabels = [];
-    const validValues = [];
-    
-    for (let i = 0; i < Math.min(labels.length, values.length); i++) {
-        try {
-            let date;
-            if (labels[i] instanceof Date) {
-                date = new Date(labels[i]);
-            } else if (typeof labels[i] === 'string') {
-                const dateStr = labels[i].includes('T') ? labels[i].split('T')[0] : labels[i];
-                date = new Date(dateStr);
-            } else {
-                console.warn(`Invalid label type at index ${i}:`, labels[i]);
-                continue;
-            }
+        const dateLabels = [];
+        const validValues = [];
+        
+        for (let i = 0; i < Math.min(labels.length, values.length); i++) {
+            try {
+                let date;
+                if (labels[i] instanceof Date) {
+                    date = new Date(labels[i]);
+                } else if (typeof labels[i] === 'string') {
+                    const dateStr = labels[i].includes('T') ? labels[i].split('T')[0] : labels[i];
+                    date = new Date(dateStr);
+                } else {
+                    console.warn(`Invalid label type at index ${i}:`, labels[i]);
+                    continue;
+                }
 
-            if (isNaN(date.getTime())) {
-                console.warn(`Invalid date at index ${i}:`, labels[i]);
-                continue;
-            }
+                if (isNaN(date.getTime())) {
+                    console.warn(`Invalid date at index ${i}:`, labels[i]);
+                    continue;
+                }
 
-            dateLabels.push(date);
-            validValues.push(values[i]);
-        } catch (e) {
-            console.warn(`Error processing data point ${i}:`, e);
+                // Normalize dates to noon to avoid timezone issues
+                date.setHours(12, 0, 0, 0);
+                dateLabels.push(date);
+                validValues.push(values[i]);
+            } catch (e) {
+                console.warn(`Error processing data point ${i}:`, e);
+            }
         }
-    }
 
-    if (dateLabels.length === 0) {
-        // Create empty chart with today's date as fallback
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        dateLabels.push(today);
-        validValues.push(0);
-        console.warn(`No valid dates found - using fallback with today's date`);
-    }
+        if (dateLabels.length === 0) {
+            // Create empty chart with today's date as fallback
+            const today = new Date();
+            today.setHours(12, 0, 0, 0);
+            dateLabels.push(today);
+            validValues.push(0);
+            console.warn(`No valid dates found - using fallback with today's date`);
+        }
 
-    // Sort dates in chronological order (earliest to latest)
-    dateLabels.sort((a, b) => a - b);
+        // Sort dates in chronological order (earliest to latest)
+        dateLabels.sort((a, b) => a - b);
 
-    // Calculate ticks based on actual time distribution
-    const tickCount = 10;
-    const minDate = dateLabels[0];
-    const maxDate = dateLabels[dateLabels.length - 1];
-    const dateRange = maxDate - minDate;
-    
-    const ticks = [];
-    for (let i = 0; i < tickCount; i++) {
-        const date = new Date(minDate.getTime() + (dateRange * (i / (tickCount - 1))));
-        ticks.push(date);
-    }
+        // Calculate min and max dates with padding
+        const minDate = new Date(dateLabels[0]);
+        const maxDate = new Date(dateLabels[dateLabels.length - 1]);
+        
+        // Add 1 day padding to the max date to ensure last point is fully visible
+        const paddedMaxDate = new Date(maxDate);
+        paddedMaxDate.setDate(paddedMaxDate.getDate() + 1);
 
         const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
 
-    const chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: dateLabels,
-            datasets: [{
-                label: datasetLabel,
-                data: validValues,
-                borderColor: 'rgba(146, 176, 174, 1)',
-                backgroundColor: 'rgba(146, 176, 174, 0.1)',
-                fill: true,
-                tension: 0.1,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                borderWidth: tickFontSize / 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        parser: 'yyyy-MM-dd',
-                        tooltipFormat: 'MMM d, yyyy',
-                        unit: 'day',
-                        displayFormats: {
-                            day: 'MMM d'
-                        }
-                    },
-                    min: minDate,
-                    max: maxDate,
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.05)',
-                    },
-                    ticks: {
-                        source: 'data',
-                        autoSkip: false,
-                        maxRotation: 35,
-                        minRotation: 35,
-                        font: { 
-                            size: tickFontSize, 
-                            family: 'Play, sans-serif' 
+        const chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dateLabels,
+                datasets: [{
+                    label: datasetLabel,
+                    data: validValues,
+                    borderColor: 'rgba(146, 176, 174, 1)',
+                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    borderWidth: tickFontSize / 6,
+                    // Ensure points are positioned correctly
+                    parsing: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'MMM d'
+                            },
+                            tooltipFormat: 'MMM d, yyyy'
                         },
-                        callback: function(value) {
-                            return new Date(value).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric'
-                            });
+                        min: minDate,
+                        max: paddedMaxDate,
+                        offset: true, // Add padding to the scale
+                        bounds: 'ticks', // Strictly align ticks with data
+                        distribution: 'series', // Evenly distribute points
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                        },
+                        ticks: {
+                            source: 'data',
+                            autoSkip: false,
+                            maxRotation: 35,
+                            minRotation: 35,
+                            font: { 
+                                size: tickFontSize, 
+                                family: 'Play, sans-serif' 
+                            },
+                            callback: function(value) {
+                                return new Date(value).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+                            }
                         }
                     },
-                    afterBuildTicks: function(scale) {
-                        scale.ticks = ticks.map(date => ({
-                            value: date,
-                            major: false
-                        }));
-                        return scale.ticks;
+                    y: {
+                        grid: { 
+                            color: 'rgba(255, 255, 255, 0.05)' 
+                        },
+                        title: {
+                            display: true,
+                            text: yAxisTitle,
+                            font: { 
+                                size: labelFontSize, 
+                                family: 'Play, sans-serif' 
+                            }
+                        },
+                        ticks: {
+                            beginAtZero: false,
+                            font: { 
+                                size: tickFontSize, 
+                                family: 'Play, sans-serif' 
+                            },
+                            callback: yAxisFormatter || function(value) {
+                                return Number(value).toLocaleString();
+                            }
+                        }
                     }
                 },
-                y: {
-                    grid: { 
-                        color: 'rgba(255, 255, 255, 0.05)' 
-                    },
-                    title: {
-                        display: true,
-                        text: yAxisTitle,
-                        font: { 
-                            size: labelFontSize, 
-                            family: 'Play, sans-serif' 
-                        }
-                    },
-                    ticks: {
-                        beginAtZero: false,
-                        font: { 
-                            size: tickFontSize, 
-                            family: 'Play, sans-serif' 
-                        },
-                        callback: yAxisFormatter || function(value) {
-                            return Number(value).toLocaleString();
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                return new Date(context[0].parsed.x).toLocaleDateString('en-US', {
+                                    month: 'long',
+                                    day: 'numeric',
+                                    year: 'numeric'
+                                });
+                            },
+                            label: function(context) {
+                                return `${datasetLabel}: ${yAxisFormatter 
+                                    ? yAxisFormatter(context.parsed.y) 
+                                    : context.parsed.y}`;
+                            }
                         }
                     }
-                }
-            },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        title: function(context) {
-                            return new Date(context[0].parsed.x).toLocaleDateString('en-US', {
-                                month: 'long',
-                                day: 'numeric',
-                                year: 'numeric'
-                            });
-                        },
-                        label: function(context) {
-                            return `${datasetLabel}: ${yAxisFormatter 
-                                ? yAxisFormatter(context.parsed.y) 
-                                : context.parsed.y}`;
-                        }
-                    }
-                }
-            },
-            layout: {
-                padding: chartPadding
-            },
-            animation: animationSetting
+                },
+                layout: {
+                    padding: chartPadding
+                },
+                animation: animationSetting
             }
         });
 
