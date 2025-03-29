@@ -744,210 +744,107 @@ function renderChart({
     isFirstLoad = false
 }) {
     const canvas = document.getElementById(canvasId);
-    if (!canvas) {
-        console.error(`${canvasId} canvas not found!`);
-        return null;
-    }
+    if (!canvas) return console.error(`${canvasId} canvas not found!`);
 
-    // Clean up previous chart if exists
+    // Clean up previous chart
     if (window[`${canvasId}Instance`]) {
+        window[`${canvasId}Instance`]?.destroy();
+    }
+
+    // Process data
+    const processedData = [];
+    for (let i = 0; i < Math.min(labels.length, values.length); i++) {
         try {
-            window[`${canvasId}Instance`].destroy();
-        } catch (e) {
-            console.warn(`Error destroying previous ${canvasId} chart:`, e);
+            const dateStr = labels[i].split('T')[0]; // Handle "YYYY-MM-DD" or ISO format
+            const [year, month, day] = dateStr.split('-');
+            const date = new Date(year, month-1, day, 12); // Noon to avoid timezone issues
+            processedData.push({
+                x: date,
+                y: values[i]
+            });
+        } catch(e) {
+            console.warn(`Skipping invalid data at index ${i}`, e);
         }
     }
 
-    // Set canvas dimensions
-    canvas.width = canvas.parentElement.offsetWidth;
-    canvas.height = canvas.parentElement.offsetHeight;
-    const ctx = canvas.getContext('2d');
+    // Sort by date
+    processedData.sort((a, b) => a.x - b.x);
 
-    try {
-        // Validate inputs
-        if (!Array.isArray(labels)) {
-            console.error('Labels must be an array');
-            labels = [];
-        }
-        if (!Array.isArray(values)) {
-            console.error('Values must be an array');
-            values = [];
-        }
+    // Calculate date range with proper padding
+    const minDate = new Date(processedData[0].x);
+    const maxDate = new Date(processedData[processedData.length-1].x);
+    const paddedMaxDate = new Date(maxDate);
+    paddedMaxDate.setDate(paddedMaxDate.getDate() + 1); // Add 1 day padding
 
-        const dateLabels = [];
-        const validValues = [];
-        
-        for (let i = 0; i < Math.min(labels.length, values.length); i++) {
-            try {
-                let date;
-                if (labels[i] instanceof Date) {
-                    date = new Date(labels[i]);
-                } else if (typeof labels[i] === 'string') {
-                    // Simplified date parsing for "YYYY-MM-DD" format
-                    const [year, month, day] = labels[i].split('-');
-                    date = new Date(year, month - 1, day);
-                } else if (typeof labels[i] === 'number') {
-                    date = new Date(labels[i]);
-                } else {
-                    console.warn(`Invalid label type at index ${i}:`, labels[i]);
-                    continue;
-                }
-
-                if (isNaN(date.getTime())) {
-                    console.warn(`Invalid date at index ${i}:`, labels[i]);
-                    continue;
-                }
-
-                // Normalize to noon to avoid timezone issues
-                date.setHours(12, 0, 0, 0);
-                dateLabels.push(date);
-                validValues.push(values[i]);
-            } catch (e) {
-                console.warn(`Error processing data point ${i}:`, e);
-            }
-        }
-
-        if (dateLabels.length === 0) {
-            // Create empty chart with today's date as fallback
-            const today = new Date();
-            today.setHours(12, 0, 0, 0);
-            dateLabels.push(today);
-            validValues.push(0);
-            console.warn(`No valid dates found - using fallback with today's date`);
-        }
-
-        // Sort dates in chronological order
-        dateLabels.sort((a, b) => a - b);
-
-        // Calculate min and max dates with padding
-        const minDate = new Date(dateLabels[0]);
-        const maxDate = new Date(dateLabels[dateLabels.length - 1]);
-        
-        // Add 0.5 day padding to the max date (less than before)
-        const paddedMaxDate = new Date(maxDate);
-        paddedMaxDate.setDate(paddedMaxDate.getDate());
-        paddedMaxDate.setHours(23, 59, 59, 999); // End of day instead of next day
-
-        const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
-
-        const chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: dateLabels,
-                datasets: [{
-                    label: datasetLabel,
-                    data: validValues.map((v, i) => ({
-                        x: dateLabels[i],
-                        y: v
-                    })),
-                    borderColor: 'rgba(146, 176, 174, 1)',
-                    backgroundColor: 'rgba(146, 176, 174, 0.1)',
-                    fill: true,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    borderWidth: tickFontSize / 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'day',
-                            displayFormats: {
-                                day: 'MMM d'
-                            },
-                            tooltipFormat: 'MMM d, yyyy',
-                            parser: 'yyyy-MM-dd' // Explicit parser for your format
-                        },
-                        min: minDate,
-                        max: paddedMaxDate,
-                        offset: true,
-                        bounds: 'ticks',
-                        distribution: 'series',
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)',
-                        },
-                        ticks: {
-                            source: 'data',
-                            autoSkip: false,
-                            maxRotation: 35,
-                            minRotation: 35,
-                            font: { 
-                                size: tickFontSize, 
-                                family: 'Play, sans-serif' 
-                            }
+    // Chart config
+    const chartInstance = new Chart(canvas, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: datasetLabel,
+                data: processedData,
+                borderColor: 'rgba(146, 176, 174, 1)',
+                backgroundColor: 'rgba(146, 176, 174, 0.1)',
+                fill: true,
+                tension: 0.1,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: { day: 'MMM d' },
+                        tooltipFormat: 'MMM d, yyyy'
+                    },
+                    min: minDate,
+                    max: paddedMaxDate,
+                    bounds: 'data',
+                    ticks: {
+                        source: 'auto',
+                        autoSkip: true,
+                        maxRotation: 0,
+                        maxTicksLimit: 10, // Force max 10 labels
+                        font: {
+                            size: 10,
+                            family: 'Play, sans-serif'
                         }
                     },
-                    y: {
-                        grid: { 
-                            color: 'rgba(255, 255, 255, 0.05)' 
-                        },
-                        title: {
-                            display: true,
-                            text: yAxisTitle,
-                            font: { 
-                                size: labelFontSize, 
-                                family: 'Play, sans-serif' 
-                            }
-                        },
-                        ticks: {
-                            beginAtZero: false,
-                            font: { 
-                                size: tickFontSize, 
-                                family: 'Play, sans-serif' 
-                            },
-                            callback: yAxisFormatter || function(value) {
-                                return Number(value).toLocaleString();
-                            }
-                        }
+                    grid: {
+                        color: 'rgba(255,255,255,0.05)'
                     }
                 },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            title: function(context) {
-                                return new Date(context[0].parsed.x).toLocaleDateString('en-US', {
-                                    month: 'long',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                });
-                            },
-                            label: function(context) {
-                                return `${datasetLabel}: ${yAxisFormatter 
-                                    ? yAxisFormatter(context.parsed.y) 
-                                    : context.parsed.y}`;
-                            }
-                        }
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(255,255,255,0.05)'
+                    },
+                    ticks: {
+                        callback: yAxisFormatter || (v => v.toLocaleString())
                     }
-                },
-                layout: {
-                    padding: chartPadding
-                },
-                animation: animationSetting
-            }
-        });
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: ctx => new Date(ctx[0].parsed.x).toLocaleDateString(),
+                        label: ctx => `${datasetLabel}: ${yAxisFormatter ? yAxisFormatter(ctx.parsed.y) : ctx.parsed.y}`
+                    }
+                }
+            },
+            animation: isFirstLoad ? { duration: 600 } : { duration: 0 }
+        }
+    });
 
-        window[`${canvasId}Instance`] = chartInstance;
-        chartInstance._destroyed = false;
-
-        console.log(`Created ${canvasId} chart with ${dateLabels.length} data points`);
-        return chartInstance;
-
-    } catch (error) {
-        console.error(`Error rendering ${canvasId} chart:`, error);
-        const fallbackChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: [], datasets: [] },
-            options: { responsive: true }
-        });
-        window[`${canvasId}Instance`] = fallbackChart;
-        return fallbackChart;
-    }
+    window[`${canvasId}Instance`] = chartInstance;
+    return chartInstance;
 }
  
 function renderPieChart({
