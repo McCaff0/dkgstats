@@ -783,8 +783,11 @@ function renderChart({
                 if (labels[i] instanceof Date) {
                     date = new Date(labels[i]);
                 } else if (typeof labels[i] === 'string') {
-                    const dateStr = labels[i].includes('T') ? labels[i].split('T')[0] : labels[i];
-                    date = new Date(dateStr);
+                    // Simplified date parsing for "YYYY-MM-DD" format
+                    const [year, month, day] = labels[i].split('-');
+                    date = new Date(year, month - 1, day);
+                } else if (typeof labels[i] === 'number') {
+                    date = new Date(labels[i]);
                 } else {
                     console.warn(`Invalid label type at index ${i}:`, labels[i]);
                     continue;
@@ -795,7 +798,7 @@ function renderChart({
                     continue;
                 }
 
-                // Normalize dates to noon to avoid timezone issues
+                // Normalize to noon to avoid timezone issues
                 date.setHours(12, 0, 0, 0);
                 dateLabels.push(date);
                 validValues.push(values[i]);
@@ -813,16 +816,17 @@ function renderChart({
             console.warn(`No valid dates found - using fallback with today's date`);
         }
 
-        // Sort dates in chronological order (earliest to latest)
+        // Sort dates in chronological order
         dateLabels.sort((a, b) => a - b);
 
         // Calculate min and max dates with padding
         const minDate = new Date(dateLabels[0]);
         const maxDate = new Date(dateLabels[dateLabels.length - 1]);
         
-        // Add 1 day padding to the max date to ensure last point is fully visible
+        // Add 0.5 day padding to the max date (less than before)
         const paddedMaxDate = new Date(maxDate);
-        paddedMaxDate.setDate(paddedMaxDate.getDate() + 1);
+        paddedMaxDate.setDate(paddedMaxDate.getDate());
+        paddedMaxDate.setHours(23, 59, 59, 999); // End of day instead of next day
 
         const animationSetting = isFirstLoad ? { duration: 600 } : { duration: 0 };
 
@@ -832,16 +836,17 @@ function renderChart({
                 labels: dateLabels,
                 datasets: [{
                     label: datasetLabel,
-                    data: validValues,
+                    data: validValues.map((v, i) => ({
+                        x: dateLabels[i],
+                        y: v
+                    })),
                     borderColor: 'rgba(146, 176, 174, 1)',
                     backgroundColor: 'rgba(146, 176, 174, 0.1)',
                     fill: true,
                     tension: 0.1,
                     pointRadius: 0,
                     pointHoverRadius: 5,
-                    borderWidth: tickFontSize / 6,
-                    // Ensure points are positioned correctly
-                    parsing: false
+                    borderWidth: tickFontSize / 6
                 }]
             },
             options: {
@@ -855,13 +860,14 @@ function renderChart({
                             displayFormats: {
                                 day: 'MMM d'
                             },
-                            tooltipFormat: 'MMM d, yyyy'
+                            tooltipFormat: 'MMM d, yyyy',
+                            parser: 'yyyy-MM-dd' // Explicit parser for your format
                         },
                         min: minDate,
                         max: paddedMaxDate,
-                        offset: true, // Add padding to the scale
-                        bounds: 'ticks', // Strictly align ticks with data
-                        distribution: 'series', // Evenly distribute points
+                        offset: true,
+                        bounds: 'ticks',
+                        distribution: 'series',
                         grid: {
                             color: 'rgba(255, 255, 255, 0.05)',
                         },
@@ -873,12 +879,6 @@ function renderChart({
                             font: { 
                                 size: tickFontSize, 
                                 family: 'Play, sans-serif' 
-                            },
-                            callback: function(value) {
-                                return new Date(value).toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric'
-                                });
                             }
                         }
                     },
@@ -932,7 +932,6 @@ function renderChart({
             }
         });
 
-        // Store instance with destruction flag
         window[`${canvasId}Instance`] = chartInstance;
         chartInstance._destroyed = false;
 
@@ -941,7 +940,6 @@ function renderChart({
 
     } catch (error) {
         console.error(`Error rendering ${canvasId} chart:`, error);
-        // Create empty chart as fallback
         const fallbackChart = new Chart(ctx, {
             type: 'line',
             data: { labels: [], datasets: [] },
