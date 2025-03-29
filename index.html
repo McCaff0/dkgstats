@@ -749,58 +749,116 @@ function renderChart({
         return null;
     }
 
-    // Clean up previous chart
+    // Clean up previous chart if exists
     if (window[`${canvasId}Instance`]) {
         window[`${canvasId}Instance`].destroy();
     }
 
-    // Process and validate data
-    const processedData = [];
+    // Process data - SIMPLE version that works with your format
+    const dateLabels = [];
+    const validValues = [];
+    
     for (let i = 0; i < Math.min(labels.length, values.length); i++) {
         try {
-            const dateStr = labels[i]?.split('T')[0]; // Handle both "YYYY-MM-DD" and ISO format
-            if (!dateStr) continue;
-            
+            // Directly parse your "YYYY-MM-DD" format
+            const dateStr = labels[i].split('T')[0];
             const [year, month, day] = dateStr.split('-');
-            const date = new Date(year, month-1, day, 12); // Noon to avoid timezone issues
-            if (isNaN(date.getTime())) continue;
+            const date = new Date(year, month-1, day);
             
-            processedData.push({
-                x: date,
-                y: Number(values[i]) || 0 // Ensure numeric value
-            });
+            if (!isNaN(date.getTime())) {
+                dateLabels.push(date);
+                validValues.push(values[i]);
+            }
         } catch(e) {
             console.warn(`Skipping invalid data at index ${i}`, e);
         }
     }
 
-    // Handle empty dataset
-    if (processedData.length === 0) {
+    // Fallback if no valid data
+    if (dateLabels.length === 0) {
         const today = new Date();
-        today.setHours(12, 0, 0, 0);
-        processedData.push({
-            x: today,
-            y: 0
-        });
-        console.warn('No valid data - showing empty chart');
+        dateLabels.push(today);
+        validValues.push(0);
     }
 
-    // Sort by date
-    processedData.sort((a, b) => a.x - b.x);
+    // Sort dates
+    dateLabels.sort((a, b) => a - b);
 
-    // SAFE date range calculation
-    const minDate = processedData[0]?.x ? new Date(processedData[0].x) : new Date();
-    const maxDate = processedData[processedData.length-1]?.x 
-        ? new Date(processedData[processedData.length-1].x) 
-        : new Date();
-    
-    // Add 1 day padding to max date
-    const paddedMaxDate = new Date(maxDate);
-    paddedMaxDate.setDate(paddedMaxDate.getDate() + 1);
+    // Get date range
+    const minDate = dateLabels[0];
+    const maxDate = dateLabels[dateLabels.length - 1];
 
-    // Rest of your chart configuration...
+    // Create chart - with FIXED tick count
     const chartInstance = new Chart(canvas, {
-        // ... (keep all your existing chart config options)
+        type: 'line',
+        data: {
+            labels: dateLabels,
+            datasets: [{
+                label: datasetLabel,
+                data: validValues,
+                borderColor: 'rgba(146, 176, 174, 1)',
+                backgroundColor: 'rgba(146, 176, 174, 0.1)',
+                fill: true,
+                tension: 0.1,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: { day: 'MMM d' },
+                        tooltipFormat: 'MMM d, yyyy'
+                    },
+                    min: minDate,
+                    max: maxDate,
+                    ticks: {
+                        source: 'auto',
+                        autoSkip: true,
+                        maxTicksLimit: 10, // THIS FIXES THE TOO MANY TICKS ISSUE
+                        maxRotation: 0,
+                        font: {
+                            size: 10,
+                            family: 'Play, sans-serif'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255,255,255,0.05)'
+                    }
+                },
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(255,255,255,0.05)'
+                    },
+                    ticks: {
+                        callback: yAxisFormatter || function(v) {
+                            return v.toLocaleString();
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return new Date(context[0].label).toLocaleDateString();
+                        },
+                        label: function(context) {
+                            return `${datasetLabel}: ${context.raw}`;
+                        }
+                    }
+                }
+            },
+            animation: isFirstLoad ? { duration: 600 } : { duration: 0 }
+        }
     });
 
     window[`${canvasId}Instance`] = chartInstance;
