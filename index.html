@@ -417,7 +417,7 @@
         <p>
           <span>Volume</span>
           <span class="value-container">
-            <span id="marketcap" class="number-value">Loading...</span>
+            <span id="volume" class="number-value">Loading...</span>
             <span class="percentage-change"></span>
           </span>
         </p>
@@ -701,6 +701,7 @@ function handleData(sheetData, records) {
     const marketCap = sheetData.tracprice * 500000000;
     updateText('marketcap', formatNumber(marketCap, 0, true));
     updateText('peratio', formatNumber(sheetData.peratio, 1));
+    updateText('volume', formatNumber(sheetData.volume, 0, true));
     updateText('tracstaked', formatNumber(sheetData.tracstaked, 0, true));
     updateText('stakingapy', formatNumber(sheetData.stakingapy, 2) + '%');
     updateText('annualspend', formatNumber(sheetData.annualspend, 0, true));
