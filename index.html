@@ -84,7 +84,7 @@
 }
 
     .container {
-      background: #373737;
+      background: #3b3b3b;
       padding: 0.5rem;
       border-radius: 1rem;
       display: flex;
@@ -128,7 +128,7 @@
       font-weight: bold;
       text-transform: uppercase;
       margin-bottom: 0;
-      color: #acafb0;
+      color: #bababa;
 }
       
     .box p {
@@ -138,7 +138,7 @@
       font-size: 1.2rem;
       font-weight: bold;
       margin: 0.025rem 0;
-      color: #b4b7b8;
+      color: #bababa;
 }
     .box:nth-of-type(1) {
       height: 36.8rem;
@@ -231,7 +231,7 @@
         text-align: center;
         margin-top: 0.25rem;
         margin-bottom: -0.3125rem;
-        color: #999999;
+        color: #bababa;
 }
 
 .time-range-buttons {
@@ -314,7 +314,7 @@
         gap: 0;
         font-family: "Play", sans-serif;
         font-size: 1rem;
-        color: #a6a6a6;
+        color: #bababa;
         z-index: 10;
         width: 59.3%;
 }
@@ -351,7 +351,7 @@
       font-weight: bold;
       text-transform: uppercase;
       margin-bottom: 0;
-      color: #acafb0;
+      color: #bababa;
       margin-top: 0.5rem
 }
     .epoch-box h3 {
@@ -362,7 +362,7 @@
         margin-top: 0.7rem;
         margin-bottom: -0.3125rem;
         margin-left: 32%;
-        color: #999999;
+        color: #bababa;
 }
 
     .epoch-box:nth-of-type(2) {
@@ -751,7 +751,6 @@ function renderChart({
         return null;
     }
 
-    // Clean up previous chart if exists
     if (window[`${canvasId}Instance`]) {
         try {
             window[`${canvasId}Instance`].destroy();
@@ -760,13 +759,11 @@ function renderChart({
         }
     }
 
-    // Set canvas dimensions
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = canvas.parentElement.offsetHeight;
     const ctx = canvas.getContext('2d');
 
     try {
-        // Validate inputs
         if (!Array.isArray(labels)) {
             console.error('Labels must be an array');
             labels = [];
@@ -805,7 +802,6 @@ function renderChart({
     }
 
     if (dateLabels.length === 0) {
-        // Create empty chart with today's date as fallback
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         dateLabels.push(today);
@@ -813,10 +809,8 @@ function renderChart({
         console.warn(`No valid dates found - using fallback with today's date`);
     }
 
-    // Sort dates in chronological order (earliest to latest)
     dateLabels.sort((a, b) => a - b);
 
-    // Calculate ticks based on actual time distribution
     const tickCount = 10;
     const minDate = dateLabels[0];
     const maxDate = dateLabels[dateLabels.length - 1];
@@ -939,7 +933,6 @@ function renderChart({
             }
         });
 
-        // Store instance with destruction flag
         window[`${canvasId}Instance`] = chartInstance;
         chartInstance._destroyed = false;
 
@@ -948,7 +941,6 @@ function renderChart({
 
     } catch (error) {
         console.error(`Error rendering ${canvasId} chart:`, error);
-        // Create empty chart as fallback
         const fallbackChart = new Chart(ctx, {
             type: 'line',
             data: { labels: [], datasets: [] },
@@ -992,7 +984,7 @@ function renderPieChart({
                     width: 1.05rem; 
                     height: 1.05rem; 
                     background: ${item.color}; 
-                    border: 0.15rem solid #a6a6a6; 
+                    border: 0.15rem solid #bababa; 
                     border-radius: 50%; 
                     margin-right: 0.5rem;
                 "></div>
@@ -1010,7 +1002,7 @@ function renderPieChart({
                 datasets: [{
                     data: combinedData.map(item => item.value),
                     backgroundColor: combinedData.map(item => item.color),
-                    borderColor: "#a6a6a6",
+                    borderColor: "#bababa",
                     hoverOffset: 10,
                     borderWidth: pieChartBorderWidth,
                     cutout: "55%"
