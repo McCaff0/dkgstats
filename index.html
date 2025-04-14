@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,7 +68,7 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 0.5rem;
-      width: 97vw;
+      width: 98vw;
       max-width: 111.75rem;
       margin: 0 auto;
 }
@@ -1071,14 +1072,14 @@ function adjustFontSize() {
         if (container) {
             const containerWidth = container.offsetWidth;
             const viewportWidth = window.innerWidth;
-            const maxWidth = 0.97 * viewportWidth;
+            const maxWidth = 0.98 * viewportWidth;
             if (containerWidth > maxWidth) {
                 newFontSize *= maxWidth / containerWidth;
             }
         }
 
         document.documentElement.style.setProperty('font-size', `${newFontSize}px`);
-        resolve(newFontSize); // Resolve the promise with the new font size
+        resolve(newFontSize);
     });
 }
 
@@ -1088,21 +1089,18 @@ async function resizeCharts() {
         updateFontSizesAndPadding(newFontSize);
         updatePieChartFontSizesAndPadding(newFontSize);
 
-        // Safely update all line charts
         const lineChartInstances = [
             { name: 'PriceChartInstance', instance: window.PriceChartInstance },
             { name: 'SpendChartInstance', instance: window.SpendChartInstance },
             { name: 'PublishesChartInstance', instance: window.PublishesChartInstance }
         ];
 
-        // Safely update all pie charts
         const pieChartInstances = [
             { name: 'publishesPieChartInstance', instance: window.publishesPieChartInstance },
             { name: 'rewardsPieChartInstance', instance: window.rewardsPieChartInstance },
             { name: 'stakedPieChartInstance', instance: window.stakedPieChartInstance }
         ];
 
-        // Update line charts (unchanged)
         lineChartInstances.forEach(({ name, instance }) => {
             try {
                 if (instance && !instance._destroyed && instance.options?.scales?.x) {
@@ -1120,7 +1118,6 @@ async function resizeCharts() {
             }
         });
 
-        // Simplified pie chart updates
         pieChartInstances.forEach(({ name, instance }) => {
             try {
                 if (instance && !instance._destroyed) {
@@ -1141,8 +1138,8 @@ async function resizeCharts() {
 
 let isThrottled = false;
 let finalCheckTimeout = null;
-const throttleDelay = 100; // milliseconds
-const finalCheckDelay = 500; // milliseconds after last resize
+const throttleDelay = 100;
+const finalCheckDelay = 500;
 
 function handleResize() {
 
@@ -1169,7 +1166,6 @@ function handleResize() {
 
 const isPageLoaded = () => document.readyState === 'complete';
 
-// Chart configurations
 const chartConfigurations = {
     PriceChart: { timeRange: '90D' },
     SpendChart: { timeRange: '90D' },
@@ -1177,10 +1173,9 @@ const chartConfigurations = {
 };
 
 const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/charts';
-const CACHE_EXPIRY_TIME = 180000; // 3 minutes in ms
+const CACHE_EXPIRY_TIME = 180000;
 const LOCAL_STORAGE_KEY = 'chartCache';
 
-// Initialize cache with validation
 let chartCache = (() => {
     try {
         const cached = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
@@ -1199,31 +1194,24 @@ let chartCache = (() => {
     }
 })();
 
-// Optimized cache update with batching
-const MAX_CACHE_ITEMS = 10; // Add this with your other constants at the top
+const MAX_CACHE_ITEMS = 10;
 
 let cacheWritePending = false;
 function updateCache(key, data) {
-    // 1. Update the cache entry
     chartCache[key] = {
         ...data,
-        timestamp: Date.now() // Ensure every update gets fresh timestamp
+        timestamp: Date.now()
     };
-    
-    // 2. Enforce cache size limit
+
     const cacheKeys = Object.keys(chartCache);
     if (cacheKeys.length > MAX_CACHE_ITEMS) {
-        // Sort keys by timestamp (oldest first)
         cacheKeys.sort((a, b) => chartCache[a].timestamp - chartCache[b].timestamp);
-        
-        // Delete oldest entries beyond the limit
         cacheKeys.slice(0, cacheKeys.length - MAX_CACHE_ITEMS).forEach(key => {
             console.log(`Evicting old cache entry: ${key}`);
             delete chartCache[key];
         });
     }
     
-    // 3. Batch write to localStorage (existing logic)
     if (!cacheWritePending) {
         cacheWritePending = true;
         setTimeout(() => {
@@ -1232,7 +1220,6 @@ function updateCache(key, data) {
                 console.debug(`Cache updated. Current items: ${Object.keys(chartCache).length}/${MAX_CACHE_ITEMS}`);
             } catch (e) {
                 console.error('Cache write failed', e);
-                // If write fails, attempt to clear some space
                 if (e.name === 'QuotaExceededError') {
                     console.warn('Storage full, clearing cache');
                     chartCache = {};
@@ -1244,7 +1231,6 @@ function updateCache(key, data) {
     }
 }
 
-// Improved date handling
 function normalizeDate(dateStr) {
     if (!dateStr) return null;
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
@@ -1263,7 +1249,6 @@ function isSameDate(dateStr1, dateStr2) {
     return d1 && d2 && d1 === d2;
 }
 
-// Fetch latest value with proper date handling
 async function fetchLatestValue(endpoint) {
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', '/latest.json')}`;
     try {
@@ -1283,7 +1268,6 @@ async function fetchLatestValue(endpoint) {
     }
 }
 
-// Fetch full dataset with proper sorting
 async function fetchFullDataset(endpoint, cacheKey) {
     const timeRange = chartConfigurations[endpoint.chartId].timeRange;
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
@@ -1297,7 +1281,6 @@ async function fetchFullDataset(endpoint, cacheKey) {
             throw new Error('Empty or invalid data received');
         }
 
-        // Process data with proper date formatting and sorting (oldest to newest)
         const processedData = data
             .map(item => ({
                 date: normalizeDate(item.date),
@@ -1305,8 +1288,8 @@ async function fetchFullDataset(endpoint, cacheKey) {
                     ? parseFloat(item.value.toFixed(2)) 
                     : item.value
             }))
-            .filter(item => item.date) // Remove invalid dates
-            .sort((a, b) => new Date(a.date) - new Date(b.date)); // Explicit sort
+            .filter(item => item.date)
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
 
         if (processedData.length === 0) {
             throw new Error('No valid data points after processing');
@@ -1325,7 +1308,6 @@ async function fetchFullDataset(endpoint, cacheKey) {
     }
 }
 
-// Core chart data fetching with proper cache updates
 async function fetchChartData(chartId = null) {
     const now = Date.now();
     const today = normalizeDate(new Date().toISOString());
@@ -1343,8 +1325,7 @@ async function fetchChartData(chartId = null) {
             const timeRange = chartConfigurations[endpoint.chartId].timeRange;
             const cacheKey = `${endpoint.chartId}_${timeRange}`;
             const cachedData = chartCache[cacheKey];
-            
-            // CASE 1: No cached data - fetch full dataset
+
             if (!cachedData) {
                 console.log(`No cache found for ${cacheKey}, fetching full dataset`);
                 const freshData = await fetchFullDataset(endpoint, cacheKey);
@@ -1357,22 +1338,17 @@ async function fetchChartData(chartId = null) {
             const isCacheFresh = (now - cachedData.timestamp) < CACHE_EXPIRY_TIME;
             const isDataCurrent = isSameDate(lastCachedDate, today);
 
-            // CASE 2: Cache is fresh and data is current - use cache
             if (isCacheFresh && isDataCurrent) {
                 console.log('Using cached data (fresh and current)');
                 renderChartDataIfPageLoaded(endpoint, cachedData.data);
                 continue;
             }
 
-            // CASE 3: Cache is stale but data is current - fetch latest value only
            if (isDataCurrent) {
     console.log('Fetching latest value (cache stale but data current)');
     try {
         const latest = await fetchLatestValue(endpoint);
-        
-        // NEW: Proper date comparison and value replacement
         if (latest && latest.date) {
-            // Convert both dates to noon to match chart's time handling
             const latestDate = new Date(latest.date);
             latestDate.setHours(12, 0, 0, 0);
             
@@ -1380,21 +1356,19 @@ async function fetchChartData(chartId = null) {
             lastCachedDate.setHours(12, 0, 0, 0);
             
             if (latestDate.getTime() === lastCachedDate.getTime()) {
-                // Same date - replace last value
                 const updatedValues = [...cachedData.data.values];
                 updatedValues[updatedValues.length - 1] = latest.value;
                 
                 const updatedData = {
                     timestamp: now,
                     data: {
-                        labels: [...cachedData.data.labels], // Same labels
+                        labels: [...cachedData.data.labels],
                         values: updatedValues
                     }
                 };
                 updateCache(cacheKey, updatedData);
                 renderChartDataIfPageLoaded(endpoint, updatedData.data);
             } else if (latestDate > lastCachedDate) {
-                // New day - append new data point
                 const updatedData = {
                     timestamp: now,
                     data: {
@@ -1405,7 +1379,6 @@ async function fetchChartData(chartId = null) {
                 updateCache(cacheKey, updatedData);
                 renderChartDataIfPageLoaded(endpoint, updatedData.data);
             } else {
-                // Just refresh timestamp (no data change needed)
                 updateCache(cacheKey, { ...cachedData, timestamp: now });
                 renderChartDataIfPageLoaded(endpoint, cachedData.data);
             }
@@ -1420,7 +1393,6 @@ async function fetchChartData(chartId = null) {
                 continue;
             }
 
-            // CASE 4: Data is outdated - fetch full dataset
             console.log('Fetching full dataset (data outdated)');
             try {
                 const freshData = await fetchFullDataset(endpoint, cacheKey);
@@ -1437,17 +1409,14 @@ async function fetchChartData(chartId = null) {
     }
 }
 
-// Render function with date validation
 function renderChartDataIfPageLoaded(endpoint, data) {
     const render = () => {
         try {
-            // Validate data structure
             if (!data || !data.labels || !data.values || data.labels.length !== data.values.length) {
                 console.error('Invalid data for rendering:', data);
                 return;
             }
 
-            // Clean up previous chart
             if (window[`${endpoint.chartId}Instance`]) {
                 try {
                     window[`${endpoint.chartId}Instance`].destroy();
@@ -1456,16 +1425,13 @@ function renderChartDataIfPageLoaded(endpoint, data) {
                 }
             }
 
-            // Initialize first load flag if needed
             const firstLoadFlag = `${endpoint.chartId}FirstPopulatedLoadFlag`;
             if (window[firstLoadFlag] === undefined) {
                 window[firstLoadFlag] = true;
             }
 
-            // Convert labels to Date objects (already sorted oldest to newest)
             const dateLabels = data.labels.map(label => new Date(label));
 
-            // Render new chart
             window[`${endpoint.chartId}Instance`] = renderChart({
                 canvasId: endpoint.chartId,
                 labels: dateLabels,
@@ -1476,7 +1442,6 @@ function renderChartDataIfPageLoaded(endpoint, data) {
                 isFirstLoad: window[firstLoadFlag]
             });
 
-            // Update first load flag
             if (window[firstLoadFlag]) {
                 window[firstLoadFlag] = false;
             }
@@ -1493,7 +1458,6 @@ function renderChartDataIfPageLoaded(endpoint, data) {
     }
 }
 
-// Time range update with cache invalidation
 function updateChartTimeRange(chartId, timeRange) {
     if (chartConfigurations[chartId]) {
 
@@ -1502,7 +1466,6 @@ function updateChartTimeRange(chartId, timeRange) {
     }
 }
 
-// Debugging helper
 window.debugChartCache = () => {
     console.group('Chart Cache Debug');
     console.log('In-memory cache:', chartCache);
@@ -1513,7 +1476,6 @@ window.debugChartCache = () => {
     console.groupEnd();
 };
 
-// Add a function to manually clear cache
 function clearChartCache(chartId = null) {
     if (chartId) {
         Object.keys(chartCache).forEach(key => {
@@ -1578,9 +1540,9 @@ function fetchPieChartData() {
             }
 
             if (isPageLoaded()) {
-                renderWhenReady(); // If page is already loaded, render immediately
+                renderWhenReady();
             } else {
-                window.addEventListener('load', renderWhenReady, { once: true }); // Otherwise, wait for full load
+                window.addEventListener('load', renderWhenReady, { once: true });
             }
         })
         .catch(error => {
@@ -1700,7 +1662,6 @@ function startIntervals() {
 
     dataInterval = setInterval(fetchData, 30000);
     chartInterval = setInterval(() => {
-        // Update each chart with its current configuration
         Object.keys(chartConfigurations).forEach(chartId => {
             fetchChartData(chartId);
         });
