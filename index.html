@@ -632,11 +632,12 @@
   </div>
 </div>
 
-  <script type="module">
+ <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
   import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js";
   import { initializeAppCheck, ReCaptchaV3Provider, getToken } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-check.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCJE1EpoY0u7p0NSiNA3fnKCWGOzwpbmqo",
@@ -652,9 +653,26 @@
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 
+  // App Check
   const appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider('6Lf24RkrAAAAACMZSLa-L3a_1_HB96rTcFWyi1dk'),
     isTokenAutoRefreshEnabled: true
+  });
+
+  // Auth
+  const auth = getAuth();
+  signInAnonymously(auth)
+    .then(() => {
+      console.log("Signed in anonymously");
+    })
+    .catch((error) => {
+      console.error("Anonymous sign-in error:", error);
+    });
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("Anonymous user ID:", user.uid);
+    }
   });
 
   const database = getDatabase(app);
@@ -729,33 +747,33 @@ function formatValueInMillions(value) {
 }
 
 async function fetchData() {
-    const SHEETDATA_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/sheetData.json';
-    const RECORDS_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/records.json';
-    const appCheckToken = await getToken(appCheck, true);
+  const SHEETDATA_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/sheetData.json';
+  const RECORDS_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/records.json';
 
-    const headers = {
-        'Authorization': `Bearer ${appCheckToken}`,
-    };
+  const appCheckToken = await getToken(appCheck, true);
 
-    return Promise.all([
-        fetch(SHEETDATA_URL, { headers }).then(r => r.json()),
-        fetch(RECORDS_URL, { headers }).then(r => r.json())
-    ])
-    .then(([sheetData, records]) => {
-        console.log("Fetched Data:", { sheetData, records });
-        if (sheetData) {
-            handleData(sheetData, records);
-        } else {
-            console.error("Error: sheetData not found");
-        }
-        return { sheetData, records };
-    })
-    .catch(error => {
-        console.error('Error fetching data:', error);
-        throw error;
-    });
+  const headers = {
+    'X-Firebase-AppCheck': appCheckToken.token, // ✅ correct header and value
+  };
+
+  return Promise.all([
+    fetch(SHEETDATA_URL, { headers }).then(r => r.json()),
+    fetch(RECORDS_URL, { headers }).then(r => r.json())
+  ])
+  .then(([sheetData, records]) => {
+    console.log("Fetched Data:", { sheetData, records });
+    if (sheetData) {
+      handleData(sheetData, records);
+    } else {
+      console.error("Error: sheetData not found");
+    }
+    return { sheetData, records };
+  })
+  .catch(error => {
+    console.error('Error fetching data:', error);
+    throw error;
+  });
 }
-
     
 function handleData(sheetData, records) {
     if (!sheetData || !records) {
