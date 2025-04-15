@@ -631,32 +631,7 @@
   </div>
 </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCJE1EpoY0u7p0NSiNA3fnKCWGOzwpbmqo",
-    authDomain: "dkgstats-b5839.firebaseapp.com",
-    databaseURL: "https://dkgstats-b5839-default-rtdb.firebaseio.com",
-    projectId: "dkgstats-b5839",
-    storageBucket: "dkgstats-b5839.firebasestorage.app",
-    messagingSenderId: "210286903130",
-    appId: "1:210286903130:web:ef990942d7a8cf1e1d7d63",
-    measurementId: "G-Q46Y36Z13K"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  signInAnonymously(auth)
-    .then(() => {
-      console.log("Signed in anonymously");
-    })
-    .catch((error) => {
-      console.error("Error signing in anonymously:", error);
-    });
-
+  <script>
 let priceLabels = [], priceValues = [];
 let spendLabels = [], spendValues = [];
 let publishesLabels = [], publishesValues = [];
@@ -714,36 +689,22 @@ function formatValueInMillions(value) {
     return Math.round(value).toString();
 }
 
-async function fetchData() {
+function fetchData() {
     const SHEETDATA_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/sheetData.json';
     const RECORDS_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/records.json';
 
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (!user) {
-        console.error("No user is signed in.");
-        return;
-    }
-
-    const idToken = await user.getIdToken(true);
-
-    const headers = {
-        'Authorization': `Bearer ${idToken}`,
-    };
-
     return Promise.all([
-        fetch(SHEETDATA_URL, { headers }).then(r => r.json()),
-        fetch(RECORDS_URL, { headers }).then(r => r.json())
+        fetch(SHEETDATA_URL).then(r => r.json()),
+        fetch(RECORDS_URL).then(r => r.json())
     ])
     .then(([sheetData, records]) => {
-        console.log("Fetched Data:", { sheetData, records });
+        console.log("Fetched Data:", {sheetData, records});
         if (sheetData) {
             handleData(sheetData, records);
         } else {
             console.error("Error: sheetData not found");
         }
-        return { sheetData, records };
+        return {sheetData, records};
     })
     .catch(error => {
         console.error('Error fetching data:', error);
@@ -1311,23 +1272,8 @@ function isSameDate(dateStr1, dateStr2) {
 
 async function fetchLatestValue(endpoint) {
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', '/latest.json')}`;
-
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (!user) {
-        console.error("No user is signed in.");
-        return;
-    }
-
-    const idToken = await user.getIdToken(true);
-
-    const headers = {
-        'Authorization': `Bearer ${idToken}`,
-    };
-
     try {
-        const response = await fetch(url, { headers });
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         
@@ -1346,23 +1292,9 @@ async function fetchLatestValue(endpoint) {
 async function fetchFullDataset(endpoint, cacheKey) {
     const timeRange = chartConfigurations[endpoint.chartId].timeRange;
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
-
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (!user) {
-        console.error("No user is signed in.");
-        return;
-    }
-
-    const idToken = await user.getIdToken(true);
-
-    const headers = {
-        'Authorization': `Bearer ${idToken}`,
-    };
-
+    
     try {
-        const response = await fetch(url, { headers });
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
 
@@ -1433,51 +1365,51 @@ async function fetchChartData(chartId = null) {
                 continue;
             }
 
-            if (isDataCurrent) {
-                console.log('Fetching latest value (cache stale but data current)');
-                try {
-                    const latest = await fetchLatestValue(endpoint);
-                    if (latest && latest.date) {
-                        const latestDate = new Date(latest.date);
-                        latestDate.setHours(12, 0, 0, 0);
-                        
-                        const lastCachedDate = new Date(cachedData.data.labels[cachedData.data.labels.length - 1]);
-                        lastCachedDate.setHours(12, 0, 0, 0);
-                        
-                        if (latestDate.getTime() === lastCachedDate.getTime()) {
-                            const updatedValues = [...cachedData.data.values];
-                            updatedValues[updatedValues.length - 1] = latest.value;
-                            
-                            const updatedData = {
-                                timestamp: now,
-                                data: {
-                                    labels: [...cachedData.data.labels],
-                                    values: updatedValues
-                                }
-                            };
-                            updateCache(cacheKey, updatedData);
-                            renderChartDataIfPageLoaded(endpoint, updatedData.data);
-                        } else if (latestDate > lastCachedDate) {
-                            const updatedData = {
-                                timestamp: now,
-                                data: {
-                                    labels: [...cachedData.data.labels, latest.date],
-                                    values: [...cachedData.data.values, latest.value]
-                                }
-                            };
-                            updateCache(cacheKey, updatedData);
-                            renderChartDataIfPageLoaded(endpoint, updatedData.data);
-                        } else {
-                            updateCache(cacheKey, { ...cachedData, timestamp: now });
-                            renderChartDataIfPageLoaded(endpoint, cachedData.data);
-                        }
-                    } else {
-                        console.warn('Invalid latest data received:', latest);
-                        renderChartDataIfPageLoaded(endpoint, cachedData.data);
+           if (isDataCurrent) {
+    console.log('Fetching latest value (cache stale but data current)');
+    try {
+        const latest = await fetchLatestValue(endpoint);
+        if (latest && latest.date) {
+            const latestDate = new Date(latest.date);
+            latestDate.setHours(12, 0, 0, 0);
+            
+            const lastCachedDate = new Date(cachedData.data.labels[cachedData.data.labels.length - 1]);
+            lastCachedDate.setHours(12, 0, 0, 0);
+            
+            if (latestDate.getTime() === lastCachedDate.getTime()) {
+                const updatedValues = [...cachedData.data.values];
+                updatedValues[updatedValues.length - 1] = latest.value;
+                
+                const updatedData = {
+                    timestamp: now,
+                    data: {
+                        labels: [...cachedData.data.labels],
+                        values: updatedValues
                     }
-                } catch (error) {
-                    console.warn('Failed to fetch latest value, using existing cache', error);
-                    renderChartDataIfPageLoaded(endpoint, cachedData.data);
+                };
+                updateCache(cacheKey, updatedData);
+                renderChartDataIfPageLoaded(endpoint, updatedData.data);
+            } else if (latestDate > lastCachedDate) {
+                const updatedData = {
+                    timestamp: now,
+                    data: {
+                        labels: [...cachedData.data.labels, latest.date],
+                        values: [...cachedData.data.values, latest.value]
+                    }
+                };
+                updateCache(cacheKey, updatedData);
+                renderChartDataIfPageLoaded(endpoint, updatedData.data);
+            } else {
+                updateCache(cacheKey, { ...cachedData, timestamp: now });
+                renderChartDataIfPageLoaded(endpoint, cachedData.data);
+            }
+        } else {
+            console.warn('Invalid latest data received:', latest);
+            renderChartDataIfPageLoaded(endpoint, cachedData.data);
+        }
+    } catch (error) {
+        console.warn('Failed to fetch latest value, using existing cache', error);
+        renderChartDataIfPageLoaded(endpoint, cachedData.data);
                 }
                 continue;
             }
@@ -1578,82 +1510,67 @@ function clearChartCache(chartId = null) {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
     console.log(chartId ? `Cleared cache for ${chartId}` : 'Cleared all chart caches');
 }
-async function fetchPieChartData() {
+function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
 
-    const auth = getAuth();
-    const user = auth.currentUser;
+    fetch(CHART_DATA_BASE_URL + '.json')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Chains Data:", data);
+            if (!data) {
+                console.warn("No valid chains data received.");
+                return;
+            }
 
-    if (!user) {
-        console.error("No user is signed in.");
-        return;
-    }
-
-    const idToken = await user.getIdToken(true);
-
-    const headers = {
-        'Authorization': `Bearer ${idToken}`,
-    };
-
-    try {
-        const response = await fetch(CHART_DATA_BASE_URL + '.json', { headers });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-
-        console.log("Chains Data:", data);
-        if (!data) {
-            console.warn("No valid chains data received.");
-            return;
-        }
-
-        function renderWhenReady() {
-            const chartsConfig = [
-                {
-                    canvasId: 'publishesPieChart',
-                    legendContainerId: 'customLegendContainer',
-                    field: 'epochPublishes',
-                    instanceKey: 'publishesPieChartInstance'
-                },
-                {
-                    canvasId: 'rewardsPieChart',
-                    legendContainerId: 'customRewardsLegendContainer',
-                    field: 'epochRewards',
-                    instanceKey: 'rewardsPieChartInstance'
-                },
-                {
-                    canvasId: 'stakedPieChart',
-                    legendContainerId: 'customStakedLegendContainer',
-                    field: 'stakedAmount',
-                    instanceKey: 'stakedPieChartInstance'
-                }
-            ];
-
-            chartsConfig.forEach(chart => {
-                const values = [
-                    data.neuroweb?.[chart.field] || 0,
-                    data.base?.[chart.field] || 0,
-                    data.gnosis?.[chart.field] || 0
+            function renderWhenReady() {
+                const chartsConfig = [
+                    {
+                        canvasId: 'publishesPieChart',
+                        legendContainerId: 'customLegendContainer',
+                        field: 'epochPublishes',
+                        instanceKey: 'publishesPieChartInstance'
+                    },
+                    {
+                        canvasId: 'rewardsPieChart',
+                        legendContainerId: 'customRewardsLegendContainer',
+                        field: 'epochRewards',
+                        instanceKey: 'rewardsPieChartInstance'
+                    },
+                    {
+                        canvasId: 'stakedPieChart',
+                        legendContainerId: 'customStakedLegendContainer',
+                        field: 'stakedAmount',
+                        instanceKey: 'stakedPieChartInstance'
+                    }
                 ];
-                renderPieChart({
-                    canvasId: chart.canvasId,
-                    legendContainerId: chart.legendContainerId,
-                    data: values,
-                    chartInstance: window[chart.instanceKey],
-                    isFirstLoad: false
+
+                chartsConfig.forEach(chart => {
+                    const values = [
+                        data.neuroweb?.[chart.field] || 0,
+                        data.base?.[chart.field] || 0,
+                        data.gnosis?.[chart.field] || 0
+                    ];
+                    renderPieChart({
+                        canvasId: chart.canvasId,
+                        legendContainerId: chart.legendContainerId,
+                        data: values,
+                        chartInstance: window[chart.instanceKey],
+                        isFirstLoad: false
+                    });
                 });
-            });
 
-            updateEpochReturns(data);
-        }
+                updateEpochReturns(data);
+            }
 
-        if (isPageLoaded()) {
-            renderWhenReady();
-        } else {
-            window.addEventListener('load', renderWhenReady, { once: true });
-        }
-    } catch (error) {
-        console.error("Error fetching chains data:", error);
-    }
+            if (isPageLoaded()) {
+                renderWhenReady();
+            } else {
+                window.addEventListener('load', renderWhenReady, { once: true });
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching chains data:", error);
+        });
 }
 
 function updateEpochReturns(chainsData) {
@@ -1753,47 +1670,17 @@ document.addEventListener('DOMContentLoaded', function () {
         data: [],
         isFirstLoad: isFirstLoadStaked
     });
+    console.log('Fetching data...');
+      fetchChartData();
+      fetchPieChartData();
+      fetchData()
+    .then(() => {
+        console.log('fetchData completed successfully');
+    })
+    .catch((error) => {
+        console.error('Error in fetchData:', error);
+    });
 
-    console.log('Checking if user is signed in...');
-
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (user) {
-        console.log("User is signed in:", user.uid);
-
-        console.log('Fetching data...');
-        fetchChartData();
-        fetchPieChartData();
-        fetchData()
-        .then(() => {
-            console.log('fetchData completed successfully');
-        })
-        .catch((error) => {
-            console.error('Error in fetchData:', error);
-        });
-
-    } else {
-        console.log("User is not signed in, waiting for sign-in...");
-        
-        // Wait for user to sign in, then run the fetchData
-        signInAnonymously(auth)
-        .then(() => {
-            console.log("Signed in anonymously");
-            fetchChartData();
-            fetchPieChartData();
-            fetchData()
-            .then(() => {
-                console.log('fetchData completed successfully');
-            })
-            .catch((error) => {
-                console.error('Error in fetchData:', error);
-            });
-        })
-        .catch((error) => {
-            console.error('Error signing in anonymously:', error);
-        });
-    }
 });
 
 window.addEventListener('load', function () {
