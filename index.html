@@ -633,42 +633,43 @@
 </div>
 
   <script type="module">
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, get } from "firebase/database";
-import { getAnalytics } from "firebase/analytics";
-import { initializeAppCheck, ReCaptchaV3Provider, getToken } from "firebase/app-check";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js";
+  import { initializeAppCheck, ReCaptchaV3Provider, getToken } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-check.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCJE1EpoY0u7p0NSiNA3fnKCWGOzwpbmqo",
-  authDomain: "dkgstats-b5839.firebaseapp.com",
-  databaseURL: "https://dkgstats-b5839-default-rtdb.firebaseio.com",
-  projectId: "dkgstats-b5839",
-  storageBucket: "dkgstats-b5839.firebasestorage.app",
-  messagingSenderId: "210286903130",
-  appId: "1:210286903130:web:ef990942d7a8cf1e1d7d63",
-  measurementId: "G-Q46Y36Z13K"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJE1EpoY0u7p0NSiNA3fnKCWGOzwpbmqo",
+    authDomain: "dkgstats-b5839.firebaseapp.com",
+    databaseURL: "https://dkgstats-b5839-default-rtdb.firebaseio.com",
+    projectId: "dkgstats-b5839",
+    storageBucket: "dkgstats-b5839.firebasestorage.app",
+    messagingSenderId: "210286903130",
+    appId: "1:210286903130:web:ef990942d7a8cf1e1d7d63",
+    measurementId: "G-Q46Y36Z13K"
+  };
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 
-const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider('6Lf24RkrAAAAACMZSLa-L3a_1_HB96rTcFWyi1dk'),
-  isTokenAutoRefreshEnabled: true
-});
+  const appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6Lf24RkrAAAAACMZSLa-L3a_1_HB96rTcFWyi1dk'),
+    isTokenAutoRefreshEnabled: true
+  });
 
-const database = getDatabase(app);
+  const database = getDatabase(app);
 
-async function getAppCheckToken() {
-  try {
-    const token = await getToken(appCheck, true);
-    return token;
-  } catch (error) {
-    console.error('Error getting App Check token:', error);
-    return null;
+  async function getAppCheckToken() {
+    try {
+      const token = await getToken(appCheck, true);
+      return token;
+    } catch (error) {
+      console.error('Error getting App Check token:', error);
+      return null;
+    }
   }
-}
-export { getAppCheckToken, database };
+
+  export { getAppCheckToken, database };
     
 let priceLabels = [], priceValues = [];
 let spendLabels = [], spendValues = [];
