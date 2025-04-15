@@ -653,13 +653,11 @@
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 
-  // App Check
   const appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider('6Lf24RkrAAAAACMZSLa-L3a_1_HB96rTcFWyi1dk'),
     isTokenAutoRefreshEnabled: true
   });
 
-  // Auth
   const auth = getAuth();
   signInAnonymously(auth)
     .then(() => {
@@ -750,35 +748,42 @@ async function fetchData() {
   const SHEETDATA_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/sheetData.json';
   const RECORDS_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/records.json';
 
-  const appCheckToken = await getToken(appCheck, true);
-
   const auth = getAuth();
   const user = auth.currentUser;
-  const idToken = user ? await user.getIdToken() : null;
 
-  const headers = {
-    'X-Firebase-AppCheck': appCheckToken.token,
-    'Authorization': `Bearer ${idToken}`
-  };
+  if (!user) {
+    console.error("User not authenticated");
+    return;
+  }
 
-  return Promise.all([
-    fetch(SHEETDATA_URL, { headers }).then(r => r.json()),
-    fetch(RECORDS_URL, { headers }).then(r => r.json())
-  ])
-  .then(([sheetData, records]) => {
-    console.log("Fetched Data:", { sheetData, records });
-    if (sheetData) {
-      handleData(sheetData, records);
-    } else {
-      console.error("Error: sheetData not found");
+  try {
+    const appCheckToken = await getToken(appCheck, true);
+    const idToken = await user.getIdToken();
+
+    const headers = {
+      'X-Firebase-AppCheck': appCheckToken.token,
+      'Authorization': `Bearer ${idToken}`
+    };
+
+    const [sheetDataResp, recordsResp] = await Promise.all([
+      fetch(SHEETDATA_URL, { headers }),
+      fetch(RECORDS_URL, { headers })
+    ]);
+
+    if (!sheetDataResp.ok || !recordsResp.ok) {
+      throw new Error(`HTTP ${sheetDataResp.status} / ${recordsResp.status}`);
     }
-    return { sheetData, records };
-  })
-  .catch(error => {
+
+    const sheetData = await sheetDataResp.json();
+    const records = await recordsResp.json();
+
+    console.log("Fetched Data:", { sheetData, records });
+    handleData(sheetData, records);
+  } catch (error) {
     console.error('Error fetching data:', error);
-    throw error;
-  });
+  }
 }
+
 
     
 function handleData(sheetData, records) {
