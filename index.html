@@ -631,7 +631,32 @@
   </div>
 </div>
 
-  <script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJE1EpoY0u7p0NSiNA3fnKCWGOzwpbmqo",
+    authDomain: "dkgstats-b5839.firebaseapp.com",
+    databaseURL: "https://dkgstats-b5839-default-rtdb.firebaseio.com",
+    projectId: "dkgstats-b5839",
+    storageBucket: "dkgstats-b5839.firebasestorage.app",
+    messagingSenderId: "210286903130",
+    appId: "1:210286903130:web:ef990942d7a8cf1e1d7d63",
+    measurementId: "G-Q46Y36Z13K"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  signInAnonymously(auth)
+    .then(() => {
+      console.log("Signed in anonymously");
+    })
+    .catch((error) => {
+      console.error("Error signing in anonymously:", error);
+    });
+
 let priceLabels = [], priceValues = [];
 let spendLabels = [], spendValues = [];
 let publishesLabels = [], publishesValues = [];
@@ -1672,17 +1697,47 @@ document.addEventListener('DOMContentLoaded', function () {
         data: [],
         isFirstLoad: isFirstLoadStaked
     });
-    console.log('Fetching data...');
-      fetchChartData();
-      fetchPieChartData();
-      fetchData()
-    .then(() => {
-        console.log('fetchData completed successfully');
-    })
-    .catch((error) => {
-        console.error('Error in fetchData:', error);
-    });
 
+    console.log('Checking if user is signed in...');
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+        console.log("User is signed in:", user.uid);
+
+        console.log('Fetching data...');
+        fetchChartData();
+        fetchPieChartData();
+        fetchData()
+        .then(() => {
+            console.log('fetchData completed successfully');
+        })
+        .catch((error) => {
+            console.error('Error in fetchData:', error);
+        });
+
+    } else {
+        console.log("User is not signed in, waiting for sign-in...");
+        
+        // Wait for user to sign in, then run the fetchData
+        signInAnonymously(auth)
+        .then(() => {
+            console.log("Signed in anonymously");
+            fetchChartData();
+            fetchPieChartData();
+            fetchData()
+            .then(() => {
+                console.log('fetchData completed successfully');
+            })
+            .catch((error) => {
+                console.error('Error in fetchData:', error);
+            });
+        })
+        .catch((error) => {
+            console.error('Error signing in anonymously:', error);
+        });
+    }
 });
 
 window.addEventListener('load', function () {
