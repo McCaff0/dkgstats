@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -632,61 +631,7 @@
   </div>
 </div>
 
- <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js";
-  import { initializeAppCheck, ReCaptchaV3Provider, getToken } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-check.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCJE1EpoY0u7p0NSiNA3fnKCWGOzwpbmqo",
-    authDomain: "dkgstats-b5839.firebaseapp.com",
-    databaseURL: "https://dkgstats-b5839-default-rtdb.firebaseio.com",
-    projectId: "dkgstats-b5839",
-    storageBucket: "dkgstats-b5839.firebasestorage.app",
-    messagingSenderId: "210286903130",
-    appId: "1:210286903130:web:ef990942d7a8cf1e1d7d63",
-    measurementId: "G-Q46Y36Z13K"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-
-  const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider('6Lf24RkrAAAAACMZSLa-L3a_1_HB96rTcFWyi1dk'),
-    isTokenAutoRefreshEnabled: true
-  });
-
-  const auth = getAuth();
-  signInAnonymously(auth)
-    .then(() => {
-      console.log("Signed in anonymously");
-    })
-    .catch((error) => {
-      console.error("Anonymous sign-in error:", error);
-    });
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      console.log("Anonymous user ID:", user.uid);
-    }
-  });
-
-  const database = getDatabase(app);
-
-  async function getAppCheckToken() {
-    try {
-      const token = await getToken(appCheck, true);
-      return token;
-    } catch (error) {
-      console.error('Error getting App Check token:', error);
-      return null;
-    }
-  }
-
-  export { getAppCheckToken, database };
-    
+  <script>
 let priceLabels = [], priceValues = [];
 let spendLabels = [], spendValues = [];
 let publishesLabels = [], publishesValues = [];
@@ -744,47 +689,28 @@ function formatValueInMillions(value) {
     return Math.round(value).toString();
 }
 
-async function fetchData() {
-  const SHEETDATA_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/sheetData.json';
-  const RECORDS_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/records.json';
+function fetchData() {
+    const SHEETDATA_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/sheetData.json';
+    const RECORDS_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/records.json';
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-
-  if (!user) {
-    console.error("User not authenticated");
-    return;
-  }
-
-  try {
-    const appCheckToken = await getToken(appCheck, true);
-    const idToken = await user.getIdToken();
-
-    const headers = {
-      'X-Firebase-AppCheck': appCheckToken.token,
-      'Authorization': `Bearer ${idToken}`
-    };
-
-    const [sheetDataResp, recordsResp] = await Promise.all([
-      fetch(SHEETDATA_URL, { headers }),
-      fetch(RECORDS_URL, { headers })
-    ]);
-
-    if (!sheetDataResp.ok || !recordsResp.ok) {
-      throw new Error(`HTTP ${sheetDataResp.status} / ${recordsResp.status}`);
-    }
-
-    const sheetData = await sheetDataResp.json();
-    const records = await recordsResp.json();
-
-    console.log("Fetched Data:", { sheetData, records });
-    handleData(sheetData, records);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+    return Promise.all([
+        fetch(SHEETDATA_URL).then(r => r.json()),
+        fetch(RECORDS_URL).then(r => r.json())
+    ])
+    .then(([sheetData, records]) => {
+        console.log("Fetched Data:", {sheetData, records});
+        if (sheetData) {
+            handleData(sheetData, records);
+        } else {
+            console.error("Error: sheetData not found");
+        }
+        return {sheetData, records};
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+        throw error;
+    });
 }
-
-
     
 function handleData(sheetData, records) {
     if (!sheetData || !records) {
@@ -1149,6 +1075,8 @@ function updateFontSizesAndPadding(newFontSize) {
 }
 
 function updatePieChartFontSizesAndPadding(newFontSize) {
+    pieChartFontSize = newFontSize * 1.05;
+    pieChartLayoutPadding = newFontSize * 1;
     pieChartBorderWidth = Math.max(1, newFontSize * 0.125);
 }
 
@@ -1344,11 +1272,10 @@ function isSameDate(dateStr1, dateStr2) {
     return d1 && d2 && d1 === d2;
 }
 
-async function fetchLatestValue(endpoint, headers) {
+async function fetchLatestValue(endpoint) {
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', '/latest.json')}`;
-    
     try {
-        const response = await fetch(url, { headers });
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         
@@ -1364,13 +1291,12 @@ async function fetchLatestValue(endpoint, headers) {
     }
 }
 
-// Modified fetchFullDataset with App Check token
-async function fetchFullDataset(endpoint, cacheKey, headers) {
+async function fetchFullDataset(endpoint, cacheKey) {
     const timeRange = chartConfigurations[endpoint.chartId].timeRange;
     const url = `${CHART_DATA_BASE_URL}${endpoint.path.replace('.json', `/${timeRange}.json`)}`;
     
     try {
-        const response = await fetch(url, { headers });
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
 
@@ -1417,104 +1343,94 @@ async function fetchChartData(chartId = null) {
 
     const filteredEndpoints = chartId ? endpoints.filter(endpoint => endpoint.chartId === chartId) : endpoints;
 
-    try {
-        const appCheckToken = await getToken(appCheck, true);
-        const headers = {
-            'Authorization': `Bearer ${appCheckToken}`
-        };
+    for (const endpoint of filteredEndpoints) {
+        try {
+            const timeRange = chartConfigurations[endpoint.chartId].timeRange;
+            const cacheKey = `${endpoint.chartId}_${timeRange}`;
+            const cachedData = chartCache[cacheKey];
 
-        for (const endpoint of filteredEndpoints) {
-            try {
-                const timeRange = chartConfigurations[endpoint.chartId].timeRange;
-                const cacheKey = `${endpoint.chartId}_${timeRange}`;
-                const cachedData = chartCache[cacheKey];
-
-                if (!cachedData) {
-                    console.log(`No cache found for ${cacheKey}, fetching full dataset`);
-                    const freshData = await fetchFullDataset(endpoint, cacheKey, headers);
-                    updateCache(cacheKey, freshData);
-                    renderChartDataIfPageLoaded(endpoint, freshData.data);
-                    continue;
-                }
-
-                const lastCachedDate = cachedData.data.labels[cachedData.data.labels.length - 1];
-                const isCacheFresh = (now - cachedData.timestamp) < CACHE_EXPIRY_TIME;
-                const isDataCurrent = isSameDate(lastCachedDate, today);
-
-                if (isCacheFresh && isDataCurrent) {
-                    console.log('Using cached data (fresh and current)');
-                    renderChartDataIfPageLoaded(endpoint, cachedData.data);
-                    continue;
-                }
-
-                if (isDataCurrent) {
-                    console.log('Fetching latest value (cache stale but data current)');
-                    try {
-                        const latest = await fetchLatestValue(endpoint, headers);  // Pass headers here
-                        if (latest && latest.date) {
-                            const latestDate = new Date(latest.date);
-                            latestDate.setHours(12, 0, 0, 0);
-
-                            const lastCachedDate = new Date(cachedData.data.labels[cachedData.data.labels.length - 1]);
-                            lastCachedDate.setHours(12, 0, 0, 0);
-
-                            if (latestDate.getTime() === lastCachedDate.getTime()) {
-                                const updatedValues = [...cachedData.data.values];
-                                updatedValues[updatedValues.length - 1] = latest.value;
-
-                                const updatedData = {
-                                    timestamp: now,
-                                    data: {
-                                        labels: [...cachedData.data.labels],
-                                        values: updatedValues
-                                    }
-                                };
-                                updateCache(cacheKey, updatedData);
-                                renderChartDataIfPageLoaded(endpoint, updatedData.data);
-                            } else if (latestDate > lastCachedDate) {
-                                const updatedData = {
-                                    timestamp: now,
-                                    data: {
-                                        labels: [...cachedData.data.labels, latest.date],
-                                        values: [...cachedData.data.values, latest.value]
-                                    }
-                                };
-                                updateCache(cacheKey, updatedData);
-                                renderChartDataIfPageLoaded(endpoint, updatedData.data);
-                            } else {
-                                updateCache(cacheKey, { ...cachedData, timestamp: now });
-                                renderChartDataIfPageLoaded(endpoint, cachedData.data);
-                            }
-                        } else {
-                            console.warn('Invalid latest data received:', latest);
-                            renderChartDataIfPageLoaded(endpoint, cachedData.data);
-                        }
-                    } catch (error) {
-                        console.warn('Failed to fetch latest value, using existing cache', error);
-                        renderChartDataIfPageLoaded(endpoint, cachedData.data);
-                    }
-                    continue;
-                }
-
-                console.log('Fetching full dataset (data outdated)');
-                try {
-                    const freshData = await fetchFullDataset(endpoint, cacheKey, headers);  // Pass headers here
-                    updateCache(cacheKey, freshData);
-                    renderChartDataIfPageLoaded(endpoint, freshData.data);
-                } catch (error) {
-                    console.error('Failed to fetch full dataset, using existing cache', error);
-                    renderChartDataIfPageLoaded(endpoint, cachedData.data);
-                }
-
-            } catch (error) {
-                console.error(`Error processing ${endpoint.chartId}:`, error);
+            if (!cachedData) {
+                console.log(`No cache found for ${cacheKey}, fetching full dataset`);
+                const freshData = await fetchFullDataset(endpoint, cacheKey);
+                updateCache(cacheKey, freshData);
+                renderChartDataIfPageLoaded(endpoint, freshData.data);
+                continue;
             }
+
+            const lastCachedDate = cachedData.data.labels[cachedData.data.labels.length - 1];
+            const isCacheFresh = (now - cachedData.timestamp) < CACHE_EXPIRY_TIME;
+            const isDataCurrent = isSameDate(lastCachedDate, today);
+
+            if (isCacheFresh && isDataCurrent) {
+                console.log('Using cached data (fresh and current)');
+                renderChartDataIfPageLoaded(endpoint, cachedData.data);
+                continue;
+            }
+
+           if (isDataCurrent) {
+    console.log('Fetching latest value (cache stale but data current)');
+    try {
+        const latest = await fetchLatestValue(endpoint);
+        if (latest && latest.date) {
+            const latestDate = new Date(latest.date);
+            latestDate.setHours(12, 0, 0, 0);
+            
+            const lastCachedDate = new Date(cachedData.data.labels[cachedData.data.labels.length - 1]);
+            lastCachedDate.setHours(12, 0, 0, 0);
+            
+            if (latestDate.getTime() === lastCachedDate.getTime()) {
+                const updatedValues = [...cachedData.data.values];
+                updatedValues[updatedValues.length - 1] = latest.value;
+                
+                const updatedData = {
+                    timestamp: now,
+                    data: {
+                        labels: [...cachedData.data.labels],
+                        values: updatedValues
+                    }
+                };
+                updateCache(cacheKey, updatedData);
+                renderChartDataIfPageLoaded(endpoint, updatedData.data);
+            } else if (latestDate > lastCachedDate) {
+                const updatedData = {
+                    timestamp: now,
+                    data: {
+                        labels: [...cachedData.data.labels, latest.date],
+                        values: [...cachedData.data.values, latest.value]
+                    }
+                };
+                updateCache(cacheKey, updatedData);
+                renderChartDataIfPageLoaded(endpoint, updatedData.data);
+            } else {
+                updateCache(cacheKey, { ...cachedData, timestamp: now });
+                renderChartDataIfPageLoaded(endpoint, cachedData.data);
+            }
+        } else {
+            console.warn('Invalid latest data received:', latest);
+            renderChartDataIfPageLoaded(endpoint, cachedData.data);
         }
     } catch (error) {
-        console.error('Failed to get App Check token:', error);
+        console.warn('Failed to fetch latest value, using existing cache', error);
+        renderChartDataIfPageLoaded(endpoint, cachedData.data);
+                }
+                continue;
+            }
+
+            console.log('Fetching full dataset (data outdated)');
+            try {
+                const freshData = await fetchFullDataset(endpoint, cacheKey);
+                updateCache(cacheKey, freshData);
+                renderChartDataIfPageLoaded(endpoint, freshData.data);
+            } catch (error) {
+                console.error('Failed to fetch full dataset, using existing cache', error);
+                renderChartDataIfPageLoaded(endpoint, cachedData.data);
+            }
+
+        } catch (error) {
+            console.error(`Error processing ${endpoint.chartId}:`, error);
+        }
     }
 }
-
 
 function renderChartDataIfPageLoaded(endpoint, data) {
     const render = () => {
@@ -1596,76 +1512,68 @@ function clearChartCache(chartId = null) {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
     console.log(chartId ? `Cleared cache for ${chartId}` : 'Cleared all chart caches');
 }
-async function fetchPieChartData() {
+function fetchPieChartData() {
     const CHART_DATA_BASE_URL = 'https://dkgstats-b5839-default-rtdb.firebaseio.com/data/chains';
-    
-    try {
-        const appCheckToken = await getToken(appCheck, true);
-        const headers = {
-            'Authorization': `Bearer ${appCheckToken}`
-        };
 
-        const response = await fetch(CHART_DATA_BASE_URL + '.json', { headers });
-        const data = await response.json();
+    fetch(CHART_DATA_BASE_URL + '.json')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Chains Data:", data);
+            if (!data) {
+                console.warn("No valid chains data received.");
+                return;
+            }
 
-        console.log("Chains Data:", data);
-
-        if (!data) {
-            console.warn("No valid chains data received.");
-            return;
-        }
-
-        function renderWhenReady() {
-            const chartsConfig = [
-                {
-                    canvasId: 'publishesPieChart',
-                    legendContainerId: 'customLegendContainer',
-                    field: 'epochPublishes',
-                    instanceKey: 'publishesPieChartInstance'
-                },
-                {
-                    canvasId: 'rewardsPieChart',
-                    legendContainerId: 'customRewardsLegendContainer',
-                    field: 'epochRewards',
-                    instanceKey: 'rewardsPieChartInstance'
-                },
-                {
-                    canvasId: 'stakedPieChart',
-                    legendContainerId: 'customStakedLegendContainer',
-                    field: 'stakedAmount',
-                    instanceKey: 'stakedPieChartInstance'
-                }
-            ];
-
-            chartsConfig.forEach(chart => {
-                const values = [
-                    data.neuroweb?.[chart.field] || 0,
-                    data.base?.[chart.field] || 0,
-                    data.gnosis?.[chart.field] || 0
+            function renderWhenReady() {
+                const chartsConfig = [
+                    {
+                        canvasId: 'publishesPieChart',
+                        legendContainerId: 'customLegendContainer',
+                        field: 'epochPublishes',
+                        instanceKey: 'publishesPieChartInstance'
+                    },
+                    {
+                        canvasId: 'rewardsPieChart',
+                        legendContainerId: 'customRewardsLegendContainer',
+                        field: 'epochRewards',
+                        instanceKey: 'rewardsPieChartInstance'
+                    },
+                    {
+                        canvasId: 'stakedPieChart',
+                        legendContainerId: 'customStakedLegendContainer',
+                        field: 'stakedAmount',
+                        instanceKey: 'stakedPieChartInstance'
+                    }
                 ];
-                renderPieChart({
-                    canvasId: chart.canvasId,
-                    legendContainerId: chart.legendContainerId,
-                    data: values,
-                    chartInstance: window[chart.instanceKey],
-                    isFirstLoad: false
+
+                chartsConfig.forEach(chart => {
+                    const values = [
+                        data.neuroweb?.[chart.field] || 0,
+                        data.base?.[chart.field] || 0,
+                        data.gnosis?.[chart.field] || 0
+                    ];
+                    renderPieChart({
+                        canvasId: chart.canvasId,
+                        legendContainerId: chart.legendContainerId,
+                        data: values,
+                        chartInstance: window[chart.instanceKey],
+                        isFirstLoad: false
+                    });
                 });
-            });
 
-            updateEpochReturns(data);
-        }
+                updateEpochReturns(data);
+            }
 
-        if (isPageLoaded()) {
-            renderWhenReady();
-        } else {
-            window.addEventListener('load', renderWhenReady, { once: true });
-        }
-
-    } catch (error) {
-        console.error("Error fetching chains data:", error);
-    }
+            if (isPageLoaded()) {
+                renderWhenReady();
+            } else {
+                window.addEventListener('load', renderWhenReady, { once: true });
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching chains data:", error);
+        });
 }
-
 
 function updateEpochReturns(chainsData) {
     if (!chainsData) return;
