@@ -752,8 +752,13 @@ async function fetchData() {
 
   const appCheckToken = await getToken(appCheck, true);
 
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const idToken = user ? await user.getIdToken() : null;
+
   const headers = {
-    'X-Firebase-AppCheck': appCheckToken.token, // ✅ correct header and value
+    'X-Firebase-AppCheck': appCheckToken.token,
+    'Authorization': `Bearer ${idToken}`
   };
 
   return Promise.all([
@@ -774,6 +779,7 @@ async function fetchData() {
     throw error;
   });
 }
+
     
 function handleData(sheetData, records) {
     if (!sheetData || !records) {
