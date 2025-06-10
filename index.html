@@ -741,6 +741,7 @@ function handleData(sheetData, records) {
 
     updateText('tracprice', formatNumber(sheetData.tracprice, 4));
     const marketCap = sheetData.tracprice * 500000000;
+    const showPlaceholderparanets = true;
     updateText('marketcap', formatNumber(marketCap, 0, true));
     updateText('peratio', formatNumber(sheetData.peratio, 1));
     updateText('volume', formatNumber(sheetData.volume, 0, true));
@@ -755,7 +756,7 @@ function handleData(sheetData, records) {
     updateText('totalkas', formatNumber(sheetData.totalkas, 0));
     updateText('totaltracspent', formatNumber(sheetData.totaltracspent, 0));
     updateText('activenodes', formatNumber(sheetData.activenodes, 0));
-    updateText('paranets', formatNumber(sheetData.paranets, 0));
+    updateText('paranets', showPlaceholderparanets ? '?' : formatNumber(sheetData.paranets, 0));
 
     updateHTML('pricechange1d', formatPercentage(sheetData.pricechange1d, '24H'));
     updateHTML('dailypublisheschange1d', formatPercentage(sheetData.dailypublisheschange1d, '24H'));
